@@ -87,10 +87,12 @@ if (SITE_PHONE !== '') {
             <span class="bar"></span>
         </button>
         <nav class="nav" id="navigare" aria-label="Principal">
-            <?php foreach ($nav as $key => $item): ?>
-                <?php $isCurrent = $page === $key || ($key === 'cont' && in_array($page, ['cont', 'cabinet', 'inregistrare', 'autentificare'], true)); ?>
-                <a href="<?= e($item[1]) ?>" <?= $isCurrent ? 'aria-current="page"' : '' ?>><?= e($item[0]) ?></a>
-            <?php endforeach; ?>
+            <div class="nav-links">
+                <?php foreach ($nav as $key => $item): ?>
+                    <?php $isCurrent = $page === $key || ($key === 'cont' && in_array($page, ['cont', 'cabinet', 'inregistrare', 'autentificare'], true)); ?>
+                    <a href="<?= e($item[1]) ?>" <?= $isCurrent ? 'aria-current="page"' : '' ?>><?= e($item[0]) ?></a>
+                <?php endforeach; ?>
+            </div>
             <a class="btn btn-dark btn-sm" href="<?= e(url('contact.php')) ?>">Solicită ofertă</a>
         </nav>
     </div>

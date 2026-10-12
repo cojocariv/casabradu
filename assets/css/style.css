@@ -99,8 +99,8 @@ button, input, select, textarea { font: inherit; }
     position: sticky;
     top: 0;
     z-index: 30;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(12px);
+    background: rgba(255, 253, 251, 0.92);
+    backdrop-filter: blur(16px);
     border-bottom: 1px solid transparent;
 }
 
@@ -132,26 +132,91 @@ button, input, select, textarea { font: inherit; }
 .nav {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 12px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+    border-radius: 999px;
+    background: rgba(231, 240, 228, 0.9);
+    border: 1px solid rgba(22, 53, 43, 0.08);
 }
 
 .nav a {
     text-decoration: none;
-    font-size: 0.98rem;
+    font-size: 0.94rem;
     font-weight: 500;
-    color: var(--ink);
-    position: relative;
+    color: var(--forest);
 }
 
-.nav a[aria-current="page"]::after,
-.nav a:not(.btn):hover::after {
+.nav-links a {
+    position: relative;
+    padding: 8px 14px;
+    border-radius: 999px;
+    color: var(--forest-2);
+    transition: background 0.28s ease, color 0.28s ease, transform 0.28s ease;
+    animation: nav-in 0.5s ease both;
+}
+
+.nav-links a:nth-child(1) { animation-delay: 0.04s; }
+.nav-links a:nth-child(2) { animation-delay: 0.08s; }
+.nav-links a:nth-child(3) { animation-delay: 0.12s; }
+.nav-links a:nth-child(4) { animation-delay: 0.16s; }
+.nav-links a:nth-child(5) { animation-delay: 0.2s; }
+
+.nav-links a:hover {
+    background: rgba(255, 253, 251, 0.92);
+    color: var(--forest);
+}
+
+.nav-links a[aria-current="page"] {
+    background: var(--forest-2);
+    color: #f6f1e6;
+    box-shadow: 0 0 0 1px rgba(196, 161, 90, 0.7), 0 8px 16px rgba(22, 53, 43, 0.16);
+}
+
+.nav .btn-dark {
+    position: relative;
+    overflow: hidden;
+    color: #f6f1e6;
+    background: linear-gradient(180deg, #245244 0%, #16352b 100%);
+    border: 1px solid rgba(196, 161, 90, 0.55);
+    box-shadow: 0 8px 18px rgba(22, 53, 43, 0.16);
+    animation: nav-in 0.5s ease 0.24s both;
+}
+
+.nav .btn-dark::after {
     content: "";
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -6px;
-    height: 1px;
-    background: var(--gold);
+    inset: 0;
+    background: linear-gradient(110deg, transparent 28%, rgba(228, 196, 138, 0.45) 50%, transparent 72%);
+    transform: translateX(-130%);
+    transition: transform 0.65s ease;
+    pointer-events: none;
+}
+
+.nav .btn-dark:hover {
+    background: linear-gradient(180deg, #2b5d4d 0%, #12281f 100%);
+    border-color: var(--gold-soft);
+    box-shadow: 0 12px 22px rgba(22, 53, 43, 0.22);
+}
+
+.nav .btn-dark:hover::after {
+    transform: translateX(130%);
+}
+
+@keyframes nav-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 .nav-toggle {
@@ -972,24 +1037,55 @@ button, input, select, textarea { font: inherit; }
     .nav-toggle { display: inline-flex; }
 
     .nav {
-        display: none;
+        display: flex;
         position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
+        top: calc(100% - 8px);
+        left: 16px;
+        right: 16px;
         flex-direction: column;
         align-items: stretch;
-        gap: 2px;
-        background: #fff;
-        padding: 8px 20px 18px;
-        border-bottom: 1px solid var(--line);
-        box-shadow: 0 16px 30px rgba(28, 52, 43, 0.06);
+        gap: 10px;
+        background: rgba(247, 245, 241, 0.98);
+        padding: 12px;
+        border: 1px solid rgba(22, 53, 43, 0.08);
+        border-radius: 22px;
+        box-shadow: 0 18px 40px rgba(22, 53, 43, 0.1);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        pointer-events: none;
+        transition: opacity 0.28s ease, transform 0.28s ease, visibility 0.28s ease;
     }
 
-    .nav.is-open { display: flex; }
-    .nav a { padding: 12px 2px; }
-    .nav a:not(.btn) { width: max-content; }
-    .nav .btn { margin-top: 8px; align-self: stretch; }
+    .nav.is-open {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        pointer-events: auto;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        gap: 4px;
+    }
+
+    .nav-links a {
+        padding: 12px 14px;
+    }
+
+    .nav.is-open .nav-links a {
+        animation: nav-in 0.35s ease both;
+    }
+
+    .nav .btn {
+        margin-top: 2px;
+        align-self: stretch;
+    }
 
     .hero-grid,
     .story,
@@ -1013,6 +1109,16 @@ button, input, select, textarea { font: inherit; }
     .section { padding: 52px 0; }
     .legal { flex-direction: column; }
     .features { grid-template-columns: 1fr 1fr; gap: 20px 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-links a,
+    .nav .btn-dark,
+    .nav.is-open .nav-links a,
+    .nav .btn-dark::after {
+        animation: none;
+        transition: none;
+    }
 }
 
 @media (max-width: 680px) {
