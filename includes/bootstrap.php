@@ -10,6 +10,12 @@ const SITE_PHONE = '';
 const SITE_DESCRIPTION = 'Importăm din Italia cafea artizanală și o distribuim sub brandul Casa Bradu Caffè: cialde, capsule, cafea boabe și aparate de cafea. Gust aromat și fin, cu un raport echilibrat între Arabica și Robusta.';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
     session_start();
 }
 
@@ -77,3 +83,11 @@ function wave_svg(): string
 {
     return '<svg class="wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path fill="#16352b" d="M0,58 C160,92 280,16 460,36 C660,60 760,12 960,40 C1140,66 1280,20 1440,46 L1440,90 L0,90 Z"></path></svg>';
 }
+
+$config = __DIR__ . '/config.php';
+if (is_file($config)) {
+    require_once $config;
+}
+
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/cont.php';

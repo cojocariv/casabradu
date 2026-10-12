@@ -68,7 +68,7 @@ require __DIR__ . '/includes/header.php';
                     <h3><?= e($item['title']) ?></h3>
                     <p><?= e($item['short']) ?></p>
                     <p class="card-meta"><?= e($item['meta']) ?></p>
-                    <a class="btn btn-dark btn-sm" href="<?= e(url('contact.php?subiect=' . $item['slug'] . '#formular')) ?>">Cere ofertă</a>
+                    <a class="btn btn-dark btn-sm" href="<?= e(url('cabinet.php?produs=' . $item['slug'])) ?>">Comandă</a>
                 </article>
             <?php endforeach; ?>
         </div>
@@ -107,7 +107,7 @@ require __DIR__ . '/includes/header.php';
             </ul>
             <div class="btn-row">
                 <a class="btn btn-dark" href="<?= e(url('produse.php#aparate')) ?>">Vezi aparatele</a>
-                <a class="btn btn-line" href="<?= e(url('contact.php?subiect=aparate#formular')) ?>">Cere ofertă</a>
+                <a class="btn btn-line" href="<?= e(url('cabinet.php?produs=aparate')) ?>">Comandă</a>
             </div>
         </div>
     </div>

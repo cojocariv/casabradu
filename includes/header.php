@@ -11,11 +11,15 @@ $fullTitle = $page === 'acasa'
     ? SITE_NAME . ' · Cafea artizanală din Italia'
     : $pageTitle . ' · ' . SITE_NAME;
 
+$client = current_user();
 $nav = [
     'acasa' => ['Acasă', url()],
     'produse' => ['Produse', url('produse.php')],
     'despre' => ['Despre', url('despre.php')],
     'contact' => ['Contact', url('contact.php')],
+    'cont' => $client
+        ? ['Cabinet', url('cabinet.php')]
+        : ['Cont', url('autentificare.php')],
 ];
 
 $schema = [
@@ -45,6 +49,9 @@ if (SITE_PHONE !== '') {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($fullTitle) ?></title>
     <meta name="description" content="<?= e($pageDescription) ?>">
+    <?php if (!empty($noindex)): ?>
+        <meta name="robots" content="noindex">
+    <?php endif; ?>
     <link rel="canonical" href="<?= e(canonical_url()) ?>">
     <meta name="theme-color" content="#16352b">
     <meta property="og:locale" content="ro_RO">
@@ -81,7 +88,8 @@ if (SITE_PHONE !== '') {
         </button>
         <nav class="nav" id="navigare" aria-label="Principal">
             <?php foreach ($nav as $key => $item): ?>
-                <a href="<?= e($item[1]) ?>" <?= $page === $key ? 'aria-current="page"' : '' ?>><?= e($item[0]) ?></a>
+                <?php $isCurrent = $page === $key || ($key === 'cont' && in_array($page, ['cont', 'cabinet', 'inregistrare', 'autentificare'], true)); ?>
+                <a href="<?= e($item[1]) ?>" <?= $isCurrent ? 'aria-current="page"' : '' ?>><?= e($item[0]) ?></a>
             <?php endforeach; ?>
             <a class="btn btn-dark btn-sm" href="<?= e(url('contact.php')) ?>">Solicită ofertă</a>
         </nav>

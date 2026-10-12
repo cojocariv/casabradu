@@ -17,6 +17,7 @@
                 <li><a href="<?= e(url('produse.php')) ?>">Produse</a></li>
                 <li><a href="<?= e(url('despre.php')) ?>">Despre</a></li>
                 <li><a href="<?= e(url('contact.php')) ?>">Contact</a></li>
+                <li><a href="<?= e(current_user() ? url('cabinet.php') : url('autentificare.php')) ?>"><?= current_user() ? 'Cabinet' : 'Cont' ?></a></li>
             </ul>
         </div>
         <div>

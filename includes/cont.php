@@ -1,0 +1,346 @@
+<?php
+
+declare(strict_types=1);
+
+function text_line(string $value, int $max): string
+{
+    $value = trim(str_replace(["\r", "\n", "\0"], '', $value));
+    if (strlen($value) > $max) {
+        $value = substr($value, 0, $max);
+    }
+
+    return $value;
+}
+
+function text_block(string $value, int $max): string
+{
+    $value = str_replace(["\r\n", "\r"], "\n", $value);
+    $value = str_replace("\0", '', $value);
+    $value = trim($value);
+    if (strlen($value) > $max) {
+        $value = substr($value, 0, $max);
+    }
+
+    return $value;
+}
+
+function public_client(array $row): array
+{
+    unset($row['parola']);
+
+    return $row;
+}
+
+function current_user(): ?array
+{
+    $id = $_SESSION['user_id'] ?? '';
+    if (!is_string($id) || $id === '') {
+        return null;
+    }
+
+    try {
+        $stmt = db()->prepare('SELECT id, nume, email, telefon, adresa, creat FROM clienti WHERE id = ? LIMIT 1');
+        $stmt->execute([$id]);
+        $row = $stmt->fetch();
+    } catch (Throwable $e) {
+        return null;
+    }
+
+    if (!is_array($row)) {
+        unset($_SESSION['user_id']);
+
+        return null;
+    }
+
+    return public_client($row);
+}
+
+function safe_next(?string $next): string
+{
+    $next = str_replace(["\r", "\n", "\0"], '', (string) $next);
+    if ($next === 'cabinet.php') {
+        return $next;
+    }
+    if (preg_match('/^cabinet\.php\?produs=(cialde|capsule|boabe|aparate)$/', $next) === 1) {
+        return $next;
+    }
+
+    return 'cabinet.php';
+}
+
+function require_client(): array
+{
+    $user = current_user();
+    if ($user !== null) {
+        return $user;
+    }
+
+    $file = basename($_SERVER['SCRIPT_NAME'] ?? 'cabinet.php');
+    $query = (string) ($_SERVER['QUERY_STRING'] ?? '');
+    $next = $file . ($query !== '' ? '?' . $query : '');
+    header('Location: ' . url('autentificare.php?next=' . rawurlencode(safe_next($next))));
+    exit;
+}
+
+function create_client(string $nume, string $email, string $telefon, string $password): array
+{
+    try {
+        $id = bin2hex(random_bytes(8));
+        $stmt = db()->prepare(
+            'INSERT INTO clienti (id, nume, email, telefon, parola, adresa, creat)
+             VALUES (?, ?, ?, ?, ?, \'\', ?)'
+        );
+        $stmt->execute([
+            $id,
+            $nume,
+            $email,
+            $telefon,
+            password_hash($password, PASSWORD_DEFAULT),
+            date('Y-m-d H:i:s'),
+        ]);
+    } catch (PDOException $e) {
+        return [
+            'id' => null,
+            'duplicate' => (string) $e->getCode() === '23000',
+        ];
+    } catch (Throwable $e) {
+        return [
+            'id' => null,
+            'duplicate' => false,
+        ];
+    }
+
+    return [
+        'id' => $id,
+        'duplicate' => false,
+    ];
+}
+
+function login_client(string $email, string $password): bool
+{
+    try {
+        $stmt = db()->prepare('SELECT id, parola FROM clienti WHERE email = ? LIMIT 1');
+        $stmt->execute([$email]);
+        $found = $stmt->fetch();
+    } catch (Throwable $e) {
+        return false;
+    }
+
+    if (!is_array($found) || !password_verify($password, (string) ($found['parola'] ?? ''))) {
+        return false;
+    }
+
+    session_regenerate_id(true);
+    $_SESSION['user_id'] = (string) $found['id'];
+
+    return true;
+}
+
+function logout_client(): void
+{
+    unset($_SESSION['user_id']);
+    session_regenerate_id(true);
+}
+
+function remember_address(string $userId, string $address): void
+{
+    try {
+        $stmt = db()->prepare('UPDATE clienti SET adresa = ? WHERE id = ?');
+        $stmt->execute([$address, $userId]);
+    } catch (Throwable $e) {
+        return;
+    }
+}
+
+function change_client_password(string $userId, string $current, string $next): bool
+{
+    try {
+        $pdo = db();
+        $stmt = $pdo->prepare('SELECT parola FROM clienti WHERE id = ? LIMIT 1');
+        $stmt->execute([$userId]);
+        $row = $stmt->fetch();
+        if (!is_array($row) || !password_verify($current, (string) ($row['parola'] ?? ''))) {
+            return false;
+        }
+
+        $update = $pdo->prepare('UPDATE clienti SET parola = ? WHERE id = ?');
+
+        return $update->execute([password_hash($next, PASSWORD_DEFAULT), $userId]);
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
+function client_orders(string $userId): array
+{
+    try {
+        $pdo = db();
+        $orders = $pdo->prepare(
+            'SELECT id, user_id, la, status, adresa, nota FROM comenzi WHERE user_id = ? ORDER BY la DESC, id DESC'
+        );
+        $orders->execute([$userId]);
+        $rows = $orders->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
+
+    if ($rows === []) {
+        return [];
+    }
+
+    $ids = [];
+    foreach ($rows as $row) {
+        $ids[] = (string) $row['id'];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $lines = $pdo->prepare(
+        "SELECT comanda_id, slug, titlu, cantitate FROM comenzi_linii WHERE comanda_id IN ($placeholders) ORDER BY id"
+    );
+    $lines->execute($ids);
+    $grouped = [];
+    foreach ($lines->fetchAll() as $line) {
+        $grouped[(string) $line['comanda_id']][] = [
+            'slug' => (string) $line['slug'],
+            'titlu' => (string) $line['titlu'],
+            'cantitate' => (int) $line['cantitate'],
+        ];
+    }
+
+    foreach ($rows as $index => $row) {
+        $stamp = strtotime((string) ($row['la'] ?? '')) ?: time();
+        $rows[$index]['la'] = date('c', $stamp);
+        $rows[$index]['linii'] = $grouped[(string) $row['id']] ?? [];
+    }
+
+    return $rows;
+}
+
+function place_order(array $user, array $lines, string $address, string $note): ?array
+{
+    $order = [
+        'id' => 'CB' . date('ymd') . '-' . strtoupper(bin2hex(random_bytes(2))),
+        'user_id' => (string) $user['id'],
+        'la' => date('c'),
+        'status' => 'inregistrata',
+        'linii' => $lines,
+        'adresa' => $address,
+        'nota' => $note,
+    ];
+
+    try {
+        $pdo = db();
+        $pdo->beginTransaction();
+        $insert = $pdo->prepare(
+            'INSERT INTO comenzi (id, user_id, la, status, adresa, nota) VALUES (?, ?, ?, ?, ?, ?)'
+        );
+        $insert->execute([
+            $order['id'],
+            $order['user_id'],
+            date('Y-m-d H:i:s'),
+            $order['status'],
+            $address,
+            $note,
+        ]);
+        $lineInsert = $pdo->prepare(
+            'INSERT INTO comenzi_linii (comanda_id, slug, titlu, cantitate) VALUES (?, ?, ?, ?)'
+        );
+        foreach ($lines as $line) {
+            $lineInsert->execute([
+                $order['id'],
+                (string) $line['slug'],
+                (string) $line['titlu'],
+                (int) $line['cantitate'],
+            ]);
+        }
+        $addressUpdate = $pdo->prepare('UPDATE clienti SET adresa = ? WHERE id = ?');
+        $addressUpdate->execute([$address, $order['user_id']]);
+        $pdo->commit();
+    } catch (Throwable $e) {
+        if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        return null;
+    }
+
+    notify_order($order, $user);
+
+    return $order;
+}
+
+function notify_order(array $order, array $user): void
+{
+    if (!function_exists('mail')) {
+        return;
+    }
+
+    $lines = '';
+    foreach ($order['linii'] as $line) {
+        $lines .= '- ' . $line['titlu'] . ': ' . $line['cantitate'] . "\n";
+    }
+
+    $body = "Comandă nouă " . $order['id'] . "\n\n"
+        . "Client: " . $user['nume'] . "\n"
+        . "Email: " . $user['email'] . "\n"
+        . "Telefon: " . $user['telefon'] . "\n\n"
+        . $lines . "\n"
+        . "Adresă: " . $order['adresa'] . "\n\n"
+        . ($order['nota'] !== '' ? $order['nota'] . "\n" : '');
+
+    $email = str_replace(["\r", "\n"], '', (string) $user['email']);
+    $headers = "MIME-Version: 1.0\r\n"
+        . "Content-Type: text/plain; charset=UTF-8\r\n"
+        . "From: Casa Bradu Caffe <" . SITE_EMAIL . ">\r\n"
+        . "Reply-To: {$email}\r\n";
+
+    @mail(SITE_EMAIL, 'Comandă ' . $order['id'], $body, $headers);
+}
+
+function save_message(string $nume, string $email, string $telefon, string $subiect, string $mesaj): bool
+{
+    try {
+        $stmt = db()->prepare(
+            'INSERT INTO mesaje (la, nume, email, telefon, subiect, mesaj) VALUES (?, ?, ?, ?, ?, ?)'
+        );
+
+        return $stmt->execute([date('Y-m-d H:i:s'), $nume, $email, $telefon, $subiect, $mesaj]);
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
+function flash_set(string $message): void
+{
+    $_SESSION['flash'] = $message;
+}
+
+function flash_get(): string
+{
+    $message = (string) ($_SESSION['flash'] ?? '');
+    unset($_SESSION['flash']);
+
+    return $message;
+}
+
+function login_is_blocked(): bool
+{
+    return (int) ($_SESSION['login_wait'] ?? 0) > time();
+}
+
+function login_failed(): void
+{
+    $fails = (int) ($_SESSION['login_fails'] ?? 0) + 1;
+    if ($fails >= 5) {
+        $_SESSION['login_wait'] = time() + 60;
+        $_SESSION['login_fails'] = 0;
+
+        return;
+    }
+    $_SESSION['login_fails'] = $fails;
+}
+
+function login_succeeded(): void
+{
+    unset($_SESSION['login_fails'], $_SESSION['login_wait']);
+}

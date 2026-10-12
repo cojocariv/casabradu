@@ -98,16 +98,13 @@ $record = [
     'mesaj' => $old['mesaj'],
 ];
 
-$storage = dirname(__DIR__) . '/storage';
-if (!is_dir($storage)) {
-    mkdir($storage, 0755, true);
-}
-
-$saved = file_put_contents(
-    $storage . '/mesaje.jsonl',
-    json_encode($record, JSON_UNESCAPED_UNICODE) . "\n",
-    FILE_APPEND | LOCK_EX
-) !== false;
+$saved = save_message(
+    $record['nume'],
+    $record['email'],
+    $record['telefon'],
+    $record['subiect'],
+    $record['mesaj']
+);
 
 $safeName = str_replace(["\r", "\n"], ' ', $old['nume']);
 $safeEmail = str_replace(["\r", "\n"], '', $old['email']);
