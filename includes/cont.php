@@ -39,7 +39,7 @@ function current_user(): ?array
     }
 
     try {
-        $stmt = db()->prepare('SELECT id, nume, email, telefon, adresa, creat FROM clienti WHERE id = ? LIMIT 1');
+        $stmt = db()->prepare('SELECT id, nume, email, telefon, adresa, rechizite, creat FROM clienti WHERE id = ? LIMIT 1');
         $stmt->execute([$id]);
         $row = $stmt->fetch();
     } catch (Throwable $e) {
@@ -142,6 +142,17 @@ function logout_client(): void
     session_regenerate_id(true);
 }
 
+function save_client_requisites(string $userId, string $requisites): bool
+{
+    try {
+        $stmt = db()->prepare('UPDATE clienti SET rechizite = ? WHERE id = ?');
+
+        return $stmt->execute([$requisites, $userId]);
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
 function remember_address(string $userId, string $address): void
 {
     try {
@@ -176,7 +187,7 @@ function client_orders(string $userId): array
     try {
         $pdo = db();
         $orders = $pdo->prepare(
-            'SELECT id, user_id, la, status, adresa, nota FROM comenzi WHERE user_id = ? ORDER BY la DESC, id DESC'
+            'SELECT id, user_id, la, status, adresa, nota, rechizite FROM comenzi WHERE user_id = ? ORDER BY la DESC, id DESC'
         );
         $orders->execute([$userId]);
         $rows = $orders->fetchAll();
@@ -226,13 +237,14 @@ function place_order(array $user, array $lines, string $address, string $note): 
         'linii' => $lines,
         'adresa' => $address,
         'nota' => $note,
+        'rechizite' => (string) ($user['rechizite'] ?? ''),
     ];
 
     try {
         $pdo = db();
         $pdo->beginTransaction();
         $insert = $pdo->prepare(
-            'INSERT INTO comenzi (id, user_id, la, status, adresa, nota) VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO comenzi (id, user_id, la, status, adresa, nota, rechizite) VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
         $insert->execute([
             $order['id'],
@@ -241,6 +253,7 @@ function place_order(array $user, array $lines, string $address, string $note): 
             $order['status'],
             $address,
             $note,
+            $order['rechizite'],
         ]);
         $lineInsert = $pdo->prepare(
             'INSERT INTO comenzi_linii (comanda_id, slug, titlu, cantitate) VALUES (?, ?, ?, ?)'
@@ -286,6 +299,7 @@ function notify_order(array $order, array $user): void
         . "Telefon: " . $user['telefon'] . "\n\n"
         . $lines . "\n"
         . "Adresă: " . $order['adresa'] . "\n\n"
+        . "Rechizite pentru cont de plată:\n" . ($order['rechizite'] !== '' ? $order['rechizite'] : '—') . "\n\n"
         . ($order['nota'] !== '' ? $order['nota'] . "\n" : '');
 
     $email = str_replace(["\r", "\n"], '', (string) $user['email']);

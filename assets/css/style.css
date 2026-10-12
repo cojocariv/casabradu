@@ -893,6 +893,23 @@ button, input, select, textarea { font: inherit; }
 
 .order-line label { margin: 0; }
 
+.requisite-form {
+    margin-top: 8px;
+}
+
+.requisite-form .btn {
+    margin-top: 12px;
+}
+
+.requisite-form + form {
+    margin-top: 16px;
+}
+
+.requisites {
+    white-space: pre-wrap;
+    margin-top: 8px;
+}
+
 .account-fold {
     margin-top: 18px;
     padding-top: 14px;

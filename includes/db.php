@@ -43,6 +43,15 @@ function db(): PDO
     return $pdo;
 }
 
+function db_add_column(PDO $pdo, string $table, string $column, string $definition): void
+{
+    $stmt = $pdo->query('SHOW COLUMNS FROM `' . $table . '` LIKE ' . $pdo->quote($column));
+    if ($stmt !== false && $stmt->fetch() !== false) {
+        return;
+    }
+    $pdo->exec('ALTER TABLE `' . $table . '` ADD COLUMN `' . $column . '` ' . $definition);
+}
+
 function db_install(PDO $pdo): void
 {
     $pdo->exec(
@@ -53,6 +62,7 @@ function db_install(PDO $pdo): void
             telefon VARCHAR(20) NOT NULL,
             parola VARCHAR(255) NOT NULL,
             adresa VARCHAR(300) NOT NULL DEFAULT \'\',
+            rechizite VARCHAR(2000) NOT NULL DEFAULT \'\',
             creat DATETIME NOT NULL,
             PRIMARY KEY (id),
             UNIQUE KEY email_unic (email)
@@ -67,6 +77,7 @@ function db_install(PDO $pdo): void
             status VARCHAR(32) NOT NULL,
             adresa VARCHAR(300) NOT NULL,
             nota TEXT NOT NULL,
+            rechizite VARCHAR(2000) NOT NULL DEFAULT \'\',
             PRIMARY KEY (id),
             KEY user_la (user_id, la)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
@@ -96,6 +107,9 @@ function db_install(PDO $pdo): void
             PRIMARY KEY (id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
+
+    db_add_column($pdo, 'clienti', 'rechizite', "VARCHAR(2000) NOT NULL DEFAULT ''");
+    db_add_column($pdo, 'comenzi', 'rechizite', "VARCHAR(2000) NOT NULL DEFAULT ''");
 
     $columns = $pdo->query("SHOW COLUMNS FROM clienti LIKE 'google_sub'");
     if ($columns === false || $columns->fetch() === false) {
