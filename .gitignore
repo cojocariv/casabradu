@@ -1,0 +1,3 @@
+storage/*.jsonl
+Thumbs.db
+.DS_Store

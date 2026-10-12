@@ -1,0 +1,41 @@
+</main>
+<footer class="site-footer">
+    <?php if (($page ?? '') !== 'acasa'): ?>
+        <?= wave_svg() ?>
+    <?php endif; ?>
+    <div class="wrap footer-grid">
+        <div>
+            <a class="brand-lockup" href="<?= e(url()) ?>">
+                <img src="<?= e(asset('assets/img/logo.jpg')) ?>" alt="">
+            </a>
+            <p>Importăm din Italia cafea artizanală și o distribuim sub brandul Casa Bradu Caffè. Cialde, capsule, boabe și aparate de cafea.</p>
+        </div>
+        <div>
+            <h2>Navigare</h2>
+            <ul>
+                <li><a href="<?= e(url()) ?>">Acasă</a></li>
+                <li><a href="<?= e(url('produse.php')) ?>">Produse</a></li>
+                <li><a href="<?= e(url('despre.php')) ?>">Despre</a></li>
+                <li><a href="<?= e(url('contact.php')) ?>">Contact</a></li>
+            </ul>
+        </div>
+        <div>
+            <h2>Contact</h2>
+            <ul>
+                <li><a href="mailto:<?= e(SITE_EMAIL) ?>"><?= e(SITE_EMAIL) ?></a></li>
+                <?php if (SITE_PHONE !== ''): ?>
+                    <li><a href="tel:<?= e(preg_replace('/\s+/', '', SITE_PHONE) ?? '') ?>"><?= e(SITE_PHONE) ?></a></li>
+                <?php endif; ?>
+                <li><?= e(SITE_LEGAL) ?></li>
+                <li>Republica Moldova</li>
+            </ul>
+        </div>
+    </div>
+    <div class="wrap legal">
+        <p>© <?= date('Y') ?> <?= e(SITE_LEGAL) ?>. Toate drepturile rezervate.</p>
+        <p><?= e(SITE_DOMAIN) ?></p>
+    </div>
+</footer>
+<script src="<?= e(asset('assets/js/main.js')) ?>" defer></script>
+</body>
+</html>
