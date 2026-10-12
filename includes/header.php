@@ -29,7 +29,7 @@ $schema = [
     'legalName' => SITE_LEGAL,
     'url' => 'https://' . SITE_DOMAIN . '/',
     'email' => SITE_EMAIL,
-    'logo' => 'https://' . SITE_DOMAIN . '/assets/img/logo.jpg',
+    'logo' => 'https://' . SITE_DOMAIN . '/assets/img/logo.jpg?v=4',
     'description' => SITE_DESCRIPTION,
     'areaServed' => 'MD',
     'brand' => [
@@ -78,7 +78,7 @@ if (SITE_PHONE !== '') {
 <header class="site-header">
     <div class="wrap header-inner">
         <a class="logo" href="<?= e(url()) ?>">
-            <img src="<?= e(asset('assets/img/logo.jpg')) ?>" alt="<?= e(SITE_NAME) ?>">
+            <img src="<?= e(asset('assets/img/logo.jpg?v=4')) ?>" alt="<?= e(SITE_NAME) ?>">
         </a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navigare">
             <span class="sr-only">Meniu</span>

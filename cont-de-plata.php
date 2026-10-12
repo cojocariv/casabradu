@@ -28,7 +28,7 @@ if ($payer['nume'] === '') {
     $payer['nume'] = (string) ($user['nume'] ?? '');
 }
 
-$logo = asset('assets/img/logo.jpg');
+$logo = asset('assets/img/logo.jpg?v=4');
 $back = url('cabinet.php');
 
 require __DIR__ . '/includes/factura-document.php';
