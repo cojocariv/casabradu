@@ -23,7 +23,10 @@ if (isset($catalog[$preselect]) && ($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'PO
     $oldQty[$preselect] = 1;
 }
 $oldAddress = (string) ($user['adresa'] ?? '');
-$oldRequisites = (string) ($user['rechizite'] ?? '');
+$oldRequisites = trim((string) ($user['rechizite'] ?? ''));
+if ($oldRequisites === '') {
+    $oldRequisites = requisite_template();
+}
 $oldNote = '';
 $flash = flash_get();
 
@@ -42,11 +45,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     } elseif ($form === 'rechizite') {
         $postedRequisites = (string) ($_POST['rechizite'] ?? '');
         if (strlen($postedRequisites) > 2000) {
-            $requisiteErrors['rechizite'] = 'Textul este prea lung. Păstrează denumirea, IDNO, adresa și contul bancar.';
+            $requisiteErrors['rechizite'] = 'Textul este prea lung. Păstrează rândurile și scrie datele lângă ele.';
         }
-        $oldRequisites = text_block($postedRequisites, 2000);
-        if ($requisiteErrors === [] && strlen($oldRequisites) < 10) {
-            $requisiteErrors['rechizite'] = 'Scrie denumirea companiei, IDNO, adresa juridică și contul bancar.';
+        $oldRequisites = requisite_normalize($postedRequisites);
+        if ($requisiteErrors === [] && !requisites_filled($oldRequisites)) {
+            $requisiteErrors['rechizite'] = 'Nu șterge rândurile. Scrie datele lângă denumire, IDNO, adresă juridică și IBAN. Codul TVA poate rămâne gol.';
         }
         if ($requisiteErrors === [] && !save_client_requisites((string) $user['id'], $oldRequisites)) {
             $requisiteErrors['form'] = 'Rechizitele nu au putut fi salvate. Încearcă din nou.';
@@ -110,7 +113,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         if (strlen($oldAddress) < 5) {
             $orderErrors['adresa'] = 'Scrie adresa de livrare sau localitatea.';
         }
-        if (strlen(trim((string) ($user['rechizite'] ?? ''))) < 10) {
+        if (!requisites_filled((string) ($user['rechizite'] ?? ''))) {
             $orderErrors['form'] = 'Completează rechizitele companiei, la contul tău, ca să îți putem trimite contul de plată.';
         }
         if ($orderErrors === []) {
@@ -199,10 +202,10 @@ require __DIR__ . '/includes/header.php';
                     <?php if (!empty($requisiteErrors['form'])): ?>
                         <p class="notice notice-error" role="alert"><?= e($requisiteErrors['form']) ?></p>
                     <?php endif; ?>
-                    <textarea id="rechizite" name="rechizite" required minlength="10" maxlength="2000" rows="7" placeholder="Denumirea companiei&#10;IDNO&#10;Cod TVA&#10;Adresa juridică&#10;IBAN și banca" <?= isset($requisiteErrors['rechizite']) ? 'aria-invalid="true"' : '' ?>><?= e($oldRequisites) ?></textarea>
+                    <textarea id="rechizite" name="rechizite" required maxlength="2000" rows="7" <?= isset($requisiteErrors['rechizite']) ? 'aria-invalid="true"' : '' ?>><?= e($oldRequisites) ?></textarea>
                     <?php if (isset($requisiteErrors['rechizite'])): ?><small class="field-error"><?= e($requisiteErrors['rechizite']) ?></small><?php endif; ?>
                     <button class="btn btn-dark" type="submit">Salvează rechizitele</button>
-                    <p class="form-note">Le atașăm comenzii ca să îți emitem contul de plată.</p>
+                    <p class="form-note">Lasă rândurile așa cum sunt și scrie datele firmei lângă fiecare. Le atașăm comenzii pentru contul de plată.</p>
                 </form>
                 <form method="post" action="<?= e(url('iesire.php')) ?>">
                     <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">

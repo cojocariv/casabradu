@@ -142,6 +142,84 @@ function logout_client(): void
     session_regenerate_id(true);
 }
 
+function requisite_labels(): array
+{
+    return [
+        'Denumirea companiei',
+        'IDNO',
+        'Cod TVA',
+        'Adresa juridică',
+        'IBAN și banca',
+    ];
+}
+
+function requisite_template(): string
+{
+    $lines = [];
+    foreach (requisite_labels() as $label) {
+        $lines[] = $label . ': ';
+    }
+
+    return implode("\n", $lines);
+}
+
+function requisite_normalize(string $posted): string
+{
+    $posted = str_replace(["\r\n", "\r"], "\n", str_replace("\0", '', $posted));
+    $labels = requisite_labels();
+    $values = [];
+    foreach ($labels as $label) {
+        $values[$label] = '';
+    }
+    $matchOrder = $labels;
+    usort($matchOrder, static function (string $a, string $b): int {
+        return strlen($b) <=> strlen($a);
+    });
+    $extras = [];
+    foreach (explode("\n", $posted) as $line) {
+        $line = trim($line);
+        if ($line === '') {
+            continue;
+        }
+        $matched = false;
+        foreach ($matchOrder as $label) {
+            if (preg_match('/^' . preg_quote($label, '/') . '\s*:?\s*(.*)$/u', $line, $found) === 1) {
+                $values[$label] = trim((string) $found[1]);
+                $matched = true;
+                break;
+            }
+        }
+        if (!$matched) {
+            $extras[] = $line;
+        }
+    }
+    $lines = [];
+    foreach ($labels as $label) {
+        $lines[] = $label . ': ' . $values[$label];
+    }
+    foreach ($extras as $extra) {
+        $lines[] = $extra;
+    }
+    $text = implode("\n", $lines);
+    if (strlen($text) > 2000) {
+        $text = substr($text, 0, 2000);
+    }
+
+    return $text;
+}
+
+function requisites_filled(string $text): bool
+{
+    $normalized = requisite_normalize($text);
+    foreach (['Denumirea companiei', 'IDNO', 'Adresa juridică', 'IBAN și banca'] as $label) {
+        if (preg_match('/^' . preg_quote($label, '/') . ':\s*\S/mu', $normalized) !== 1) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function save_client_requisites(string $userId, string $requisites): bool
 {
     try {
