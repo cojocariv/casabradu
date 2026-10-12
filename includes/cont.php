@@ -208,11 +208,32 @@ function requisite_normalize(string $posted): string
     return $text;
 }
 
+function requisite_value(string $text, string $label): string
+{
+    $normalized = requisite_normalize($text);
+    if (preg_match('/^' . preg_quote($label, '/') . ':[ \t]*(.*)$/mu', $normalized, $found) !== 1) {
+        return '';
+    }
+
+    return trim((string) $found[1]);
+}
+
+function client_order(string $userId, string $orderId): ?array
+{
+    foreach (client_orders($userId) as $order) {
+        if ((string) ($order['id'] ?? '') === $orderId) {
+            return $order;
+        }
+    }
+
+    return null;
+}
+
 function requisites_filled(string $text): bool
 {
     $normalized = requisite_normalize($text);
     foreach (['Denumirea companiei', 'IDNO', 'Adresa juridică', 'IBAN și banca'] as $label) {
-        if (preg_match('/^' . preg_quote($label, '/') . ':\s*\S/mu', $normalized) !== 1) {
+        if (preg_match('/^' . preg_quote($label, '/') . ':[ \t]*\S/mu', $normalized) !== 1) {
             return false;
         }
     }
@@ -284,7 +305,7 @@ function client_orders(string $userId): array
 
     $placeholders = implode(',', array_fill(0, count($ids), '?'));
     $lines = $pdo->prepare(
-        "SELECT comanda_id, slug, titlu, cantitate FROM comenzi_linii WHERE comanda_id IN ($placeholders) ORDER BY id"
+        "SELECT comanda_id, slug, titlu, cantitate, pret FROM comenzi_linii WHERE comanda_id IN ($placeholders) ORDER BY id"
     );
     $lines->execute($ids);
     $grouped = [];
@@ -293,6 +314,7 @@ function client_orders(string $userId): array
             'slug' => (string) $line['slug'],
             'titlu' => (string) $line['titlu'],
             'cantitate' => (int) $line['cantitate'],
+            'pret' => ($line['pret'] === null || $line['pret'] === '') ? null : (float) $line['pret'],
         ];
     }
 
@@ -334,14 +356,16 @@ function place_order(array $user, array $lines, string $address, string $note): 
             $order['rechizite'],
         ]);
         $lineInsert = $pdo->prepare(
-            'INSERT INTO comenzi_linii (comanda_id, slug, titlu, cantitate) VALUES (?, ?, ?, ?)'
+            'INSERT INTO comenzi_linii (comanda_id, slug, titlu, cantitate, pret) VALUES (?, ?, ?, ?, ?)'
         );
         foreach ($lines as $line) {
+            $pret = $line['pret'] ?? null;
             $lineInsert->execute([
                 $order['id'],
                 (string) $line['slug'],
                 (string) $line['titlu'],
                 (int) $line['cantitate'],
+                is_numeric($pret) ? number_format((float) $pret, 2, '.', '') : null,
             ]);
         }
         $addressUpdate = $pdo->prepare('UPDATE clienti SET adresa = ? WHERE id = ?');

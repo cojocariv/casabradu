@@ -102,6 +102,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                     'slug' => $slug,
                     'titlu' => $item['title'],
                     'cantitate' => $qty,
+                    'pret' => (isset($item['pret']) && is_numeric($item['pret'])) ? round((float) $item['pret'], 2) : null,
                 ];
             }
         }
@@ -123,6 +124,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                     ? 'Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.'
                     : 'Comanda nu a putut fi salvată. Încearcă din nou sau scrie-ne la ' . SITE_EMAIL . '.';
             } else {
+                if ((string) ($_POST['actiune'] ?? '') === 'cont') {
+                    header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode((string) $order['id'])));
+                    exit;
+                }
                 flash_set('Comanda ' . $order['id'] . ' a fost înregistrată. Te contactăm pentru confirmare.');
                 header('Location: ' . url('cabinet.php'));
                 exit;
@@ -181,8 +186,11 @@ require __DIR__ . '/includes/header.php';
                     <label for="nota">Mențiune <span>(opțional)</span></label>
                     <textarea id="nota" name="nota" maxlength="1000" rows="3" placeholder="Cutii, kilogram sau orice detaliu despre comandă"><?= e($oldNote) ?></textarea>
 
-                    <button class="btn btn-dark" type="submit">Trimite comanda</button>
-                    <p class="form-note">Cantitatea 0 înseamnă că produsul nu intră în comandă. Prețul îl confirmăm împreună.</p>
+                    <div class="btn-row">
+                        <button class="btn btn-dark" type="submit" name="actiune" value="comanda">Trimite comanda</button>
+                        <button class="btn btn-line" type="submit" name="actiune" value="cont">Generează cont de plată</button>
+                    </div>
+                    <p class="form-note">Cantitatea 0 înseamnă că produsul nu intră în comandă. Contul de plată se emite pentru produsele alese și rechizitele salvate.</p>
                 </form>
             </div>
 
@@ -263,6 +271,7 @@ require __DIR__ . '/includes/header.php';
                             <?php if (($order['rechizite'] ?? '') !== ''): ?>
                                 <p class="requisites"><?= e((string) $order['rechizite']) ?></p>
                             <?php endif; ?>
+                            <p><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">Cont de plată</a></p>
                         </article>
                     <?php endforeach; ?>
                 </div>

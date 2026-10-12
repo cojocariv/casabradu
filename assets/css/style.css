@@ -975,6 +975,11 @@ button, input, select, textarea { font: inherit; }
     margin-top: 8px;
 }
 
+.invoice-link {
+    color: var(--forest-2);
+    font-weight: 600;
+}
+
 .account-fold {
     margin-top: 18px;
     padding-top: 14px;

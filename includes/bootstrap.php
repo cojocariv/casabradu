@@ -7,6 +7,11 @@ const SITE_LEGAL = 'Casa Bradu Caffe SRL';
 const SITE_DOMAIN = 'casabradu.md';
 const SITE_EMAIL = 'info@casabradu.md';
 const SITE_PHONE = '';
+const COMPANY_LEGAL = 'S.R.L. CASA BRADU CAFFE';
+const COMPANY_IDNO = '1026023149244';
+const COMPANY_TVA = '0615161';
+const COMPANY_IBAN = 'MD50AG000000022517877084';
+const COMPANY_BANK = "BC 'MAIB' S.A.";
 const SITE_DESCRIPTION = 'Importăm din Italia cafea artizanală și o distribuim sub brandul Casa Bradu Caffè: cialde, capsule, cafea boabe și aparate de cafea. Gust aromat și fin, cu un raport echilibrat între Arabica și Robusta.';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
