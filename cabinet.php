@@ -164,7 +164,9 @@ require __DIR__ . '/includes/header.php';
                 <h2><?= e((string) $user['nume']) ?></h2>
                 <ul class="ticks">
                     <li><?= e((string) $user['email']) ?></li>
-                    <li><?= e((string) $user['telefon']) ?></li>
+                    <?php if ((string) ($user['telefon'] ?? '') !== ''): ?>
+                        <li><?= e((string) $user['telefon']) ?></li>
+                    <?php endif; ?>
                 </ul>
                 <form method="post" action="<?= e(url('iesire.php')) ?>">
                     <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">

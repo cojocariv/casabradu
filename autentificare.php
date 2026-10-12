@@ -42,6 +42,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     }
 }
 
+$authError = auth_error_pull();
 $page = 'autentificare';
 $noindex = true;
 $pageTitle = 'Intră în cont';
@@ -60,6 +61,10 @@ require __DIR__ . '/includes/header.php';
 <section class="section">
     <div class="wrap auth-layout">
         <div class="contact-card">
+            <?php if ($authError !== ''): ?>
+                <p class="notice notice-error" role="alert"><?= e($authError) ?></p>
+            <?php endif; ?>
+            <?php require __DIR__ . '/includes/google-button.php'; ?>
             <form class="contact-form" method="post" action="<?= e(url('autentificare.php')) ?>" accept-charset="UTF-8">
                 <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                 <input type="hidden" name="next" value="<?= e($next) ?>">

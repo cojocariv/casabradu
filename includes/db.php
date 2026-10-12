@@ -96,4 +96,16 @@ function db_install(PDO $pdo): void
             PRIMARY KEY (id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
+
+    $columns = $pdo->query("SHOW COLUMNS FROM clienti LIKE 'google_sub'");
+    if ($columns === false || $columns->fetch() === false) {
+        $pdo->exec('ALTER TABLE clienti ADD COLUMN google_sub VARCHAR(255) NULL DEFAULT NULL');
+        try {
+            $pdo->exec('ALTER TABLE clienti ADD UNIQUE KEY google_sub_unic (google_sub)');
+        } catch (PDOException $e) {
+            if ((string) $e->getCode() !== '42000') {
+                throw $e;
+            }
+        }
+    }
 }

@@ -858,6 +858,30 @@ button, input, select, textarea { font: inherit; }
 
 .auth-layout { grid-template-columns: 1.05fr 0.95fr; }
 
+.google-auth { margin-bottom: 4px; }
+
+.google-auth .g_id_signin,
+.google-auth iframe { max-width: 100%; }
+
+.auth-or {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0 4px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.auth-or::before,
+.auth-or::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+}
+
 .order-lines { display: grid; gap: 14px; margin-top: 8px; }
 
 .order-line {

@@ -344,3 +344,77 @@ function login_succeeded(): void
 {
     unset($_SESSION['login_fails'], $_SESSION['login_wait']);
 }
+
+function login_with_google(string $sub, string $email, string $name): array
+{
+    try {
+        $pdo = db();
+        $bySub = $pdo->prepare('SELECT id, email FROM clienti WHERE google_sub = ? LIMIT 1');
+        $bySub->execute([$sub]);
+        $row = $bySub->fetch();
+        if (is_array($row)) {
+            if (strcasecmp((string) $row['email'], $email) !== 0) {
+                $taken = $pdo->prepare('SELECT id FROM clienti WHERE email = ? AND id <> ? LIMIT 1');
+                $taken->execute([$email, $row['id']]);
+                if ($taken->fetch() === false) {
+                    $update = $pdo->prepare('UPDATE clienti SET email = ? WHERE id = ?');
+                    $update->execute([$email, $row['id']]);
+                }
+            }
+
+            return ['id' => (string) $row['id'], 'created' => false, 'error' => ''];
+        }
+
+        $byEmail = $pdo->prepare('SELECT id, google_sub FROM clienti WHERE email = ? LIMIT 1');
+        $byEmail->execute([$email]);
+        $existing = $byEmail->fetch();
+        if (is_array($existing)) {
+            $linked = (string) ($existing['google_sub'] ?? '');
+            if ($linked !== '' && !hash_equals($linked, $sub)) {
+                return ['id' => null, 'created' => false, 'error' => 'linked'];
+            }
+            $update = $pdo->prepare('UPDATE clienti SET google_sub = ? WHERE id = ? AND (google_sub IS NULL OR google_sub = ?)');
+            $update->execute([$sub, $existing['id'], $sub]);
+
+            return ['id' => (string) $existing['id'], 'created' => false, 'error' => ''];
+        }
+
+        $id = bin2hex(random_bytes(8));
+        $display = $name;
+        if (strlen($display) < 2) {
+            $local = strstr($email, '@', true);
+            $display = is_string($local) && strlen($local) >= 2 ? $local : 'Client';
+        }
+        $insert = $pdo->prepare(
+            'INSERT INTO clienti (id, nume, email, telefon, parola, adresa, creat, google_sub)
+             VALUES (?, ?, ?, \'\', ?, \'\', ?, ?)'
+        );
+        $insert->execute([
+            $id,
+            $display,
+            $email,
+            password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT),
+            date('Y-m-d H:i:s'),
+            $sub,
+        ]);
+    } catch (PDOException $e) {
+        if ((string) $e->getCode() === '23000') {
+            try {
+                $again = $pdo->prepare('SELECT id FROM clienti WHERE google_sub = ? OR email = ? LIMIT 1');
+                $again->execute([$sub, $email]);
+                $found = $again->fetch();
+                if (is_array($found)) {
+                    return ['id' => (string) $found['id'], 'created' => false, 'error' => ''];
+                }
+            } catch (Throwable $retry) {
+                return ['id' => null, 'created' => false, 'error' => 'save'];
+            }
+        }
+
+        return ['id' => null, 'created' => false, 'error' => 'save'];
+    } catch (Throwable $e) {
+        return ['id' => null, 'created' => false, 'error' => db_failed() ? 'db' : 'save'];
+    }
+
+    return ['id' => $id, 'created' => true, 'error' => ''];
+}

@@ -61,8 +61,8 @@ if (SITE_PHONE !== '') {
     <meta property="og:description" content="<?= e($pageDescription) ?>">
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:image" content="https://<?= e(SITE_DOMAIN) ?>/assets/img/hero-cafea.jpg">
-    <link rel="icon" href="<?= e(asset('assets/img/favicon.png')) ?>" type="image/png" sizes="512x512">
-    <link rel="apple-touch-icon" href="<?= e(asset('assets/img/favicon.png')) ?>">
+    <link rel="icon" href="<?= e(asset('assets/img/favicon.jpg')) ?>?v=3" type="image/jpeg">
+    <link rel="apple-touch-icon" href="<?= e(asset('assets/img/favicon.jpg')) ?>?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Great+Vibes&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">

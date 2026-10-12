@@ -63,6 +63,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 
 $next = safe_next((string) ($_GET['next'] ?? $_POST['next'] ?? 'cabinet.php'));
+$authError = auth_error_pull();
 $page = 'inregistrare';
 $noindex = true;
 $pageTitle = 'Creează cont';
@@ -74,13 +75,17 @@ require __DIR__ . '/includes/header.php';
     <div class="wrap">
         <p class="eyebrow">Cont nou</p>
         <h1>Înregistrează-te.</h1>
-        <p class="lede">Cu un cont poți trimite comenzi de cialde, capsule, cafea boabe și aparate. Le confirmăm noi, apoi stabilim livrarea.</p>
+        <p class="lede">Poți intra cu Google sau îți creezi contul cu email. Apoi trimiți comenzi de cialde, capsule, cafea boabe și aparate.</p>
     </div>
 </section>
 
 <section class="section">
     <div class="wrap auth-layout">
         <div class="contact-card">
+            <?php if ($authError !== ''): ?>
+                <p class="notice notice-error" role="alert"><?= e($authError) ?></p>
+            <?php endif; ?>
+            <?php require __DIR__ . '/includes/google-button.php'; ?>
             <form class="contact-form" method="post" action="<?= e(url('inregistrare.php')) ?>" accept-charset="UTF-8">
                 <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                 <input type="hidden" name="next" value="<?= e($next) ?>">
