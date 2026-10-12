@@ -876,9 +876,6 @@ button, input, select, textarea { font: inherit; }
 .brand-lockup {
     display: block;
     width: 200px;
-    background: #fff;
-    border-radius: 18px;
-    padding: 6px;
     margin-bottom: 14px;
 }
 
