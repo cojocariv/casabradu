@@ -165,8 +165,8 @@ function product_catalog_items(): array
         'title' => 'Cialde',
         'kicker' => 'Monodoze',
         'meta' => 'Import Italia',
-        'image' => 'assets/img/produs-cialde.jpg',
-        'alt' => 'Stivă de cialde de cafea, cu câteva boabe alături',
+        'image' => 'assets/img/produs-cialde.jpg?v=2',
+        'alt' => 'Cialdă de cafea Casa Bradu Caffè',
         'short' => 'Cafea porționată în cialde, pentru un espresso constant, ceașcă după ceașcă.',
         'long' => 'Cialdele Casa Bradu sunt pentru cine vrea gustul cafelei artizanale fără râșniță și fără cântar. Fiecare porție păstrează amestecul nostru: un gust aromat și fin, în care Arabica și Robusta stau într-un raport echilibrat.',
         'points' => [
