@@ -106,7 +106,7 @@ require __DIR__ . '/includes/header.php';
                 <li>Aparate pentru capsule</li>
             </ul>
             <div class="btn-row">
-                <a class="btn btn-dark" href="<?= e(url('produse.php#aparate')) ?>">Vezi aparatele</a>
+                <a class="btn btn-dark" href="<?= e(url('aparate.php')) ?>">Vezi aparatele</a>
                 <?php buy_form('aparate', 'index.php', 'btn btn-line'); ?>
             </div>
         </div>

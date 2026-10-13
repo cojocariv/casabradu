@@ -167,6 +167,7 @@ button, input, select, textarea { font: inherit; }
 .nav-links a:nth-child(4) { animation-delay: 0.16s; }
 .nav-links a:nth-child(5) { animation-delay: 0.2s; }
 .nav-links a:nth-child(6) { animation-delay: 0.24s; }
+.nav-links a:nth-child(7) { animation-delay: 0.28s; }
 
 .cart-count {
     display: inline-grid;
@@ -258,6 +259,10 @@ button, input, select, textarea { font: inherit; }
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
+}
+
+.product-grid-single {
+    grid-template-columns: minmax(0, 720px);
 }
 
 .product-card {
@@ -1243,6 +1248,13 @@ button, input, select, textarea { font: inherit; }
 .invoice-link {
     color: var(--forest-2);
     font-weight: 600;
+}
+
+.continue-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin: 0 0 18px;
 }
 
 .account-fold {

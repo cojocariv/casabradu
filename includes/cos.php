@@ -212,7 +212,7 @@ function cart_clear(): void
 
 function cart_return(string $target): string
 {
-    if (preg_match('/^(index\.php|produse\.php|cos\.php)(#[a-z0-9-]+)?$/', $target) === 1) {
+    if (preg_match('/^(index\.php|produse\.php|aparate\.php|cos\.php)(#[a-z0-9-]+)?$/', $target) === 1) {
         return $target;
     }
 

@@ -61,6 +61,11 @@
         });
     }
 
+    if (window.location.hash === '#aparate' && /\/produse\.php$/.test(window.location.pathname)) {
+        window.location.replace(window.location.pathname.replace(/produse\.php$/, 'aparate.php'));
+        return;
+    }
+
     var filters = document.querySelectorAll('[data-filter]');
     var cards = document.querySelectorAll('[data-cat]');
 

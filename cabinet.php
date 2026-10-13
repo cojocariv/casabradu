@@ -175,7 +175,8 @@ require __DIR__ . '/includes/header.php';
                 <h2>Comenzile pleacă din coș.</h2>
                 <p>Alegi produsele, le adaugi în coș și le trimiți când ești gata. Aici rămân datele firmei și istoricul.</p>
                 <div class="btn-row">
-                    <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi produsele</a>
+                    <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi cafeaua</a>
+                    <a class="btn btn-line" href="<?= e(url('aparate.php')) ?>">Vezi aparatele</a>
                     <a class="btn btn-line" href="<?= e(url('cos.php')) ?>">Deschide coșul<?php if (cart_count() > 0): ?> (<?= (int) cart_count() ?>)<?php endif; ?></a>
                 </div>
             </div>

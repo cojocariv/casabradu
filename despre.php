@@ -28,7 +28,10 @@ require __DIR__ . '/includes/header.php';
             <h2>Un gust care se recunoaște.</h2>
             <p>Nu ținem o cafenea în paginile astea. Aducem cafeaua. O importăm din Italia și o distribuim sub numele Casa Bradu Caffè, ca același amestec să ajungă acasă, la birou sau în locul în care se servesc zeci de cești pe zi.</p>
             <p>Căutăm un gust aromat și fin. Arabica deschide aroma și dulceața. Robusta dă corp, cremă și prezență. Raportul dintre ele este partea de care avem grijă: nici aspru, nici gol.</p>
-            <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi produsele</a>
+            <div class="btn-row">
+                <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi cafeaua</a>
+                <a class="btn btn-line" href="<?= e(url('aparate.php')) ?>">Vezi aparatele</a>
+            </div>
         </div>
     </div>
 </section>

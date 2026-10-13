@@ -122,9 +122,15 @@ require __DIR__ . '/includes/header.php';
         <?php endif; ?>
 
         <?php if ($lines === []): ?>
-            <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi produsele</a>
+            <div class="btn-row">
+                <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi cafeaua</a>
+                <a class="btn btn-line" href="<?= e(url('aparate.php')) ?>">Vezi aparatele</a>
+            </div>
         <?php else: ?>
-            <p><a class="invoice-link" href="<?= e(url('produse.php')) ?>">Continuă cumpărăturile</a></p>
+            <p class="continue-links">
+                <a class="invoice-link" href="<?= e(url('produse.php')) ?>">Continuă cu cafeaua</a>
+                <a class="invoice-link" href="<?= e(url('aparate.php')) ?>">Continuă cu aparatele</a>
+            </p>
             <form id="cart-update" method="post" action="<?= e(url('cos.php')) ?>">
                 <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                 <input type="hidden" name="actiune" value="actualizeaza">

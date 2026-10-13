@@ -14,7 +14,8 @@ $fullTitle = $page === 'acasa'
 $client = current_user();
 $nav = [
     'acasa' => ['Acasă', url()],
-    'produse' => ['Produse', url('produse.php')],
+    'cafea' => ['Cafea', url('produse.php')],
+    'aparate' => ['Aparate', url('aparate.php')],
     'despre' => ['Despre', url('despre.php')],
     'contact' => ['Contact', url('contact.php')],
     'cont' => $client

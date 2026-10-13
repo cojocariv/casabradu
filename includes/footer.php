@@ -14,7 +14,8 @@
             <h2>Navigare</h2>
             <ul>
                 <li><a href="<?= e(url()) ?>">Acasă</a></li>
-                <li><a href="<?= e(url('produse.php')) ?>">Produse</a></li>
+                <li><a href="<?= e(url('produse.php')) ?>">Cafea</a></li>
+                <li><a href="<?= e(url('aparate.php')) ?>">Aparate</a></li>
                 <li><a href="<?= e(url('despre.php')) ?>">Despre</a></li>
                 <li><a href="<?= e(url('contact.php')) ?>">Contact</a></li>
                 <li><a href="<?= e(current_user() ? url('cabinet.php') : url('autentificare.php')) ?>"><?= current_user() ? 'Cabinet' : 'Cont' ?></a></li>

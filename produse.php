@@ -4,18 +4,24 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/bootstrap.php';
 
-$products = require __DIR__ . '/includes/products.php';
-$page = 'produse';
-$pageTitle = 'Cialde, capsule, boabe și aparate';
-$pageDescription = 'Cialde, capsule, cafea boabe și aparate de cafea Casa Bradu Caffè, importate din Italia. Gust aromat și fin, cu Arabica și Robusta în echilibru.';
+$products = array_values(array_filter(
+    require __DIR__ . '/includes/products.php',
+    static function (array $item): bool {
+        return $item['slug'] !== 'aparate';
+    }
+));
+$page = 'cafea';
+$pageTitle = 'Cialde, capsule și cafea boabe';
+$pageDescription = 'Cialde, capsule și cafea boabe Casa Bradu Caffè, importate din Italia. Gust aromat și fin, cu Arabica și Robusta în echilibru.';
 require __DIR__ . '/includes/header.php';
 ?>
 
 <section class="page-hero">
     <div class="wrap">
-        <p class="eyebrow">Selecția</p>
-        <h1>Cialde, capsule, boabe și aparate.</h1>
-        <p class="lede">Patru feluri de a ajunge la același gust: aromat, fin, cu un raport echilibrat între Arabica și Robusta. Cafeaua vine din Italia. Aparatele, la fel, pentru cialde și pentru capsule.</p>
+        <p class="eyebrow">Cafea</p>
+        <h1>Cialde, capsule și boabe.</h1>
+        <p class="lede">Același gust, în trei forme: aromat, fin, cu un raport echilibrat între Arabica și Robusta. Cafeaua vine din Italia.</p>
+        <p><a class="invoice-link" href="<?= e(url('aparate.php')) ?>">Aparatele de cafea sunt pe o pagină separată.</a></p>
     </div>
 </section>
 
