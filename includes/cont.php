@@ -396,10 +396,6 @@ function place_order(array $user, array $lines, string $address, string $note): 
 
 function notify_order(array $order, array $user): void
 {
-    if (!function_exists('mail')) {
-        return;
-    }
-
     $lines = '';
     foreach ($order['linii'] as $line) {
         $lines .= '- ' . $line['titlu'] . ': ' . $line['cantitate'] . "\n";
@@ -415,12 +411,7 @@ function notify_order(array $order, array $user): void
         . ($order['nota'] !== '' ? $order['nota'] . "\n" : '');
 
     $email = str_replace(["\r", "\n"], '', (string) $user['email']);
-    $headers = "MIME-Version: 1.0\r\n"
-        . "Content-Type: text/plain; charset=UTF-8\r\n"
-        . "From: Casa Bradu Caffe <" . SITE_EMAIL . ">\r\n"
-        . "Reply-To: {$email}\r\n";
-
-    @mail(SITE_EMAIL, 'Comandă ' . $order['id'], $body, $headers);
+    site_mail(SITE_EMAIL, 'Comandă ' . $order['id'], $body, $email);
 }
 
 function save_message(string $nume, string $email, string $telefon, string $subiect, string $mesaj): bool

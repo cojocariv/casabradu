@@ -114,16 +114,12 @@ $body = "Mesaj nou de pe " . SITE_DOMAIN . "\n\n"
     . "Telefon: " . ($old['telefon'] !== '' ? $old['telefon'] : '—') . "\n"
     . "Subiect: {$subjects[$old['subiect']]}\n\n"
     . $old['mesaj'] . "\n";
-$headers = "MIME-Version: 1.0\r\n"
-    . "Content-Type: text/plain; charset=UTF-8\r\n"
-    . "From: Casa Bradu Caffe <" . SITE_EMAIL . ">\r\n"
-    . "Reply-To: {$safeName} <{$safeEmail}>\r\n";
-
-$mailed = function_exists('mail') && @mail(
+$mailed = site_mail(
     SITE_EMAIL,
     'Mesaj site: ' . $subjects[$old['subiect']],
     $body,
-    $headers
+    $safeEmail,
+    $safeName
 );
 
 if (!$saved && !$mailed) {

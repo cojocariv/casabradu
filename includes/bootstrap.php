@@ -95,6 +95,7 @@ if (is_file($config)) {
 }
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/mail.php';
 require_once __DIR__ . '/cont.php';
 require_once __DIR__ . '/cos.php';
 require_once __DIR__ . '/admin.php';

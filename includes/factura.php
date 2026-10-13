@@ -94,23 +94,14 @@ function invoice_message(array $order, string $date, array $payer, array $table)
 
 function send_invoice_mail(array $order, string $date, array $payer, array $table, string $replyTo): bool
 {
-    if (!function_exists('mail')) {
-        return false;
-    }
-
     $replyTo = str_replace(["\r", "\n"], '', $replyTo);
     if (!filter_var($replyTo, FILTER_VALIDATE_EMAIL)) {
         $replyTo = SITE_EMAIL;
     }
-    $headers = "MIME-Version: 1.0\r\n"
-        . "Content-Type: text/plain; charset=UTF-8\r\n"
-        . "From: Casa Bradu Caffe <" . SITE_EMAIL . ">\r\n"
-        . "Reply-To: {$replyTo}\r\n";
-
-    return @mail(
+    return site_mail(
         SITE_EMAIL,
         'Cont de plată ' . ($order['id'] ?? ''),
         invoice_message($order, $date, $payer, $table),
-        $headers
+        $replyTo
     );
 }
