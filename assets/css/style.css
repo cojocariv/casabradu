@@ -1323,6 +1323,37 @@ button, input, select, textarea { font: inherit; }
     background: #fff;
 }
 
+.price-board h3 {
+    font-size: 1.35rem;
+    margin: 18px 0 8px;
+}
+
+.crm-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0;
+}
+
+.crm-form select,
+.crm-form input[type="text"],
+.crm-form input[type="number"] {
+    border: 1px solid rgba(28, 52, 43, 0.16);
+    border-radius: 999px;
+    padding: 8px 12px;
+    background: #fff;
+    color: var(--ink);
+}
+
+.crm-form select { max-width: 100%; }
+
+.crm-form input[type="number"] { width: 6rem; }
+
+.crm-form input[type="text"] { width: min(280px, 100%); }
+
+.stock-low { color: #7a3328; font-weight: 600; }
+
 .admin-bar {
     display: flex;
     flex-wrap: wrap;

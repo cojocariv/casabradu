@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/products.php';
+require_once __DIR__ . '/includes/crm.php';
 
 $errors = [];
 $flash = flash_get();
@@ -47,6 +48,30 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         }
         $errors['form'] = $priceError;
         $pricePosted = $postedPrices;
+    } elseif ($form === 'stoc' && admin_logged_in()) {
+        $note = text_block((string) ($_POST['nota'] ?? ''), 300);
+        $stockError = crm_stock_add(
+            text_line((string) ($_POST['marfa'] ?? ''), 60),
+            (int) ($_POST['cantitate'] ?? 0),
+            $note
+        );
+        if ($stockError === '') {
+            flash_set('Intrarea în stoc a fost notată.');
+            header('Location: ' . url('admin.php#marfa'));
+            exit;
+        }
+        $errors['form'] = $stockError;
+    } elseif ($form === 'stoc-sterge' && admin_logged_in()) {
+        $moveId = (int) ($_POST['id'] ?? 0);
+        if (crm_stock_delete($moveId)) {
+            flash_set('Intrarea a fost ștearsă din evidență.');
+        } else {
+            $errors['form'] = 'Intrarea nu a putut fi ștearsă.';
+        }
+        if ($errors === []) {
+            header('Location: ' . url('admin.php#marfa'));
+            exit;
+        }
     } elseif ($form === 'intrare') {
         $user = text_line((string) ($_POST['utilizator'] ?? ''), 80);
         $password = (string) ($_POST['parola'] ?? '');
@@ -71,6 +96,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
 $pricePosted = $pricePosted ?? [];
 $loggedIn = admin_logged_in();
+$stockSheet = $loggedIn ? crm_stock_sheet() : ['rows' => [], 'istoric' => [], 'ok' => false];
+$clientSheet = $loggedIn ? crm_clients() : ['rows' => [], 'ok' => false];
+$ordersByClient = [];
 $filter = text_line((string) ($_GET['stare'] ?? ''), 20);
 if (!isset(order_statuses()[$filter])) {
     $filter = '';
@@ -90,6 +118,7 @@ if ($loggedIn) {
             if ($filter === '' || $status === $filter) {
                 $visible[] = $order;
             }
+            $ordersByClient[(string) ($order['user_id'] ?? '')][] = $order;
         }
     }
 }
@@ -201,6 +230,164 @@ require __DIR__ . '/includes/header.php';
                     <button class="btn btn-dark" type="submit">Salvează prețurile</button>
                 </form>
             </div>
+            <div class="price-board" id="marfa">
+                <p class="kicker">Stoc</p>
+                <h2>Evidența mărfurilor</h2>
+                <p class="form-note">Comandate sunt comenzile clienților încă nelivrate. Vândute sunt cele livrate. Intrate le notezi când primești marfa. Stocul este intrate minus vândute.</p>
+                <form class="crm-form" method="post" action="<?= e(url('admin.php#marfa')) ?>">
+                    <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                    <input type="hidden" name="formular" value="stoc">
+                    <label class="sr-only" for="marfa-produs">Produs</label>
+                    <select id="marfa-produs" name="marfa" required>
+                        <?php foreach (product_price_rows() as $row): ?>
+                            <?php $field = product_price_field($row); ?>
+                            <option value="<?= e($field) ?>"><?= e($row['produs'] . ($row['varianta'] !== '' ? ', ' . $row['varianta'] : '')) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <label class="sr-only" for="marfa-cantitate">Cantitate intrată</label>
+                    <input id="marfa-cantitate" name="cantitate" type="number" min="1" max="99999" step="1" value="1" required inputmode="numeric">
+                    <label class="sr-only" for="marfa-nota">Notă</label>
+                    <input id="marfa-nota" name="nota" type="text" maxlength="300" placeholder="Notă, opțional">
+                    <button class="btn btn-dark btn-sm" type="submit">Notează intrarea</button>
+                </form>
+                <div class="table-wrap orders-sheet">
+                    <table class="sheet-table">
+                        <thead>
+                            <tr>
+                                <th>Produs</th>
+                                <th>Variantă</th>
+                                <th>Comandate</th>
+                                <th>Intrate</th>
+                                <th>Vândute</th>
+                                <th>Stoc</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($stockSheet['rows'] as $row): ?>
+                                <?php $available = (int) $row['intrate'] - (int) $row['vandute']; ?>
+                                <tr>
+                                    <td><?= e((string) $row['produs']) ?></td>
+                                    <td><?= e($row['varianta'] !== '' ? (string) $row['varianta'] : '—') ?></td>
+                                    <td><?= (int) $row['comandate'] ?></td>
+                                    <td><?= (int) $row['intrate'] ?></td>
+                                    <td><?= (int) $row['vandute'] ?></td>
+                                    <td<?= $available < 0 ? ' class="stock-low"' : '' ?>><?= $available ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <?php if ($stockSheet['istoric'] !== []): ?>
+                    <h3>Intrări notate</h3>
+                    <div class="table-wrap orders-sheet">
+                        <table class="sheet-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Produs</th>
+                                    <th>Cantitate</th>
+                                    <th>Notă</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($stockSheet['istoric'] as $move): ?>
+                                    <tr>
+                                        <td><?= e(date('d.m.Y', strtotime($move['la']) ?: time())) ?></td>
+                                        <td><?= e($move['produs'] . ($move['varianta'] !== '' ? ', ' . $move['varianta'] : '')) ?></td>
+                                        <td><?= (int) $move['cantitate'] ?></td>
+                                        <td><?= e($move['nota'] !== '' ? $move['nota'] : '—') ?></td>
+                                        <td>
+                                            <form method="post" action="<?= e(url('admin.php#marfa')) ?>">
+                                                <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                                                <input type="hidden" name="formular" value="stoc-sterge">
+                                                <input type="hidden" name="id" value="<?= (int) $move['id'] ?>">
+                                                <button class="btn btn-line btn-sm" type="submit">Șterge</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <div class="price-board" id="clienti">
+                <p class="kicker">Clienți</p>
+                <h2>Evidența clienților</h2>
+                <p class="form-note">Clienții înregistrați, compania și comenzile lor. Deschide un rând pentru istoric.</p>
+                <?php if ($clientSheet['rows'] === []): ?>
+                    <p>Nu există clienți înregistrați.</p>
+                <?php else: ?>
+                    <div class="table-wrap orders-sheet">
+                        <table class="sheet-table">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Companie</th>
+                                    <th>Contact</th>
+                                    <th>Comenzi</th>
+                                    <th>Ultima</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <?php foreach ($clientSheet['rows'] as $client): ?>
+                                <?php
+                                $clientId = (string) $client['id'];
+                                $detailId = 'det-client-' . $clientId;
+                                $clientOrders = $ordersByClient[$clientId] ?? [];
+                                if (!$client['are_comenzi']) {
+                                    $totalLabel = '—';
+                                } elseif (!$client['complet'] || $client['total'] === null) {
+                                    $totalLabel = 'la confirmare';
+                                } else {
+                                    $totalLabel = product_money($client['total']);
+                                }
+                                $lastLabel = $client['ultima'] === '' ? '—' : date('d.m.Y', strtotime($client['ultima']) ?: time());
+                                ?>
+                                <tbody>
+                                    <tr class="order-summary">
+                                        <td>
+                                            <button class="order-toggle" type="button" aria-expanded="false" aria-controls="<?= e($detailId) ?>"><?= e($client['nume']) ?></button>
+                                        </td>
+                                        <td><?= e($client['companie'] !== '' ? $client['companie'] : '—') ?></td>
+                                        <td>
+                                            <?php if ($client['email'] !== ''): ?>
+                                                <a href="mailto:<?= e($client['email']) ?>"><?= e($client['email']) ?></a>
+                                            <?php endif; ?>
+                                            <?php if ($client['telefon'] !== ''): ?>
+                                                <span class="line-note"><?= e($client['telefon']) ?></span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?= (int) $client['comenzi'] ?></td>
+                                        <td><?= e($lastLabel) ?></td>
+                                        <td><?= e($totalLabel) ?></td>
+                                    </tr>
+                                    <tr class="order-detail" id="<?= e($detailId) ?>" hidden>
+                                        <td colspan="6">
+                                            <?php if ($clientOrders === []): ?>
+                                                <p>Acest client nu are comenzi.</p>
+                                            <?php else: ?>
+                                                <?php foreach ($clientOrders as $clientOrder): ?>
+                                                    <span class="line-item">
+                                                        <?= e((string) $clientOrder['id']) ?>
+                                                        · <?= e(date('d.m.Y', strtotime((string) ($clientOrder['la'] ?? 'now')) ?: time())) ?>
+                                                        · <?= e(order_status_label((string) ($clientOrder['status'] ?? ''))) ?>
+                                                    </span>
+                                                    <?php foreach (($clientOrder['linii'] ?? []) as $line): ?>
+                                                        <?php if (!is_array($line)) { continue; } ?>
+                                                        <span class="line-note"><?= e((string) ($line['titlu'] ?? '')) ?> × <?= (int) ($line['cantitate'] ?? 0) ?></span>
+                                                    <?php endforeach; ?>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
             <?php if (is_array($orders) && $visible === []): ?>
                 <p class="lede">Nu există comenzi<?= $filter === '' ? '' : ' în starea aceasta' ?>.</p>
             <?php elseif (is_array($orders)): ?>
@@ -296,32 +483,42 @@ require __DIR__ . '/includes/header.php';
                         <?php endforeach; ?>
                     </table>
                 </div>
-                <script>
-                    document.querySelectorAll('.order-summary').forEach(function (row) {
-                        row.addEventListener('click', function () {
-                            var button = row.querySelector('.order-toggle');
-                            var panel = document.getElementById(button.getAttribute('aria-controls'));
-                            if (!button || !panel) {
-                                return;
-                            }
-                            var open = button.getAttribute('aria-expanded') === 'true';
-                            button.setAttribute('aria-expanded', open ? 'false' : 'true');
-                            panel.hidden = open;
-                            row.classList.toggle('is-open', !open);
-                        });
+            <?php endif; ?>
+            <script>
+                document.querySelectorAll('.order-summary').forEach(function (row) {
+                    row.addEventListener('click', function (event) {
+                        var target = event.target && event.target.closest ? event.target : event.target.parentElement;
+                        if (!target) {
+                            return;
+                        }
+                        if (target.closest('a, input, select, textarea, label') || (target.closest('button') && !target.closest('.order-toggle'))) {
+                            return;
+                        }
+                        var button = row.querySelector('.order-toggle');
+                        if (!button) {
+                            return;
+                        }
+                        var panel = document.getElementById(button.getAttribute('aria-controls'));
+                        if (!panel) {
+                            return;
+                        }
+                        var open = button.getAttribute('aria-expanded') === 'true';
+                        button.setAttribute('aria-expanded', open ? 'false' : 'true');
+                        panel.hidden = open;
+                        row.classList.toggle('is-open', !open);
                     });
-                    var opened = location.hash.replace('#', '');
-                    if (opened) {
-                        var current = document.getElementById('det-' + opened);
-                        if (current) {
-                            var summary = current.previousElementSibling;
-                            if (summary) {
-                                summary.click();
-                            }
+                });
+                var opened = location.hash.replace('#', '');
+                if (opened) {
+                    var current = document.getElementById('det-' + opened);
+                    if (current) {
+                        var summary = current.previousElementSibling;
+                        if (summary) {
+                            summary.click();
                         }
                     }
-                </script>
-            <?php endif; ?>
+                }
+            </script>
         <?php endif; ?>
     </div>
 </section>

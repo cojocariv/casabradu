@@ -110,6 +110,19 @@ function db_install(PDO $pdo): void
     );
 
     $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS stoc_miscari (
+            id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            la DATETIME NOT NULL,
+            slug VARCHAR(40) NOT NULL,
+            optiune VARCHAR(20) NOT NULL DEFAULT \'\',
+            cantitate INT UNSIGNED NOT NULL,
+            nota VARCHAR(300) NOT NULL DEFAULT \'\',
+            PRIMARY KEY (id),
+            KEY marfa (slug, optiune)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+    );
+
+    $pdo->exec(
         'CREATE TABLE IF NOT EXISTS preturi (
             slug VARCHAR(40) NOT NULL,
             optiune VARCHAR(20) NOT NULL DEFAULT \'\',
