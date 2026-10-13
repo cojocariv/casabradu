@@ -73,9 +73,9 @@ require __DIR__ . '/includes/header.php';
 
 <section class="page-hero">
     <div class="wrap">
-        <p class="eyebrow">Cont nou</p>
-        <h1>Înregistrează-te.</h1>
-        <p class="lede">Poți intra cu Google sau îți creezi contul cu email. Apoi comanzi cialde, capsule și boabe, sau un aparat în comodat.</p>
+        <p class="eyebrow"><?= tr('Cont nou') ?></p>
+        <h1><?= tr('Înregistrează-te.') ?></h1>
+        <p class="lede"><?= tr('Poți intra cu Google sau îți creezi contul cu email. Apoi comanzi cialde, capsule și boabe, sau un aparat în comodat.') ?></p>
     </div>
 </section>
 
@@ -83,7 +83,7 @@ require __DIR__ . '/includes/header.php';
     <div class="wrap auth-layout">
         <div class="contact-card">
             <?php if ($authError !== ''): ?>
-                <p class="notice notice-error" role="alert"><?= e($authError) ?></p>
+                    <p class="notice notice-error" role="alert"><?= e(t($authError)) ?></p>
             <?php endif; ?>
             <?php require __DIR__ . '/includes/google-button.php'; ?>
             <form class="contact-form" method="post" action="<?= e(url('inregistrare.php')) ?>" accept-charset="UTF-8">
@@ -93,38 +93,38 @@ require __DIR__ . '/includes/header.php';
                     <label>Site <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
                 </div>
                 <?php if (!empty($errors['form'])): ?>
-                    <p class="notice notice-error" role="alert"><?= e($errors['form']) ?></p>
+                    <p class="notice notice-error" role="alert"><?= e(t($errors['form'])) ?></p>
                 <?php endif; ?>
 
-                <label for="nume">Nume</label>
+                <label for="nume"><?= tr('Nume') ?></label>
                 <input id="nume" name="nume" type="text" required minlength="2" maxlength="80" autocomplete="name" value="<?= e($old['nume']) ?>" <?= isset($errors['nume']) ? 'aria-invalid="true"' : '' ?>>
-                <?php if (isset($errors['nume'])): ?><small class="field-error"><?= e($errors['nume']) ?></small><?php endif; ?>
+                <?php if (isset($errors['nume'])): ?><small class="field-error"><?= e(t($errors['nume'])) ?></small><?php endif; ?>
 
                 <label for="email">Email</label>
                 <input id="email" name="email" type="email" required maxlength="120" autocomplete="email" value="<?= e($old['email']) ?>" <?= isset($errors['email']) ? 'aria-invalid="true"' : '' ?>>
-                <?php if (isset($errors['email'])): ?><small class="field-error"><?= e($errors['email']) ?></small><?php endif; ?>
+                <?php if (isset($errors['email'])): ?><small class="field-error"><?= e(t($errors['email'])) ?></small><?php endif; ?>
 
-                <label for="telefon">Telefon</label>
+                <label for="telefon"><?= tr('Telefon') ?></label>
                 <input id="telefon" name="telefon" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" value="<?= e($old['telefon']) ?>" placeholder="+373" <?= isset($errors['telefon']) ? 'aria-invalid="true"' : '' ?>>
-                <?php if (isset($errors['telefon'])): ?><small class="field-error"><?= e($errors['telefon']) ?></small><?php endif; ?>
+                <?php if (isset($errors['telefon'])): ?><small class="field-error"><?= e(t($errors['telefon'])) ?></small><?php endif; ?>
 
-                <label for="parola">Parolă</label>
+                <label for="parola"><?= tr('Parolă') ?></label>
                 <input id="parola" name="parola" type="password" required minlength="8" maxlength="72" autocomplete="new-password" <?= isset($errors['parola']) ? 'aria-invalid="true"' : '' ?>>
-                <?php if (isset($errors['parola'])): ?><small class="field-error"><?= e($errors['parola']) ?></small><?php endif; ?>
+                <?php if (isset($errors['parola'])): ?><small class="field-error"><?= e(t($errors['parola'])) ?></small><?php endif; ?>
 
-                <label for="parola2">Confirmă parola</label>
+                <label for="parola2"><?= tr('Confirmă parola') ?></label>
                 <input id="parola2" name="parola2" type="password" required minlength="8" maxlength="72" autocomplete="new-password" <?= isset($errors['parola2']) ? 'aria-invalid="true"' : '' ?>>
-                <?php if (isset($errors['parola2'])): ?><small class="field-error"><?= e($errors['parola2']) ?></small><?php endif; ?>
+                <?php if (isset($errors['parola2'])): ?><small class="field-error"><?= e(t($errors['parola2'])) ?></small><?php endif; ?>
 
-                <button class="btn btn-dark" type="submit">Creează contul</button>
-                <p class="form-note">Folosim datele ca să îți confirmăm comenzile.</p>
+                <button class="btn btn-dark" type="submit"><?= tr('Creează contul') ?></button>
+                <p class="form-note"><?= tr('Folosim datele ca să îți confirmăm comenzile.') ?></p>
             </form>
         </div>
         <aside class="contact-aside">
-            <p class="kicker">Ai deja cont?</p>
-            <h2>Intră și continuă comanda.</h2>
-            <p>Contul păstrează comenzile tale și adresa folosită ultima dată.</p>
-            <a class="btn btn-line" href="<?= e(url('autentificare.php?next=' . rawurlencode($next))) ?>">Intră în cont</a>
+            <p class="kicker"><?= tr('Ai deja cont?') ?></p>
+            <h2><?= tr('Intră și continuă comanda.') ?></h2>
+            <p><?= tr('Contul păstrează comenzile tale și adresa folosită ultima dată.') ?></p>
+            <a class="btn btn-line" href="<?= e(url('autentificare.php?next=' . rawurlencode($next))) ?>"><?= tr('Intră în cont') ?></a>
         </aside>
     </div>
 </section>

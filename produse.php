@@ -22,19 +22,19 @@ require __DIR__ . '/includes/header.php';
 <section class="page-hero">
     <div class="wrap">
         <?= breadcrumb_nav($page) ?>
-        <p class="eyebrow">Cafea</p>
-        <h1>Cialde, capsule și boabe.</h1>
-        <p class="lede">Același gust, în trei forme. Aromă deschisă și un raport ideal între Arabica și Robusta. Cafeaua vine din Italia și o livrăm în toată țara, în Republica Moldova.</p>
-        <p><a class="invoice-link" href="<?= e(url('aparate.php')) ?>">Aparatele pentru cialde, capsule și boabe le oferim în comodat.</a></p>
+        <p class="eyebrow"><?= tr('Cafea') ?></p>
+        <h1><?= tr('Cialde, capsule și boabe.') ?></h1>
+        <p class="lede"><?= tr('Același gust, în trei forme. Aromă deschisă și un raport ideal între Arabica și Robusta. Cafeaua vine din Italia și o livrăm în toată țara, în Republica Moldova.') ?></p>
+        <p><a class="invoice-link" href="<?= e(url('aparate.php')) ?>"><?= tr('Aparatele pentru cialde, capsule și boabe le oferim în comodat.') ?></a></p>
     </div>
 </section>
 
 <section class="section">
     <div class="wrap">
-        <div class="filters" aria-label="Filtrează produsele">
-            <button class="filter is-active" type="button" data-filter="toate">Toate</button>
+        <div class="filters" aria-label="<?= tr('Filtrează produsele') ?>">
+            <button class="filter is-active" type="button" data-filter="toate"><?= tr('Toate') ?></button>
             <?php foreach ($products as $item): ?>
-                <button class="filter" type="button" data-filter="<?= e($item['slug']) ?>"><?= e($item['title']) ?></button>
+                <button class="filter" type="button" data-filter="<?= e($item['slug']) ?>"><?= tr($item['title']) ?></button>
             <?php endforeach; ?>
         </div>
 
@@ -42,12 +42,12 @@ require __DIR__ . '/includes/header.php';
             <?php foreach ($products as $item): ?>
                 <article class="product-card reveal" id="<?= e($item['slug']) ?>" data-cat="<?= e($item['slug']) ?>">
                     <div class="product-card-photo">
-                        <img src="<?= e(asset($item['image'])) ?>" alt="<?= e($item['alt']) ?>" width="640" height="640">
+                        <img src="<?= e(asset($item['image'])) ?>" alt="<?= tr($item['alt']) ?>" width="640" height="640">
                     </div>
                     <div class="product-card-body">
-                        <p class="kicker"><?= e($item['kicker']) ?></p>
-                        <h2><?= e($item['title']) ?></h2>
-                        <p class="product-short"><?= e($item['short']) ?></p>
+                        <p class="kicker"><?= tr($item['kicker']) ?></p>
+                        <h2><?= tr($item['title']) ?></h2>
+                        <p class="product-short"><?= tr($item['short']) ?></p>
                         <?php buy_form($item['slug'], 'produse.php', 'btn btn-dark btn-sm'); ?>
                     </div>
                 </article>

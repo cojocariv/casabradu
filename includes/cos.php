@@ -235,21 +235,21 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
         <input type="hidden" name="slug" value="<?= e($slug) ?>">
         <input type="hidden" name="inapoi" value="<?= e($back) ?>">
         <?php if (count($choices) > 1): ?>
-            <div class="buy-options" role="radiogroup" aria-label="<?= e((string) ($item['choice'] ?? 'Opțiune')) ?>">
+            <div class="buy-options" role="radiogroup" aria-label="<?= tr((string) ($item['choice'] ?? 'Opțiune')) ?>">
                 <?php foreach ($choices as $index => $choice): ?>
                     <label class="buy-option">
-                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e('Preț: ' . product_money($choice['pret'])) ?>"<?= $index === 0 ? ' checked' : '' ?>>
-                        <span><?= e($choice['label']) ?></span>
+                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(t('Preț') . ': ' . (product_money($choice['pret']) === 'la confirmare' ? t('la confirmare') : str_replace(' lei', ' ' . t('lei'), product_money($choice['pret'])))) ?>"<?= $index === 0 ? ' checked' : '' ?>>
+                        <span><?= tr($choice['label']) ?></span>
                     </label>
                 <?php endforeach; ?>
             </div>
         <?php elseif ($first['key'] !== ''): ?>
             <input type="hidden" name="optiune" value="<?= e($first['key']) ?>">
         <?php endif; ?>
-        <p class="buy-price">Preț: <?= e(product_money($first['pret'])) ?></p>
-        <label class="sr-only" for="cant-<?= e($field) ?>">Cantitate</label>
+        <p class="buy-price"><?= e(t('Preț') . ': ' . (product_money($first['pret']) === 'la confirmare' ? t('la confirmare') : str_replace(' lei', ' ' . t('lei'), product_money($first['pret'])))) ?></p>
+        <label class="sr-only" for="cant-<?= e($field) ?>"><?= tr('Cantitate') ?></label>
         <input id="cant-<?= e($field) ?>" name="cantitate" type="number" min="1" max="999" step="1" value="1" inputmode="numeric">
-        <button class="<?= e($buttonClass) ?>" type="submit">Adaugă în coș</button>
+        <button class="<?= e($buttonClass) ?>" type="submit"><?= tr('Adaugă în coș') ?></button>
     </form>
     <?php
 }

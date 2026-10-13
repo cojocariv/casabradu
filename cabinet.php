@@ -139,7 +139,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                     header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode((string) $order['id'])));
                     exit;
                 }
-                flash_set('Comanda ' . $order['id'] . ' a fost înregistrată. Te contactăm pentru confirmare.');
+                flash_set(sprintf(t('Comanda %s a fost înregistrată. Te contactăm pentru confirmare.'), $order['id']));
                 header('Location: ' . url('cabinet.php'));
                 exit;
             }
@@ -157,38 +157,38 @@ require __DIR__ . '/includes/header.php';
 
 <section class="page-hero">
     <div class="wrap">
-        <p class="eyebrow">Cabinet</p>
-        <h1>Bun venit, <?= e((string) $user['nume']) ?>.</h1>
-        <p class="lede">Comenzile se trimit din coș. Aici îți ții datele și vezi istoricul.</p>
+        <p class="eyebrow"><?= tr('Cabinet') ?></p>
+        <h1><?= e(sprintf(t('Bun venit, %s.'), (string) $user['nume'])) ?></h1>
+        <p class="lede"><?= tr('Comenzile se trimit din coș. Aici îți ții datele și vezi istoricul.') ?></p>
     </div>
 </section>
 
 <section class="section">
     <div class="wrap">
         <?php if ($flash !== ''): ?>
-            <p class="notice" role="status"><?= e($flash) ?></p>
+            <p class="notice" role="status"><?= e(t($flash)) ?></p>
         <?php endif; ?>
 
         <div class="cabinet-grid">
             <div class="contact-card" id="comanda">
-                <p class="kicker">Magazin</p>
-                <h2>Comenzile pleacă din coș.</h2>
-                <p>Alegi cafeaua sau un aparat în comodat, le adaugi în coș și trimiți comanda. Livrăm în toată Republica Moldova. Aici rămân datele firmei și istoricul.</p>
+                <p class="kicker"><?= tr('Magazin') ?></p>
+                <h2><?= tr('Comenzile pleacă din coș.') ?></h2>
+                <p><?= tr('Alegi cafeaua sau un aparat în comodat, le adaugi în coș și trimiți comanda. Livrăm în toată Republica Moldova. Aici rămân datele firmei și istoricul.') ?></p>
                 <div class="btn-row">
-                    <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi cafeaua</a>
-                    <a class="btn btn-line" href="<?= e(url('aparate.php')) ?>">Vezi aparatele</a>
-                    <a class="btn btn-line" href="<?= e(url('cos.php')) ?>">Deschide coșul<?php if (cart_count() > 0): ?> (<?= (int) cart_count() ?>)<?php endif; ?></a>
+                    <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>"><?= tr('Vezi cafeaua') ?></a>
+                    <a class="btn btn-line" href="<?= e(url('aparate.php')) ?>"><?= tr('Vezi aparatele') ?></a>
+                    <a class="btn btn-line" href="<?= e(url('cos.php')) ?>"><?= tr('Deschide coșul') ?><?php if (cart_count() > 0): ?> (<?= (int) cart_count() ?>)<?php endif; ?></a>
                 </div>
             </div>
 
             <aside class="contact-aside">
-                <p class="kicker">Contul tău</p>
-                <h2>Datele contului</h2>
+                <p class="kicker"><?= tr('Contul tău') ?></p>
+                <h2><?= tr('Datele contului') ?></h2>
                 <div class="table-wrap">
                     <table class="sheet-table">
                         <tbody>
                             <tr>
-                                <th scope="row">Nume</th>
+                                <th scope="row"><?= tr('Nume') ?></th>
                                 <td><?= e((string) $user['nume']) ?></td>
                             </tr>
                             <tr>
@@ -196,7 +196,7 @@ require __DIR__ . '/includes/header.php';
                                 <td><?= e((string) $user['email']) ?></td>
                             </tr>
                             <tr>
-                                <th scope="row">Telefon</th>
+                                <th scope="row"><?= tr('Telefon') ?></th>
                                 <td><?= e((string) ($user['telefon'] ?? '')) !== '' ? e((string) $user['telefon']) : '—' ?></td>
                             </tr>
                         </tbody>
@@ -205,16 +205,16 @@ require __DIR__ . '/includes/header.php';
                 <form class="contact-form requisite-form" method="post" action="<?= e(url('cabinet.php')) ?>" accept-charset="UTF-8">
                     <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                     <input type="hidden" name="formular" value="rechizite">
-                    <p class="kicker">Rechizite</p>
+                    <p class="kicker"><?= tr('Rechizite') ?></p>
                     <?php if (!empty($requisiteErrors['form'])): ?>
-                        <p class="notice notice-error" role="alert"><?= e($requisiteErrors['form']) ?></p>
+                        <p class="notice notice-error" role="alert"><?= e(t($requisiteErrors['form'])) ?></p>
                     <?php endif; ?>
                     <div class="table-wrap">
                         <table class="sheet-table">
                             <tbody>
                                 <?php foreach (requisite_fields() as $key => $label): ?>
                                     <tr>
-                                        <th scope="row"><label for="camp-<?= e($key) ?>"><?= e($label) ?></label></th>
+                                        <th scope="row"><label for="camp-<?= e($key) ?>"><?= tr($label) ?></label></th>
                                         <td>
                                             <input id="camp-<?= e($key) ?>" name="camp[<?= e($key) ?>]" type="text" maxlength="400" value="<?= e(requisite_value($oldRequisites, $label)) ?>" <?= $key === 'tva' ? '' : 'required' ?> <?= isset($requisiteErrors['rechizite']) ? 'aria-invalid="true"' : '' ?>>
                                         </td>
@@ -223,53 +223,53 @@ require __DIR__ . '/includes/header.php';
                             </tbody>
                         </table>
                     </div>
-                    <?php if (isset($requisiteErrors['rechizite'])): ?><small class="field-error"><?= e($requisiteErrors['rechizite']) ?></small><?php endif; ?>
-                    <button class="btn btn-dark" type="submit">Salvează rechizitele</button>
-                    <p class="form-note">Scrie datele firmei în dreptul fiecărei denumiri. Codul TVA poate rămâne gol. Le atașăm comenzii pentru contul de plată.</p>
+                    <?php if (isset($requisiteErrors['rechizite'])): ?><small class="field-error"><?= e(t($requisiteErrors['rechizite'])) ?></small><?php endif; ?>
+                    <button class="btn btn-dark" type="submit"><?= tr('Salvează rechizitele') ?></button>
+                    <p class="form-note"><?= tr('Scrie datele firmei în dreptul fiecărei denumiri. Codul TVA poate rămâne gol. Le atașăm comenzii pentru contul de plată.') ?></p>
                 </form>
                 <form method="post" action="<?= e(url('iesire.php')) ?>">
                     <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
-                    <button class="btn btn-line" type="submit">Ieși din cont</button>
+                    <button class="btn btn-line" type="submit"><?= tr('Ieși din cont') ?></button>
                 </form>
 
                 <details class="account-fold" <?= $passwordErrors !== [] ? 'open' : '' ?>>
-                    <summary>Schimbă parola</summary>
+                    <summary><?= tr('Schimbă parola') ?></summary>
                     <form class="contact-form" method="post" action="<?= e(url('cabinet.php')) ?>" accept-charset="UTF-8">
                         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                         <input type="hidden" name="formular" value="parola">
                         <?php if (!empty($passwordErrors['form'])): ?>
-                            <p class="notice notice-error" role="alert"><?= e($passwordErrors['form']) ?></p>
+                            <p class="notice notice-error" role="alert"><?= e(t($passwordErrors['form'])) ?></p>
                         <?php endif; ?>
-                        <label for="parola_veche">Parola actuală</label>
+                        <label for="parola_veche"><?= tr('Parola actuală') ?></label>
                         <input id="parola_veche" name="parola_veche" type="password" required autocomplete="current-password" <?= isset($passwordErrors['parola']) ? 'aria-invalid="true"' : '' ?>>
-                        <?php if (isset($passwordErrors['parola'])): ?><small class="field-error"><?= e($passwordErrors['parola']) ?></small><?php endif; ?>
-                        <label for="parola_noua">Parola nouă</label>
+                        <?php if (isset($passwordErrors['parola'])): ?><small class="field-error"><?= e(t($passwordErrors['parola'])) ?></small><?php endif; ?>
+                        <label for="parola_noua"><?= tr('Parola nouă') ?></label>
                         <input id="parola_noua" name="parola_noua" type="password" required minlength="8" maxlength="72" autocomplete="new-password">
-                        <label for="parola_noua2">Confirmă parola nouă</label>
+                        <label for="parola_noua2"><?= tr('Confirmă parola nouă') ?></label>
                         <input id="parola_noua2" name="parola_noua2" type="password" required minlength="8" maxlength="72" autocomplete="new-password" <?= isset($passwordErrors['parola2']) ? 'aria-invalid="true"' : '' ?>>
-                        <?php if (isset($passwordErrors['parola2'])): ?><small class="field-error"><?= e($passwordErrors['parola2']) ?></small><?php endif; ?>
-                        <button class="btn btn-dark" type="submit">Salvează parola</button>
+                        <?php if (isset($passwordErrors['parola2'])): ?><small class="field-error"><?= e(t($passwordErrors['parola2'])) ?></small><?php endif; ?>
+                        <button class="btn btn-dark" type="submit"><?= tr('Salvează parola') ?></button>
                     </form>
                 </details>
             </aside>
         </div>
 
         <div class="orders-block">
-            <p class="kicker">Comenzile tale</p>
-            <h2>Istoric</h2>
+            <p class="kicker"><?= tr('Comenzile tale') ?></p>
+            <h2><?= tr('Istoric') ?></h2>
             <?php if ($orders === []): ?>
-                <p class="lede">Nu ai comenzi încă. Prima o poți trimite din formular.</p>
+                <p class="lede"><?= tr('Nu ai comenzi încă. Prima o poți trimite din coș.') ?></p>
             <?php else: ?>
                 <div class="table-wrap orders-sheet">
                     <table class="sheet-table">
                         <thead>
                             <tr>
-                                <th>Comandă</th>
-                                <th>Data</th>
-                                <th>Produse</th>
-                                <th>Adresă</th>
-                                <th>Stare</th>
-                                <th>Document</th>
+                                <th><?= tr('Comandă') ?></th>
+                                <th><?= tr('Data') ?></th>
+                                <th><?= tr('Produse') ?></th>
+                                <th><?= tr('Adresă') ?></th>
+                                <th><?= tr('Stare') ?></th>
+                                <th><?= tr('Document') ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -280,7 +280,7 @@ require __DIR__ . '/includes/header.php';
                                     <td>
                                         <?php foreach (($order['linii'] ?? []) as $line): ?>
                                             <?php if (!is_array($line)) { continue; } ?>
-                                            <span class="line-item"><?= e((string) ($line['titlu'] ?? '')) ?> × <?= (int) ($line['cantitate'] ?? 0) ?></span>
+                                            <span class="line-item"><?= tr((string) ($line['titlu'] ?? '')) ?> × <?= (int) ($line['cantitate'] ?? 0) ?></span>
                                         <?php endforeach; ?>
                                         <?php if (($order['nota'] ?? '') !== ''): ?>
                                             <span class="line-note"><?= e((string) $order['nota']) ?></span>
@@ -288,7 +288,7 @@ require __DIR__ . '/includes/header.php';
                                     </td>
                                     <td><?= e((string) ($order['adresa'] ?? '')) ?></td>
                                     <td><span class="status status-<?= e((string) ($order['status'] ?? '')) ?>"><?= e(order_status_label((string) ($order['status'] ?? ''))) ?></span></td>
-                                    <td><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">Cont de plată</a></td>
+                                    <td><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>"><?= tr('Cont de plată') ?></a></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

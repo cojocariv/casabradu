@@ -79,7 +79,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                     header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode((string) $order['id'])));
                     exit;
                 }
-                flash_set('Comanda ' . $order['id'] . ' a fost înregistrată. Te contactăm pentru confirmare.');
+                flash_set(sprintf(t('Comanda %s a fost înregistrată. Te contactăm pentru confirmare.'), $order['id']));
                 header('Location: ' . url('cabinet.php'));
                 exit;
             }
@@ -106,9 +106,9 @@ require __DIR__ . '/includes/header.php';
 
 <section class="page-hero">
     <div class="wrap">
-        <p class="eyebrow">Magazin</p>
-        <h1>Coșul tău.</h1>
-        <p class="lede"><?= $lines === [] ? 'Nu ai produse în coș. Alege cafeaua sau un aparat în comodat.' : 'Verifică cantitățile, apoi trimite comanda. Livrăm în toată Republica Moldova și te contactăm ca să o confirmăm.' ?></p>
+        <p class="eyebrow"><?= tr('Magazin') ?></p>
+        <h1><?= tr('Coșul tău.') ?></h1>
+        <p class="lede"><?= $lines === [] ? tr('Nu ai produse în coș. Alege cafeaua sau un aparat în comodat.') : tr('Verifică cantitățile, apoi trimite comanda. Livrăm în toată Republica Moldova și te contactăm ca să o confirmăm.') ?></p>
     </div>
 </section>
 
@@ -118,18 +118,18 @@ require __DIR__ . '/includes/header.php';
             <p class="notice" role="status"><?= e($notice) ?></p>
         <?php endif; ?>
         <?php if (!empty($errors['form'])): ?>
-            <p class="notice notice-error" role="alert"><?= e($errors['form']) ?></p>
+            <p class="notice notice-error" role="alert"><?= e(t($errors['form'])) ?></p>
         <?php endif; ?>
 
         <?php if ($lines === []): ?>
             <div class="btn-row">
-                <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi cafeaua</a>
-                <a class="btn btn-line" href="<?= e(url('aparate.php')) ?>">Vezi aparatele</a>
+                <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>"><?= tr('Vezi cafeaua') ?></a>
+                <a class="btn btn-line" href="<?= e(url('aparate.php')) ?>"><?= tr('Vezi aparatele') ?></a>
             </div>
         <?php else: ?>
             <p class="continue-links">
-                <a class="invoice-link" href="<?= e(url('produse.php')) ?>">Continuă cu cafeaua</a>
-                <a class="invoice-link" href="<?= e(url('aparate.php')) ?>">Continuă cu aparatele</a>
+                <a class="invoice-link" href="<?= e(url('produse.php')) ?>"><?= tr('Continuă cu cafeaua') ?></a>
+                <a class="invoice-link" href="<?= e(url('aparate.php')) ?>"><?= tr('Continuă cu aparatele') ?></a>
             </p>
             <form id="cart-update" method="post" action="<?= e(url('cos.php')) ?>">
                 <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
@@ -139,10 +139,10 @@ require __DIR__ . '/includes/header.php';
                 <table class="sheet-table">
                     <thead>
                         <tr>
-                            <th>Produs</th>
-                            <th>Cantitate</th>
-                            <th>Preț, lei</th>
-                            <th>Suma, lei</th>
+                            <th><?= tr('Produs') ?></th>
+                            <th><?= tr('Cantitate') ?></th>
+                            <th><?= tr('Preț, lei') ?></th>
+                            <th><?= tr('Suma, lei') ?></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -150,9 +150,9 @@ require __DIR__ . '/includes/header.php';
                         <?php foreach ($lines as $index => $line): ?>
                             <?php $row = $table['rows'][$index] ?? ['pret' => null, 'suma' => null]; ?>
                             <tr>
-                                <td><?= e($line['titlu']) ?></td>
+                                <td><?= tr($line['titlu']) ?></td>
                                 <td>
-                                    <input form="cart-update" name="qty[<?= e($line['slug']) ?>]" type="number" min="0" max="999" step="1" value="<?= (int) $line['cantitate'] ?>" inputmode="numeric" aria-label="Cantitate <?= e($line['titlu']) ?>">
+                                    <input form="cart-update" name="qty[<?= e($line['slug']) ?>]" type="number" min="0" max="999" step="1" value="<?= (int) $line['cantitate'] ?>" inputmode="numeric" aria-label="<?= e(t('Cantitate') . ' ' . t($line['titlu'])) ?>">
                                 </td>
                                 <td><?= e(lei($row['pret'] ?? null)) ?></td>
                                 <td><?= e(lei($row['suma'] ?? null)) ?></td>
@@ -161,7 +161,7 @@ require __DIR__ . '/includes/header.php';
                                         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                                         <input type="hidden" name="actiune" value="sterge">
                                         <input type="hidden" name="slug" value="<?= e($line['slug']) ?>">
-                                        <button class="btn btn-line btn-sm" type="submit">Elimină</button>
+                                        <button class="btn btn-line btn-sm" type="submit"><?= tr('Elimină') ?></button>
                                     </form>
                                 </td>
                             </tr>
@@ -169,35 +169,35 @@ require __DIR__ . '/includes/header.php';
                     </tbody>
                 </table>
             </div>
-            <p class="cart-total"><strong>Total: <?= e($table['total'] === null ? 'la confirmare' : lei($table['total']) . ' lei') ?></strong></p>
+            <p class="cart-total"><strong><?= tr('Total') ?>: <?= e($table['total'] === null ? t('la confirmare') : lei($table['total']) . ' ' . t('lei')) ?></strong></p>
             <?php if ($table['tva'] !== null): ?>
-                <p class="form-note">Inclusiv TVA: <?= e(lei($table['tva'])) ?> lei</p>
+                <p class="form-note"><?= tr('Inclusiv TVA') ?>: <?= e(lei($table['tva'])) ?> <?= tr('lei') ?></p>
             <?php else: ?>
-                <p class="form-note">Prețul îl confirmăm împreună, înainte de contul de plată. Cantitatea 0 scoate produsul din coș.</p>
+                <p class="form-note"><?= tr('Prețul îl confirmăm împreună, înainte de contul de plată. Cantitatea 0 scoate produsul din coș.') ?></p>
             <?php endif; ?>
-            <button class="btn btn-line" type="submit" form="cart-update">Actualizează coșul</button>
+            <button class="btn btn-line" type="submit" form="cart-update"><?= tr('Actualizează coșul') ?></button>
 
             <div class="contact-card cart-checkout">
-                <p class="kicker">Finalizare</p>
-                <h2>Trimite comanda.</h2>
+                <p class="kicker"><?= tr('Finalizare') ?></p>
+                <h2><?= tr('Trimite comanda.') ?></h2>
                 <?php if ($user === null): ?>
-                    <p>Ca să înregistrăm comanda, intră în cont. Produsele rămân în coș.</p>
-                    <a class="btn btn-dark" href="<?= e(url('autentificare.php?next=' . rawurlencode('cos.php'))) ?>">Intră în cont</a>
+                    <p><?= tr('Ca să înregistrăm comanda, intră în cont. Produsele rămân în coș.') ?></p>
+                    <a class="btn btn-dark" href="<?= e(url('autentificare.php?next=' . rawurlencode('cos.php'))) ?>"><?= tr('Intră în cont') ?></a>
                 <?php else: ?>
                     <?php if (!$requisitesReady): ?>
-                        <p class="notice notice-error" role="alert">Completează rechizitele companiei în cabinet înainte de comandă.</p>
-                        <a class="btn btn-line" href="<?= e(url('cabinet.php')) ?>">Completează rechizitele</a>
+                        <p class="notice notice-error" role="alert"><?= tr('Completează rechizitele companiei în cabinet înainte de comandă.') ?></p>
+                        <a class="btn btn-line" href="<?= e(url('cabinet.php')) ?>"><?= tr('Completează rechizitele') ?></a>
                     <?php endif; ?>
                     <form class="contact-form" method="post" action="<?= e(url('cos.php')) ?>" accept-charset="UTF-8">
                         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
-                        <label for="adresa">Adresă de livrare</label>
+                        <label for="adresa"><?= tr('Adresă de livrare') ?></label>
                         <textarea id="adresa" name="adresa" required minlength="5" maxlength="300" rows="3"><?= e($address) ?></textarea>
-                        <?php if (isset($errors['adresa'])): ?><small class="field-error"><?= e($errors['adresa']) ?></small><?php endif; ?>
-                        <label for="nota">Mențiune <span>(opțional)</span></label>
+                        <?php if (isset($errors['adresa'])): ?><small class="field-error"><?= e(t($errors['adresa'])) ?></small><?php endif; ?>
+                        <label for="nota"><?= tr('Mențiune') ?> <span><?= tr('(opțional)') ?></span></label>
                         <textarea id="nota" name="nota" maxlength="1000" rows="3"><?= e($note) ?></textarea>
                         <div class="btn-row">
-                            <button class="btn btn-dark" type="submit" name="actiune" value="comanda" <?= $requisitesReady ? '' : 'disabled' ?>>Plasează comanda</button>
-                            <button class="btn btn-line" type="submit" name="actiune" value="cont" <?= $requisitesReady ? '' : 'disabled' ?>>Generează cont de plată</button>
+                            <button class="btn btn-dark" type="submit" name="actiune" value="comanda" <?= $requisitesReady ? '' : 'disabled' ?>><?= tr('Plasează comanda') ?></button>
+                            <button class="btn btn-line" type="submit" name="actiune" value="cont" <?= $requisitesReady ? '' : 'disabled' ?>><?= tr('Generează cont de plată') ?></button>
                         </div>
                     </form>
                 <?php endif; ?>

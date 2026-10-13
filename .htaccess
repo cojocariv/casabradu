@@ -37,7 +37,6 @@ ErrorDocument 404 /404.php
 </FilesMatch>
 
 <IfModule mod_headers.c>
-    Header set Content-Language "ro"
     Header set X-Content-Type-Options "nosniff"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
     Header set X-Frame-Options "SAMEORIGIN"

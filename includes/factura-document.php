@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="<?= lang() === 'ru' ? 'ru' : 'ro' ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
-    <title>Cont de plată <?= e((string) $order['id']) ?> · <?= e(SITE_NAME) ?></title>
+    <title><?= e(sprintf(t('Cont de plată nr. %s din %s'), (string) $order['id'], $invoiceDate)) ?> · <?= e(SITE_NAME) ?></title>
     <style>
         :root { color-scheme: light; }
         * { box-sizing: border-box; }
@@ -92,18 +92,18 @@
 </head>
 <body>
     <?php if (($invoiceNotice ?? '') !== ''): ?>
-        <p class="mail-note ok" role="status"><?= e($invoiceNotice) ?></p>
+        <p class="mail-note ok" role="status"><?= e(t($invoiceNotice)) ?></p>
     <?php endif; ?>
     <?php if (($invoiceError ?? '') !== ''): ?>
-        <p class="mail-note err" role="alert"><?= e($invoiceError) ?></p>
+        <p class="mail-note err" role="alert"><?= e(t($invoiceError)) ?></p>
     <?php endif; ?>
     <div class="toolbar">
-        <a href="<?= e($back) ?>">Înapoi la cabinet</a>
-        <button type="button" onclick="window.print()">Printează sau salvează PDF</button>
+        <a href="<?= e($back) ?>"><?= tr('Înapoi la cabinet') ?></a>
+        <button type="button" onclick="window.print()"><?= tr('Printează sau salvează PDF') ?></button>
         <form method="post" action="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">
             <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
             <input type="hidden" name="actiune" value="email">
-            <button type="submit">Trimite contul prin email</button>
+            <button type="submit"><?= tr('Trimite contul prin email') ?></button>
         </form>
     </div>
     <article class="sheet">
@@ -111,59 +111,59 @@
             <img src="<?= e($logo) ?>" alt="<?= e(SITE_NAME) ?>">
         </div>
         <hr class="rule">
-        <h1>Cont de plată nr. <?= e((string) $order['id']) ?> din <?= e($invoiceDate) ?></h1>
+        <h1><?= e(sprintf(t('Cont de plată nr. %s din %s'), (string) $order['id'], $invoiceDate)) ?></h1>
         <hr class="rule">
         <div class="parties">
             <div>
-                <p><strong>Furnizor:</strong> <?= e(COMPANY_LEGAL) ?></p>
+                <p><strong><?= tr('Furnizor:') ?></strong> <?= e(COMPANY_LEGAL) ?></p>
                 <p><strong>IDNO:</strong> <?= e(COMPANY_IDNO) ?></p>
                 <p><strong>TVA:</strong> <?= e(COMPANY_TVA) ?></p>
             </div>
             <div>
-                <p><strong>Rechizite bancare:</strong> <?= e(COMPANY_BANK) ?></p>
+                <p><strong><?= tr('Rechizite bancare:') ?></strong> <?= e(COMPANY_BANK) ?></p>
                 <p><strong>IBAN:</strong> <?= e(COMPANY_IBAN) ?></p>
             </div>
         </div>
         <div class="payer">
-            <p><strong>Plătitor:</strong> <?= e($payer['nume']) ?></p>
+            <p><strong><?= tr('Plătitor:') ?></strong> <?= e($payer['nume']) ?></p>
             <?php if ($payer['idno'] !== ''): ?><p><strong>IDNO:</strong> <?= e($payer['idno']) ?></p><?php endif; ?>
             <?php if ($payer['tva'] !== ''): ?><p><strong>TVA:</strong> <?= e($payer['tva']) ?></p><?php endif; ?>
-            <?php if ($payer['adresa'] !== ''): ?><p><strong>Adresă:</strong> <?= e($payer['adresa']) ?></p><?php endif; ?>
+            <?php if ($payer['adresa'] !== ''): ?><p><strong><?= tr('Adresă:') ?></strong> <?= e($payer['adresa']) ?></p><?php endif; ?>
         </div>
         <hr class="rule">
         <div class="warn">
-            <strong>ATENȚIE</strong>
-            <p>Înainte de a achita, contactează-ne și verifică dacă produsele comandate sunt disponibile. Contul este valabil 3 zile bancare. Livrarea se face numai după încasarea sumei în contul nostru.</p>
+            <strong><?= tr('ATENȚIE') ?></strong>
+            <p><?= tr('Înainte de a achita, contactează-ne și verifică dacă produsele comandate sunt disponibile. Contul este valabil 3 zile bancare. Livrarea se face numai după încasarea sumei în contul nostru.') ?></p>
         </div>
         <table>
             <thead>
                 <tr>
-                    <th>Nr.</th>
-                    <th>Denumirea mărfii</th>
-                    <th>Cant.</th>
-                    <th>Preț, lei</th>
-                    <th>Suma, lei</th>
+                    <th><?= tr('Nr.') ?></th>
+                    <th><?= tr('Denumirea mărfii') ?></th>
+                    <th><?= tr('Cant.') ?></th>
+                    <th><?= tr('Preț, lei') ?></th>
+                    <th><?= tr('Suma, lei') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($table['rows'] as $index => $row): ?>
                     <tr>
                         <td class="num"><?= $index + 1 ?></td>
-                        <td><?= e($row['titlu']) ?></td>
+                        <td><?= tr($row['titlu']) ?></td>
                         <td class="qty"><?= (int) $row['cantitate'] ?></td>
-                        <td class="money"><?= e(lei($row['pret'])) ?></td>
-                        <td class="money"><?= e(lei($row['suma'])) ?></td>
+                        <td class="money"><?= e(($money = lei($row['pret'])) === 'la confirmare' ? t('la confirmare') : $money) ?></td>
+                        <td class="money"><?= e(($money = lei($row['suma'])) === 'la confirmare' ? t('la confirmare') : $money) ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
         <div class="totals">
-            <p><strong>Total de plată: <?= e($table['total'] === null ? 'la confirmare' : lei($table['total']) . ' lei') ?></strong></p>
+            <p><strong><?= tr('Total de plată') ?>: <?= e($table['total'] === null ? t('la confirmare') : lei($table['total']) . ' ' . t('lei')) ?></strong></p>
             <?php if ($table['tva'] !== null): ?>
-                <p>Inclusiv TVA: <?= e(lei($table['tva'])) ?> lei</p>
+                <p><?= tr('Inclusiv TVA') ?>: <?= e(lei($table['tva'])) ?> <?= tr('lei') ?></p>
             <?php endif; ?>
         </div>
-        <p class="sign">Conducător: <span></span> / <span></span> /</p>
+        <p class="sign"><?= tr('Conducător:') ?> <span></span> / <span></span> /</p>
     </article>
 </body>
 </html>

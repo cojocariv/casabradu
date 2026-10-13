@@ -17,7 +17,7 @@ function order_status_label(string $status): string
 {
     $labels = order_statuses();
 
-    return $labels[$status] ?? 'Înregistrată';
+    return t($labels[$status] ?? 'Înregistrată');
 }
 
 function admin_configured(): bool

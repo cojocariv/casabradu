@@ -17,7 +17,7 @@ $googleFrom = ($page ?? '') === 'inregistrare' ? 'inregistrare.php' : 'autentifi
          data-context="<?= $googleFrom === 'inregistrare.php' ? 'signup' : 'signin' ?>"
          data-ux_mode="popup"
          data-auto_prompt="false"
-         data-locale="ro"></div>
+         data-locale="<?= lang() === 'ru' ? 'ru' : 'ro' ?>"></div>
     <div class="g_id_signin"
          data-type="standard"
          data-shape="pill"
@@ -32,7 +32,7 @@ $googleFrom = ($page ?? '') === 'inregistrare' ? 'inregistrare.php' : 'autentifi
         <input type="hidden" name="from" value="<?= e($googleFrom) ?>">
         <input type="hidden" name="credential" value="">
     </form>
-    <p class="auth-or"><span>sau cu email</span></p>
+    <p class="auth-or"><span><?= tr('sau cu email') ?></span></p>
 </div>
 <script>
 function casaGoogleAuth(response) {

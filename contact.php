@@ -18,9 +18,9 @@ require __DIR__ . '/includes/header.php';
 <section class="page-hero">
     <div class="wrap">
         <?= breadcrumb_nav($page) ?>
-        <p class="eyebrow">Contact</p>
-        <h1>Spune-ne ce cafea cauți.</h1>
-        <p class="lede">Răspundem pentru cialde, capsule, boabe și pentru aparate în comodat. Livrăm în toată țara, în Republica Moldova.</p>
+        <p class="eyebrow"><?= tr('Contact') ?></p>
+        <h1><?= tr('Spune-ne ce cafea cauți.') ?></h1>
+        <p class="lede"><?= tr('Răspundem pentru cialde, capsule, boabe și pentru aparate în comodat. Livrăm în toată țara, în Republica Moldova.') ?></p>
     </div>
 </section>
 
@@ -29,9 +29,9 @@ require __DIR__ . '/includes/header.php';
         <div class="contact-card" id="formular">
             <?php if ($sent): ?>
                 <div class="notice" role="status">
-                    <h2>Ți-am primit mesajul.</h2>
-                    <p>Îți răspundem în curând la adresa lăsată în formular.</p>
-                    <a class="btn btn-dark" href="<?= e(url('contact.php')) ?>">Trimite un alt mesaj</a>
+                    <h2><?= tr('Ți-am primit mesajul.') ?></h2>
+                    <p><?= tr('Îți răspundem în curând la adresa lăsată în formular.') ?></p>
+                    <a class="btn btn-dark" href="<?= e(url('contact.php')) ?>"><?= tr('Trimite un alt mesaj') ?></a>
                 </div>
             <?php else: ?>
                 <?php $theme = 'light'; require __DIR__ . '/includes/formular.php'; ?>
@@ -39,18 +39,18 @@ require __DIR__ . '/includes/header.php';
         </div>
         <aside class="contact-aside">
             <p class="kicker">Casa Bradu Caffè</p>
-            <h2>Aromă, raport ideal, livrare în toată țara.</h2>
+            <h2><?= tr('Aromă, raport ideal, livrare în toată țara.') ?></h2>
             <ul class="ticks">
-                <li>Cialde, capsule și boabe</li>
-                <li>Arabica și Robusta, în raport ideal</li>
-                <li>Livrare în toată Republica Moldova</li>
-                <li>Aparate în comodat, pentru cialde, capsule și boabe</li>
+                <li><?= tr('Cialde, capsule și boabe') ?></li>
+                <li><?= tr('Arabica și Robusta, în raport ideal') ?></li>
+                <li><?= tr('Livrare în toată Republica Moldova') ?></li>
+                <li><?= tr('Aparate în comodat, pentru cialde, capsule și boabe') ?></li>
             </ul>
             <p><a href="mailto:<?= e(SITE_EMAIL) ?>"><?= e(SITE_EMAIL) ?></a></p>
             <?php if (SITE_PHONE !== ''): ?>
                 <p><a href="tel:<?= e(preg_replace('/\s+/', '', SITE_PHONE) ?? '') ?>"><?= e(SITE_PHONE) ?></a></p>
             <?php endif; ?>
-            <p class="aside-legal"><?= e(SITE_LEGAL) ?><br>Republica Moldova</p>
+            <p class="aside-legal"><?= e(SITE_LEGAL) ?><br><?= tr('Republica Moldova') ?></p>
         </aside>
     </div>
 </section>

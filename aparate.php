@@ -23,9 +23,9 @@ $item = $products[0];
 <section class="page-hero">
     <div class="wrap">
         <?= breadcrumb_nav($page) ?>
-        <p class="eyebrow">Aparate</p>
-        <h1>Aparate în comodat.</h1>
-        <p class="lede">Oferim în comodat aparate de cafea pentru cialde, pentru capsule și pentru boabe. Prepararea ține pasul cu aroma, acasă sau la birou, oriunde livrăm în Republica Moldova.</p>
+        <p class="eyebrow"><?= tr('Aparate') ?></p>
+        <h1><?= tr('Aparate în comodat.') ?></h1>
+        <p class="lede"><?= tr('Oferim în comodat aparate de cafea pentru cialde, pentru capsule și pentru boabe. Prepararea ține pasul cu aroma, acasă sau la birou, oriunde livrăm în Republica Moldova.') ?></p>
     </div>
 </section>
 
@@ -34,12 +34,12 @@ $item = $products[0];
         <div class="product-grid product-grid-single">
             <article class="product-card reveal" id="aparate">
                 <div class="product-card-photo">
-                    <img src="<?= e(asset($item['image'])) ?>" alt="<?= e($item['alt']) ?>" width="640" height="640">
+                    <img src="<?= e(asset($item['image'])) ?>" alt="<?= tr($item['alt']) ?>" width="640" height="640">
                 </div>
                 <div class="product-card-body">
-                    <p class="kicker"><?= e($item['kicker']) ?></p>
-                    <h2><?= e($item['title']) ?></h2>
-                    <p class="product-short"><?= e($item['long']) ?></p>
+                    <p class="kicker"><?= tr($item['kicker']) ?></p>
+                    <h2><?= tr($item['title']) ?></h2>
+                    <p class="product-short"><?= tr($item['long']) ?></p>
                     <?php buy_form('aparate', 'aparate.php', 'btn btn-dark btn-sm'); ?>
                 </div>
             </article>

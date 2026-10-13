@@ -1,33 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
         <loc>https://casabradu.md/</loc>
         <lastmod>2026-10-13</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/"/>
+    </url>
+    <url>
+        <loc>https://casabradu.md/ru/</loc>
+        <lastmod>2026-10-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/"/>
     </url>
     <url>
         <loc>https://casabradu.md/produse.php</loc>
         <lastmod>2026-10-13</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/produse.php"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/produse.php"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/produse.php"/>
+    </url>
+    <url>
+        <loc>https://casabradu.md/ru/produse.php</loc>
+        <lastmod>2026-10-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/produse.php"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/produse.php"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/produse.php"/>
     </url>
     <url>
         <loc>https://casabradu.md/aparate.php</loc>
         <lastmod>2026-10-13</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/aparate.php"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/aparate.php"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/aparate.php"/>
+    </url>
+    <url>
+        <loc>https://casabradu.md/ru/aparate.php</loc>
+        <lastmod>2026-10-13</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/aparate.php"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/aparate.php"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/aparate.php"/>
     </url>
     <url>
         <loc>https://casabradu.md/despre.php</loc>
         <lastmod>2026-10-13</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/despre.php"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/despre.php"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/despre.php"/>
+    </url>
+    <url>
+        <loc>https://casabradu.md/ru/despre.php</loc>
+        <lastmod>2026-10-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/despre.php"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/despre.php"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/despre.php"/>
     </url>
     <url>
         <loc>https://casabradu.md/contact.php</loc>
         <lastmod>2026-10-13</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/contact.php"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/contact.php"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/contact.php"/>
+    </url>
+    <url>
+        <loc>https://casabradu.md/ru/contact.php</loc>
+        <lastmod>2026-10-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <xhtml:link rel="alternate" hreflang="ro" href="https://casabradu.md/contact.php"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="https://casabradu.md/ru/contact.php"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://casabradu.md/contact.php"/>
     </url>
 </urlset>
