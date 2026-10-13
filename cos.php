@@ -108,7 +108,7 @@ require __DIR__ . '/includes/header.php';
     <div class="wrap">
         <p class="eyebrow">Magazin</p>
         <h1>Coșul tău.</h1>
-        <p class="lede"><?= $lines === [] ? 'Nu ai produse în coș. Alege din selecție și adaugă ce vrei să comandăm.' : 'Verifică cantitățile, apoi trimite comanda. Te contactăm ca să o confirmăm.' ?></p>
+        <p class="lede"><?= $lines === [] ? 'Nu ai produse în coș. Alege cafeaua sau un aparat în comodat.' : 'Verifică cantitățile, apoi trimite comanda. Livrăm în toată Republica Moldova și te contactăm ca să o confirmăm.' ?></p>
     </div>
 </section>
 

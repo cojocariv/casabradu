@@ -11,8 +11,8 @@ $products = array_values(array_filter(
     }
 ));
 $page = 'aparate';
-$pageTitle = 'Aparate pentru cialde și capsule';
-$pageDescription = 'Aparate de cafea pentru cialde și capsule, alese împreună cu cafeaua Casa Bradu Caffè. Pentru acasă, birou sau serviciu, în Moldova.';
+$pageTitle = 'Aparate în comodat';
+$pageDescription = 'Oferim în comodat aparate de cafea pentru cialde, capsule și boabe. Livrare în toată Republica Moldova.';
 $pageImage = 'assets/img/aparat-cafea.jpg';
 $pageImageAlt = 'Aparat de cafea pentru capsule, cu o ceașcă de espresso';
 $seoItems = seo_product_items($products);
@@ -24,8 +24,8 @@ $item = $products[0];
     <div class="wrap">
         <?= breadcrumb_nav($page) ?>
         <p class="eyebrow">Aparate</p>
-        <h1>Aparate pentru cialde și capsule.</h1>
-        <p class="lede">Importăm aparate de cafea pentru cialde și pentru capsule, ca prepararea să țină pasul cu cafeaua. Pentru acasă, pentru birou sau pentru cine servește cafea în fiecare zi.</p>
+        <h1>Aparate în comodat.</h1>
+        <p class="lede">Oferim în comodat aparate de cafea pentru cialde, pentru capsule și pentru boabe. Prepararea ține pasul cu aroma, acasă sau la birou, oriunde livrăm în Republica Moldova.</p>
     </div>
 </section>
 

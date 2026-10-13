@@ -173,7 +173,7 @@ require __DIR__ . '/includes/header.php';
             <div class="contact-card" id="comanda">
                 <p class="kicker">Magazin</p>
                 <h2>Comenzile pleacă din coș.</h2>
-                <p>Alegi produsele, le adaugi în coș și le trimiți când ești gata. Aici rămân datele firmei și istoricul.</p>
+                <p>Alegi cafeaua sau un aparat în comodat, le adaugi în coș și trimiți comanda. Livrăm în toată Republica Moldova. Aici rămân datele firmei și istoricul.</p>
                 <div class="btn-row">
                     <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi cafeaua</a>
                     <a class="btn btn-line" href="<?= e(url('aparate.php')) ?>">Vezi aparatele</a>

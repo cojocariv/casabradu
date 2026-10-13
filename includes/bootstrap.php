@@ -13,7 +13,7 @@ const COMPANY_IDNO = '1026023149244';
 const COMPANY_TVA = '0615161';
 const COMPANY_IBAN = 'MD50AG000000022517877084';
 const COMPANY_BANK = "BC 'MAIB' S.A.";
-const SITE_DESCRIPTION = 'Cialde, capsule și cafea boabe din Italia, distribuite în Moldova de Casa Bradu Caffè. Gust aromat, cu Arabica și Robusta. Aparate pentru cialde și capsule.';
+const SITE_DESCRIPTION = 'Cafea din Italia, cu aromă și un raport ideal între Arabica și Robusta. Livrăm în toată Republica Moldova. Aparate în comodat.';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([
