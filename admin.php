@@ -29,6 +29,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             if ($filter !== '' && isset(order_statuses()[$filter])) {
                 $next .= '?stare=' . rawurlencode($filter);
             }
+            $next .= '#' . $orderId;
             header('Location: ' . url($next));
             exit;
         }
@@ -149,61 +150,114 @@ require __DIR__ . '/includes/header.php';
                             <tr>
                                 <th>Comandă</th>
                                 <th>Data</th>
-                                <th>Client</th>
-                                <th>Produse</th>
-                                <th>Adresă</th>
-                                <th>Rechizite</th>
                                 <th>Stare</th>
-                                <th>Document</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php foreach ($visible as $order): ?>
-                                <?php $status = (string) ($order['status'] ?? 'inregistrata'); ?>
-                                <tr>
-                                    <td><?= e((string) ($order['id'] ?? '')) ?></td>
+                        <?php foreach ($visible as $order): ?>
+                            <?php
+                            $orderId = (string) ($order['id'] ?? '');
+                            $status = (string) ($order['status'] ?? 'inregistrata');
+                            $detailId = 'det-' . $orderId;
+                            ?>
+                            <tbody>
+                                <tr class="order-summary">
+                                    <td>
+                                        <button class="order-toggle" type="button" aria-expanded="false" aria-controls="<?= e($detailId) ?>"><?= e($orderId) ?></button>
+                                    </td>
                                     <td><?= e(date('d.m.Y H:i', strtotime((string) ($order['la'] ?? 'now')) ?: time())) ?></td>
-                                    <td>
-                                        <span class="line-item"><?= e((string) ($order['nume'] ?? 'Client')) ?></span>
-                                        <?php if (($order['email'] ?? '') !== ''): ?>
-                                            <span class="line-item"><a href="mailto:<?= e((string) $order['email']) ?>"><?= e((string) $order['email']) ?></a></span>
-                                        <?php endif; ?>
-                                        <?php if (($order['telefon'] ?? '') !== ''): ?>
-                                            <span class="line-note"><?= e((string) $order['telefon']) ?></span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?php foreach (($order['linii'] ?? []) as $line): ?>
-                                            <?php if (!is_array($line)) { continue; } ?>
-                                            <span class="line-item"><?= e((string) ($line['titlu'] ?? '')) ?> × <?= (int) ($line['cantitate'] ?? 0) ?></span>
-                                        <?php endforeach; ?>
-                                        <?php if (($order['nota'] ?? '') !== ''): ?>
-                                            <span class="line-note"><?= e((string) $order['nota']) ?></span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td><?= e((string) ($order['adresa'] ?? '')) ?></td>
-                                    <td class="requisites"><?= e((string) ($order['rechizite'] ?? '')) ?></td>
-                                    <td>
-                                        <form class="status-form" method="post" action="<?= e(url('admin.php')) ?>">
-                                            <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
-                                            <input type="hidden" name="formular" value="stare">
-                                            <input type="hidden" name="id" value="<?= e((string) ($order['id'] ?? '')) ?>">
-                                            <input type="hidden" name="filtru" value="<?= e($filter) ?>">
-                                            <label class="sr-only" for="status-<?= e((string) ($order['id'] ?? '')) ?>">Stare</label>
-                                            <select id="status-<?= e((string) ($order['id'] ?? '')) ?>" name="status">
-                                                <?php foreach (order_statuses() as $key => $label): ?>
-                                                    <option value="<?= e($key) ?>" <?= $status === $key ? 'selected' : '' ?>><?= e($label) ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                            <button class="btn btn-dark btn-sm" type="submit">Salvează</button>
-                                        </form>
-                                    </td>
-                                    <td><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">Cont de plată</a></td>
+                                    <td><span class="status status-<?= e($status) ?>"><?= e(order_status_label($status)) ?></span></td>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+                                <tr class="order-detail" id="<?= e($detailId) ?>" hidden>
+                                    <td colspan="3">
+                                        <table class="sheet-table order-more">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">Client</th>
+                                                    <td>
+                                                        <span class="line-item"><?= e((string) ($order['nume'] ?? 'Client')) ?></span>
+                                                        <?php if (($order['email'] ?? '') !== ''): ?>
+                                                            <span class="line-item"><a href="mailto:<?= e((string) $order['email']) ?>"><?= e((string) $order['email']) ?></a></span>
+                                                        <?php endif; ?>
+                                                        <?php if (($order['telefon'] ?? '') !== ''): ?>
+                                                            <span class="line-note"><?= e((string) $order['telefon']) ?></span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Produse</th>
+                                                    <td>
+                                                        <?php foreach (($order['linii'] ?? []) as $line): ?>
+                                                            <?php if (!is_array($line)) { continue; } ?>
+                                                            <span class="line-item"><?= e((string) ($line['titlu'] ?? '')) ?> × <?= (int) ($line['cantitate'] ?? 0) ?></span>
+                                                        <?php endforeach; ?>
+                                                        <?php if (($order['nota'] ?? '') !== ''): ?>
+                                                            <span class="line-note"><?= e((string) $order['nota']) ?></span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Adresă</th>
+                                                    <td><?= e((string) ($order['adresa'] ?? '')) ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Rechizite</th>
+                                                    <td class="requisites"><?= e((string) ($order['rechizite'] ?? '')) ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Document</th>
+                                                    <td><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode($orderId))) ?>">Cont de plată</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Stare</th>
+                                                    <td>
+                                                        <form class="status-form" method="post" action="<?= e(url('admin.php')) ?>">
+                                                            <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                                                            <input type="hidden" name="formular" value="stare">
+                                                            <input type="hidden" name="id" value="<?= e($orderId) ?>">
+                                                            <input type="hidden" name="filtru" value="<?= e($filter) ?>">
+                                                            <label class="sr-only" for="status-<?= e($orderId) ?>">Stare</label>
+                                                            <select id="status-<?= e($orderId) ?>" name="status">
+                                                                <?php foreach (order_statuses() as $key => $label): ?>
+                                                                    <option value="<?= e($key) ?>" <?= $status === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                                                                <?php endforeach; ?>
+                                                            </select>
+                                                            <button class="btn btn-dark btn-sm" type="submit">Salvează</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        <?php endforeach; ?>
                     </table>
                 </div>
+                <script>
+                    document.querySelectorAll('.order-summary').forEach(function (row) {
+                        row.addEventListener('click', function () {
+                            var button = row.querySelector('.order-toggle');
+                            var panel = document.getElementById(button.getAttribute('aria-controls'));
+                            if (!button || !panel) {
+                                return;
+                            }
+                            var open = button.getAttribute('aria-expanded') === 'true';
+                            button.setAttribute('aria-expanded', open ? 'false' : 'true');
+                            panel.hidden = open;
+                            row.classList.toggle('is-open', !open);
+                        });
+                    });
+                    var opened = location.hash.replace('#', '');
+                    if (opened) {
+                        var current = document.getElementById('det-' + opened);
+                        if (current) {
+                            var summary = current.previousElementSibling;
+                            if (summary) {
+                                summary.click();
+                            }
+                        }
+                    }
+                </script>
             <?php endif; ?>
         <?php endif; ?>
     </div>

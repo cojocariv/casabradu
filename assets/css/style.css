@@ -1036,7 +1036,47 @@ button, input, select, textarea { font: inherit; }
 
 .orders-sheet .line-item,
 .orders-sheet .invoice-link,
-.orders-sheet td:first-child { white-space: nowrap; }
+.order-summary td:first-child { white-space: nowrap; }
+
+.order-detail > td { white-space: normal; }
+
+.order-summary { cursor: pointer; }
+
+.order-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.order-toggle::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    margin-top: -2px;
+}
+
+.order-summary.is-open .order-toggle::before {
+    transform: rotate(45deg);
+    margin-top: 2px;
+}
+
+.order-detail > td {
+    background: #fbfaf7;
+    padding-top: 4px;
+    padding-bottom: 8px;
+}
+
+.order-more th[scope="row"] { width: 140px; }
 
 .order-lines { display: grid; gap: 14px; margin-top: 8px; }
 
