@@ -58,7 +58,7 @@ function current_user(): ?array
 function safe_next(?string $next): string
 {
     $next = str_replace(["\r", "\n", "\0"], '', (string) $next);
-    if ($next === 'cabinet.php') {
+    if ($next === 'cabinet.php' || $next === 'cos.php') {
         return $next;
     }
     if (preg_match('/^cabinet\.php\?produs=(cialde|capsule|boabe|aparate)$/', $next) === 1) {

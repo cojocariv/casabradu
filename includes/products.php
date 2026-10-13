@@ -2,7 +2,14 @@
 
 declare(strict_types=1);
 
-return [
+function product_catalog(): array
+{
+    return product_catalog_items();
+}
+
+function product_catalog_items(): array
+{
+    return [
     [
         'slug' => 'cialde',
         'title' => 'Cialde',
@@ -63,4 +70,7 @@ return [
             'Le potrivim cu cafeaua Casa Bradu',
         ],
     ],
-];
+    ];
+}
+
+return product_catalog();

@@ -166,6 +166,48 @@ button, input, select, textarea { font: inherit; }
 .nav-links a:nth-child(3) { animation-delay: 0.12s; }
 .nav-links a:nth-child(4) { animation-delay: 0.16s; }
 .nav-links a:nth-child(5) { animation-delay: 0.2s; }
+.nav-links a:nth-child(6) { animation-delay: 0.24s; }
+
+.cart-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    margin-left: 6px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #c4a15a;
+    color: #1c3b30;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.nav-links a[aria-current] .cart-count {
+    background: #f6f1e6;
+    color: #1c3b30;
+}
+
+.buy-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.buy-form input[type="number"] {
+    width: 72px;
+    border: 1px solid rgba(28, 52, 43, 0.16);
+    border-radius: 999px;
+    padding: 8px 10px;
+    background: #fff;
+    color: var(--ink);
+}
+
+.cart-total { margin: 16px 0 4px; }
+
+.cart-checkout { margin-top: 28px; }
 
 .nav-links a:hover {
     background: rgba(255, 253, 251, 0.92);

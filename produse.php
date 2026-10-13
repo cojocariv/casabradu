@@ -43,7 +43,7 @@ require __DIR__ . '/includes/header.php';
                                 <li><?= e($point) ?></li>
                             <?php endforeach; ?>
                         </ul>
-                        <a class="btn btn-dark" href="<?= e(url('cabinet.php?produs=' . $item['slug'])) ?>">Comandă</a>
+                        <?php buy_form($item['slug'], 'produse.php#' . $item['slug'], 'btn btn-dark'); ?>
                     </div>
                 </article>
             <?php endforeach; ?>

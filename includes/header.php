@@ -92,6 +92,7 @@ if (SITE_PHONE !== '') {
                     <?php $isCurrent = $page === $key || ($key === 'cont' && in_array($page, ['cont', 'cabinet', 'inregistrare', 'autentificare'], true)); ?>
                     <a href="<?= e($item[1]) ?>" <?= $isCurrent ? 'aria-current="page"' : '' ?>><?= e($item[0]) ?></a>
                 <?php endforeach; ?>
+                <a href="<?= e(url('cos.php')) ?>" <?= $page === 'cos' ? 'aria-current="page"' : '' ?>>Coș<?php $cartCount = cart_count(); if ($cartCount > 0): ?> <span class="cart-count"><?= (int) $cartCount ?></span><?php endif; ?></a>
             </div>
             <a class="btn btn-dark btn-sm" href="<?= e(url('contact.php')) ?>">Solicită ofertă</a>
         </nav>

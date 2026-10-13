@@ -20,7 +20,10 @@ foreach ($catalog as $slug => $item) {
 }
 $preselect = (string) ($_GET['produs'] ?? '');
 if (isset($catalog[$preselect]) && ($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
-    $oldQty[$preselect] = 1;
+    cart_add($preselect, 1);
+    flash_set($catalog[$preselect]['title'] . ' a fost adăugat în coș.');
+    header('Location: ' . url('cos.php'));
+    exit;
 }
 $oldAddress = (string) ($user['adresa'] ?? '');
 $oldRequisites = trim((string) ($user['rechizite'] ?? ''));
@@ -156,7 +159,7 @@ require __DIR__ . '/includes/header.php';
     <div class="wrap">
         <p class="eyebrow">Cabinet</p>
         <h1>Bun venit, <?= e((string) $user['nume']) ?>.</h1>
-        <p class="lede">Trimite o comandă de cialde, capsule, boabe sau aparate. O înregistrăm și te contactăm ca să o confirmăm.</p>
+        <p class="lede">Comenzile se trimit din coș. Aici îți ții datele și vezi istoricul.</p>
     </div>
 </section>
 
@@ -168,52 +171,13 @@ require __DIR__ . '/includes/header.php';
 
         <div class="cabinet-grid">
             <div class="contact-card" id="comanda">
-                <p class="kicker">Comandă nouă</p>
-                <h2>Ce vrei să aducem.</h2>
-                <form class="contact-form" method="post" action="<?= e(url('cabinet.php')) ?>" accept-charset="UTF-8">
-                    <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
-                    <input type="hidden" name="formular" value="comanda">
-                    <?php if (!empty($orderErrors['form'])): ?>
-                        <p class="notice notice-error" role="alert"><?= e($orderErrors['form']) ?></p>
-                    <?php endif; ?>
-
-                    <div class="table-wrap">
-                        <table class="sheet-table">
-                            <thead>
-                                <tr>
-                                    <th>Produs</th>
-                                    <th>Cantitate</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($catalog as $slug => $item): ?>
-                                    <tr>
-                                        <td>
-                                            <label for="qty-<?= e($slug) ?>"><?= e($item['title']) ?> <span><?= e($item['kicker']) ?></span></label>
-                                        </td>
-                                        <td>
-                                            <input id="qty-<?= e($slug) ?>" name="qty[<?= e($slug) ?>]" type="number" min="0" max="999" step="1" inputmode="numeric" value="<?= (int) $oldQty[$slug] ?>">
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                    <?php if (isset($orderErrors['qty'])): ?><small class="field-error"><?= e($orderErrors['qty']) ?></small><?php endif; ?>
-
-                    <label for="adresa">Adresă de livrare</label>
-                    <textarea id="adresa" name="adresa" required minlength="5" maxlength="300" rows="3" placeholder="Localitate, stradă, alte detalii"><?= e($oldAddress) ?></textarea>
-                    <?php if (isset($orderErrors['adresa'])): ?><small class="field-error"><?= e($orderErrors['adresa']) ?></small><?php endif; ?>
-
-                    <label for="nota">Mențiune <span>(opțional)</span></label>
-                    <textarea id="nota" name="nota" maxlength="1000" rows="3" placeholder="Cutii, kilogram sau orice detaliu despre comandă"><?= e($oldNote) ?></textarea>
-
-                    <div class="btn-row">
-                        <button class="btn btn-dark" type="submit" name="actiune" value="comanda">Trimite comanda</button>
-                        <button class="btn btn-line" type="submit" name="actiune" value="cont">Generează cont de plată</button>
-                    </div>
-                    <p class="form-note">Cantitatea 0 înseamnă că produsul nu intră în comandă. Contul de plată se emite pentru produsele alese și rechizitele salvate.</p>
-                </form>
+                <p class="kicker">Magazin</p>
+                <h2>Comenzile pleacă din coș.</h2>
+                <p>Alegi produsele, le adaugi în coș și le trimiți când ești gata. Aici rămân datele firmei și istoricul.</p>
+                <div class="btn-row">
+                    <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>">Vezi produsele</a>
+                    <a class="btn btn-line" href="<?= e(url('cos.php')) ?>">Deschide coșul<?php if (cart_count() > 0): ?> (<?= (int) cart_count() ?>)<?php endif; ?></a>
+                </div>
             </div>
 
             <aside class="contact-aside">
