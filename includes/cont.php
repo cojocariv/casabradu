@@ -142,15 +142,20 @@ function logout_client(): void
     session_regenerate_id(true);
 }
 
-function requisite_labels(): array
+function requisite_fields(): array
 {
     return [
-        'Denumirea companiei',
-        'IDNO',
-        'Cod TVA',
-        'Adresa juridică',
-        'IBAN și banca',
+        'companie' => 'Denumirea companiei',
+        'idno' => 'IDNO',
+        'tva' => 'Cod TVA',
+        'adresa' => 'Adresa juridică',
+        'iban' => 'IBAN și banca',
     ];
+}
+
+function requisite_labels(): array
+{
+    return array_values(requisite_fields());
 }
 
 function requisite_template(): string

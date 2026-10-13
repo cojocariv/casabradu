@@ -944,6 +944,96 @@ button, input, select, textarea { font: inherit; }
     background: var(--line);
 }
 
+.table-wrap { overflow-x: auto; }
+
+.sheet-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.sheet-table th,
+.sheet-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.sheet-table th {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.sheet-table tbody th[scope="row"] {
+    width: 38%;
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 0.95rem;
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.contact-form .sheet-table label {
+    margin: 0;
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.contact-form .sheet-table label span {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.82rem;
+}
+
+.sheet-table input[type="number"] {
+    width: 88px;
+    padding: 8px 10px;
+}
+
+.sheet-table input[type="text"] {
+    min-width: 0;
+    width: 100%;
+}
+
+.requisite-form .sheet-table,
+.requisite-form .sheet-table tbody,
+.requisite-form .sheet-table tr,
+.requisite-form .sheet-table th,
+.requisite-form .sheet-table td {
+    display: block;
+    width: 100%;
+}
+
+.requisite-form .sheet-table th {
+    border-bottom: 0;
+    padding: 12px 0 4px;
+}
+
+.requisite-form .sheet-table td { padding: 0 0 8px; }
+
+.line-item,
+.line-note { display: block; }
+
+.line-note {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.orders-sheet {
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+}
+
+.orders-sheet .sheet-table th { background: #f7f5f1; }
+
 .order-lines { display: grid; gap: 14px; margin-top: 8px; }
 
 .order-line {
