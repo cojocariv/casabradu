@@ -25,7 +25,6 @@ require __DIR__ . '/includes/header.php';
         <p class="eyebrow">Cafea</p>
         <h1>Cialde, capsule și boabe.</h1>
         <p class="lede">Același gust, în trei forme: aromat, fin, cu un raport echilibrat între Arabica și Robusta. Cafeaua vine din Italia.</p>
-        <p><a class="invoice-link" href="<?= e(url('aparate.php')) ?>">Aparatele de cafea sunt pe o pagină separată.</a></p>
     </div>
 </section>
 

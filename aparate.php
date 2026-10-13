@@ -26,7 +26,6 @@ $item = $products[0];
         <p class="eyebrow">Aparate</p>
         <h1>Aparate pentru cialde și capsule.</h1>
         <p class="lede">Importăm aparate de cafea pentru cialde și pentru capsule, ca prepararea să țină pasul cu cafeaua. Pentru acasă, pentru birou sau pentru cine servește cafea în fiecare zi.</p>
-        <p><a class="invoice-link" href="<?= e(url('produse.php')) ?>">Cafeaua — cialde, capsule și boabe — este pe pagina ei.</a></p>
     </div>
 </section>
 
