@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /storage/
+Disallow: /admin.php
 Disallow: /design.jpg
 
 Sitemap: https://casabradu.md/sitemap.xml

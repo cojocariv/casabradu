@@ -253,7 +253,7 @@ require __DIR__ . '/includes/header.php';
                         <article class="order-card">
                             <div class="order-top">
                                 <h3><?= e((string) ($order['id'] ?? '')) ?></h3>
-                                <span class="status">Înregistrată</span>
+                                <span class="status status-<?= e((string) ($order['status'] ?? '')) ?>"><?= e(order_status_label((string) ($order['status'] ?? ''))) ?></span>
                             </div>
                             <p class="order-date"><?= e(date('d.m.Y H:i', strtotime((string) ($order['la'] ?? 'now')) ?: time())) ?></p>
                             <ul class="ticks">

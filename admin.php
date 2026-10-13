@@ -1,0 +1,201 @@
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/includes/bootstrap.php';
+
+$errors = [];
+$flash = flash_get();
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+    $form = (string) ($_POST['formular'] ?? '');
+    $csrfOk = hash_equals((string) ($_SESSION['csrf'] ?? ''), (string) ($_POST['csrf'] ?? ''));
+
+    if (!$csrfOk) {
+        $errors['form'] = 'Sesiunea a expirat. Reîncarcă pagina și încearcă din nou.';
+    } elseif ($form === 'iesire') {
+        admin_logout();
+        header('Location: ' . url('admin.php'));
+        exit;
+    } elseif ($form === 'stare' && admin_logged_in()) {
+        $orderId = text_line((string) ($_POST['id'] ?? ''), 20);
+        $status = text_line((string) ($_POST['status'] ?? ''), 20);
+        $filter = text_line((string) ($_POST['filtru'] ?? ''), 20);
+        if (!admin_set_status($orderId, $status)) {
+            $errors['form'] = 'Starea comenzii nu a putut fi salvată.';
+        } else {
+            flash_set('Comanda ' . $orderId . ' este acum „' . order_status_label($status) . '”.');
+            $next = 'admin.php';
+            if ($filter !== '' && isset(order_statuses()[$filter])) {
+                $next .= '?stare=' . rawurlencode($filter);
+            }
+            header('Location: ' . url($next));
+            exit;
+        }
+    } elseif ($form === 'intrare') {
+        $user = text_line((string) ($_POST['utilizator'] ?? ''), 80);
+        $password = (string) ($_POST['parola'] ?? '');
+        if (text_line((string) ($_POST['website'] ?? ''), 200) !== '') {
+            header('Location: ' . url('admin.php'));
+            exit;
+        }
+        if (!admin_configured()) {
+            $errors['form'] = 'Cabinetul de administrator nu este configurat încă.';
+        } elseif (admin_login_blocked()) {
+            $errors['form'] = 'Prea multe încercări. Așteaptă un minut și încearcă din nou.';
+        } elseif (!admin_login($user, $password)) {
+            $errors['form'] = 'Utilizator sau parolă incorectă.';
+            admin_login_failed();
+        } else {
+            admin_login_succeeded();
+            header('Location: ' . url('admin.php'));
+            exit;
+        }
+    }
+}
+
+$loggedIn = admin_logged_in();
+$filter = text_line((string) ($_GET['stare'] ?? ''), 20);
+if (!isset(order_statuses()[$filter])) {
+    $filter = '';
+}
+
+$orders = null;
+$visible = [];
+$counts = array_fill_keys(array_keys(order_statuses()), 0);
+if ($loggedIn) {
+    $orders = admin_orders();
+    if (is_array($orders)) {
+        foreach ($orders as $order) {
+            $status = (string) ($order['status'] ?? '');
+            if (isset($counts[$status])) {
+                $counts[$status]++;
+            }
+            if ($filter === '' || $status === $filter) {
+                $visible[] = $order;
+            }
+        }
+    }
+}
+
+$page = 'admin';
+$noindex = true;
+$pageTitle = 'Administrator';
+$pageDescription = 'Cabinetul de administrator Casa Bradu Caffè.';
+require __DIR__ . '/includes/header.php';
+?>
+
+<section class="page-hero">
+    <div class="wrap">
+        <p class="eyebrow">Administrator</p>
+        <h1><?= $loggedIn ? 'Comenzile clienților.' : 'Intră în cabinet.' ?></h1>
+        <?php if ($loggedIn): ?>
+            <p class="lede">Vezi cine a comandat, ce a ales și marchează comanda pe măsură ce o confirmi, o încasezi sau o livrezi.</p>
+        <?php endif; ?>
+    </div>
+</section>
+
+<section class="section">
+    <div class="wrap">
+        <?php if ($flash !== ''): ?>
+            <p class="notice" role="status"><?= e($flash) ?></p>
+        <?php endif; ?>
+        <?php if (!empty($errors['form'])): ?>
+            <p class="notice notice-error" role="alert"><?= e($errors['form']) ?></p>
+        <?php endif; ?>
+
+        <?php if (!$loggedIn): ?>
+            <div class="admin-login contact-card">
+                <?php if (!admin_configured()): ?>
+                    <p class="notice notice-error" role="alert">Adaugă ADMIN_USER și ADMIN_PASS în includes/config.php, pe server, ca să poți intra.</p>
+                <?php endif; ?>
+                <form class="contact-form" method="post" action="<?= e(url('admin.php')) ?>" accept-charset="UTF-8">
+                    <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                    <input type="hidden" name="formular" value="intrare">
+                    <div class="hp" aria-hidden="true">
+                        <label>Site <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                    </div>
+                    <label for="utilizator">Utilizator</label>
+                    <input id="utilizator" name="utilizator" type="text" required maxlength="80" autocomplete="username">
+                    <label for="parola">Parolă</label>
+                    <input id="parola" name="parola" type="password" required maxlength="200" autocomplete="current-password">
+                    <button class="btn btn-dark" type="submit">Intră</button>
+                </form>
+            </div>
+        <?php else: ?>
+            <div class="admin-bar">
+                <?php if (is_array($orders)): ?>
+                    <nav class="admin-filters" aria-label="Filtru comenzi">
+                        <a href="<?= e(url('admin.php')) ?>" <?= $filter === '' ? 'class="is-on"' : '' ?>>Toate <span><?= count($orders) ?></span></a>
+                        <?php foreach (order_statuses() as $key => $label): ?>
+                            <a href="<?= e(url('admin.php?stare=' . rawurlencode($key))) ?>" <?= $filter === $key ? 'class="is-on"' : '' ?>><?= e($label) ?> <span><?= (int) $counts[$key] ?></span></a>
+                        <?php endforeach; ?>
+                    </nav>
+                <?php else: ?>
+                    <p class="notice notice-error" role="alert">Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.</p>
+                <?php endif; ?>
+                <form method="post" action="<?= e(url('admin.php')) ?>">
+                    <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                    <input type="hidden" name="formular" value="iesire">
+                    <button class="btn btn-line btn-sm" type="submit">Ieși</button>
+                </form>
+            </div>
+            <?php if (is_array($orders) && $visible === []): ?>
+                <p class="lede">Nu există comenzi<?= $filter === '' ? '' : ' în starea aceasta' ?>.</p>
+            <?php elseif (is_array($orders)): ?>
+                <div class="order-list">
+                    <?php foreach ($visible as $order): ?>
+                        <?php $status = (string) ($order['status'] ?? 'inregistrata'); ?>
+                        <article class="order-card">
+                            <div class="order-top">
+                                <h3><?= e((string) ($order['id'] ?? '')) ?></h3>
+                                <span class="status status-<?= e($status) ?>"><?= e(order_status_label($status)) ?></span>
+                            </div>
+                            <p class="order-date"><?= e(date('d.m.Y H:i', strtotime((string) ($order['la'] ?? 'now')) ?: time())) ?></p>
+                            <p class="order-client">
+                                <?= e((string) ($order['nume'] ?? 'Client')) ?>
+                                <?php if (($order['email'] ?? '') !== ''): ?>
+                                    · <a href="mailto:<?= e((string) $order['email']) ?>"><?= e((string) $order['email']) ?></a>
+                                <?php endif; ?>
+                                <?php if (($order['telefon'] ?? '') !== ''): ?>
+                                    · <?= e((string) $order['telefon']) ?>
+                                <?php endif; ?>
+                            </p>
+                            <ul class="ticks">
+                                <?php foreach (($order['linii'] ?? []) as $line): ?>
+                                    <?php if (!is_array($line)) { continue; } ?>
+                                    <li><?= e((string) ($line['titlu'] ?? '')) ?> · <?= (int) ($line['cantitate'] ?? 0) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                            <?php if (($order['adresa'] ?? '') !== ''): ?>
+                                <p><?= e((string) $order['adresa']) ?></p>
+                            <?php endif; ?>
+                            <?php if (($order['nota'] ?? '') !== ''): ?>
+                                <p><?= e((string) $order['nota']) ?></p>
+                            <?php endif; ?>
+                            <?php if (($order['rechizite'] ?? '') !== ''): ?>
+                                <p class="requisites"><?= e((string) $order['rechizite']) ?></p>
+                            <?php endif; ?>
+                            <p><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">Cont de plată</a></p>
+                            <form class="status-form" method="post" action="<?= e(url('admin.php')) ?>">
+                                <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                                <input type="hidden" name="formular" value="stare">
+                                <input type="hidden" name="id" value="<?= e((string) ($order['id'] ?? '')) ?>">
+                                <input type="hidden" name="filtru" value="<?= e($filter) ?>">
+                                <label for="status-<?= e((string) ($order['id'] ?? '')) ?>">Stare</label>
+                                <select id="status-<?= e((string) ($order['id'] ?? '')) ?>" name="status">
+                                    <?php foreach (order_statuses() as $key => $label): ?>
+                                        <option value="<?= e($key) ?>" <?= $status === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button class="btn btn-dark btn-sm" type="submit">Salvează</button>
+                            </form>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+</section>
+
+<?php require __DIR__ . '/includes/footer.php'; ?>

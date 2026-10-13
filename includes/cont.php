@@ -294,6 +294,11 @@ function client_orders(string $userId): array
         return [];
     }
 
+    return orders_with_lines($pdo, $rows);
+}
+
+function orders_with_lines(PDO $pdo, array $rows): array
+{
     if ($rows === []) {
         return [];
     }

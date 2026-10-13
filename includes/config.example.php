@@ -8,3 +8,6 @@ const DB_USER = 'casabrad_';
 const DB_PASS = '';
 
 const GOOGLE_CLIENT_ID = '';
+
+const ADMIN_USER = '';
+const ADMIN_PASS = '';

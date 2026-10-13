@@ -5,12 +5,18 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/factura.php';
 
-$user = require_client();
 $orderId = text_line((string) ($_GET['id'] ?? ''), 20);
-$order = $orderId === '' ? null : client_order((string) $user['id'], $orderId);
+$asAdmin = admin_logged_in();
+if ($asAdmin) {
+    $order = admin_order($orderId);
+    $user = ['nume' => is_array($order) ? (string) ($order['nume'] ?? '') : ''];
+} else {
+    $user = require_client();
+    $order = $orderId === '' ? null : client_order((string) $user['id'], $orderId);
+}
 
 if ($order === null) {
-    header('Location: ' . url('cabinet.php'));
+    header('Location: ' . url($asAdmin ? 'admin.php' : 'cabinet.php'));
     exit;
 }
 
@@ -29,7 +35,7 @@ if ($payer['nume'] === '') {
 }
 
 $logo = asset('assets/img/logo.jpg?v=4');
-$back = url('cabinet.php');
+$back = url($asAdmin ? 'admin.php' : 'cabinet.php');
 
 require __DIR__ . '/includes/factura-document.php';
 

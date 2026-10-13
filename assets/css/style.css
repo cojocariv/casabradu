@@ -1025,6 +1025,72 @@ button, input, select, textarea { font: inherit; }
     white-space: nowrap;
 }
 
+.status-confirmata { background: #f3ead0; color: #6a5220; }
+.status-achitata { background: #e3efe8; color: #1c3b30; }
+.status-livrata { background: #e7f0e4; color: #1c3b30; }
+.status-anulata { background: #f6e4e1; color: #7a3328; }
+
+.admin-login { max-width: 460px; }
+
+.admin-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.admin-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.admin-filters a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(231, 240, 228, 0.9);
+    color: var(--forest-2);
+    text-decoration: none;
+    font-size: 0.92rem;
+}
+
+.admin-filters a span {
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.admin-filters a.is-on {
+    background: #1c3b30;
+    color: #f6f1e6;
+}
+
+.admin-filters a.is-on span { color: #e7d7b0; }
+
+.order-client { margin: 0 0 8px; }
+
+.status-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 16px;
+}
+
+.status-form label { margin: 0; }
+
+.status-form select {
+    min-width: 160px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 12px;
+    background: #fff;
+}
+
 .notice + .cabinet-grid { margin-top: 18px; }
 
 @media (max-width: 980px) {
