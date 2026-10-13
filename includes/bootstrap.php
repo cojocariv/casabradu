@@ -6,6 +6,7 @@ const SITE_NAME = 'Casa Bradu Caffè';
 const SITE_LEGAL = 'Casa Bradu Caffe SRL';
 const SITE_DOMAIN = 'casabradu.md';
 const SITE_EMAIL = 'info@casabradu.md';
+const SITE_ORDERS_EMAIL = 'comenzi@casabradu.md';
 const SITE_PHONE = '';
 const COMPANY_LEGAL = 'S.R.L. CASA BRADU CAFFE';
 const COMPANY_IDNO = '1026023149244';

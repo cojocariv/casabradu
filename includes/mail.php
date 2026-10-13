@@ -2,13 +2,17 @@
 
 declare(strict_types=1);
 
-function site_mail(string $to, string $subject, string $body, string $replyTo = '', string $replyName = ''): bool
+function site_mail(string $to, string $subject, string $body, string $replyTo = '', string $replyName = '', string $from = ''): bool
 {
     $to = str_replace(["\r", "\n"], '', $to);
     if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
         return false;
     }
 
+    $from = str_replace(["\r", "\n"], '', $from);
+    if (!filter_var($from, FILTER_VALIDATE_EMAIL)) {
+        $from = SITE_EMAIL;
+    }
     $replyTo = str_replace(["\r", "\n"], '', $replyTo);
     if (!filter_var($replyTo, FILTER_VALIDATE_EMAIL)) {
         $replyTo = SITE_EMAIL;
@@ -25,10 +29,10 @@ function site_mail(string $to, string $subject, string $body, string $replyTo = 
         $headers = "MIME-Version: 1.0\r\n"
             . "Content-Type: text/plain; charset=UTF-8\r\n"
             . "Content-Transfer-Encoding: 8bit\r\n"
-            . 'From: Casa Bradu Caffe <' . SITE_EMAIL . ">\r\n"
+            . 'From: Casa Bradu Caffe <' . $from . ">\r\n"
             . 'Reply-To: ' . $replyHeader . "\r\n";
-        $previous = @ini_set('sendmail_from', SITE_EMAIL);
-        $sent = @mail($to, $encodedSubject, $body, $headers, '-f' . SITE_EMAIL);
+        $previous = @ini_set('sendmail_from', $from);
+        $sent = @mail($to, $encodedSubject, $body, $headers, '-f' . $from);
         if (is_string($previous)) {
             @ini_set('sendmail_from', $previous);
         }
@@ -37,10 +41,10 @@ function site_mail(string $to, string $subject, string $body, string $replyTo = 
         }
     }
 
-    return site_mail_smtp($to, $subject, $body, $replyHeader);
+    return site_mail_smtp($to, $subject, $body, $replyHeader, $from);
 }
 
-function site_mail_smtp(string $to, string $subject, string $body, string $replyHeader): bool
+function site_mail_smtp(string $to, string $subject, string $body, string $replyHeader, string $from): bool
 {
     $errno = 0;
     $errstr = '';
@@ -80,7 +84,7 @@ function site_mail_smtp(string $to, string $subject, string $body, string $reply
         $hello = $command('HELO ' . SITE_DOMAIN, ['250']);
     }
     $ok = $hello
-        && $command('MAIL FROM:<' . SITE_EMAIL . '>', ['250'])
+        && $command('MAIL FROM:<' . $from . '>', ['250'])
         && $command('RCPT TO:<' . $to . '>', ['250', '251'])
         && $command('DATA', ['354']);
 
@@ -103,7 +107,7 @@ function site_mail_smtp(string $to, string $subject, string $body, string $reply
     fwrite(
         $socket,
         'Date: ' . date('r') . "\r\n"
-        . 'From: Casa Bradu Caffe <' . SITE_EMAIL . ">\r\n"
+        . 'From: Casa Bradu Caffe <' . $from . ">\r\n"
         . 'To: <' . $to . ">\r\n"
         . 'Reply-To: ' . $replyHeader . "\r\n"
         . 'Subject: ' . $encodedSubject . "\r\n"

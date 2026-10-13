@@ -102,6 +102,8 @@ function send_invoice_mail(array $order, string $date, array $payer, array $tabl
         SITE_EMAIL,
         'Cont de plată ' . ($order['id'] ?? ''),
         invoice_message($order, $date, $payer, $table),
-        $replyTo
+        $replyTo,
+        '',
+        SITE_ORDERS_EMAIL
     );
 }
