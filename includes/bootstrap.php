@@ -13,7 +13,7 @@ const COMPANY_IDNO = '1026023149244';
 const COMPANY_TVA = '0615161';
 const COMPANY_IBAN = 'MD50AG000000022517877084';
 const COMPANY_BANK = "BC 'MAIB' S.A.";
-const SITE_DESCRIPTION = 'Importăm din Italia cafea artizanală și o distribuim sub brandul Casa Bradu Caffè: cialde, capsule, cafea boabe și aparate de cafea. Gust aromat și fin, cu un raport echilibrat între Arabica și Robusta.';
+const SITE_DESCRIPTION = 'Cialde, capsule și cafea boabe din Italia, distribuite în Moldova de Casa Bradu Caffè. Gust aromat, cu Arabica și Robusta. Aparate pentru cialde și capsule.';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([
@@ -83,6 +83,164 @@ function canonical_url(): string
     }
 
     return 'https://' . SITE_DOMAIN . '/' . $file;
+}
+
+function breadcrumb_nav(string $page): string
+{
+    $labels = [
+        'cafea' => 'Cafea',
+        'aparate' => 'Aparate',
+        'despre' => 'Despre',
+        'contact' => 'Contact',
+    ];
+
+    if (!isset($labels[$page])) {
+        return '';
+    }
+
+    return '<nav class="crumbs" aria-label="Traseu"><ol>'
+        . '<li><a href="' . e(url()) . '">Acasă</a></li>'
+        . '<li><span aria-current="page">' . e($labels[$page]) . '</span></li>'
+        . '</ol></nav>';
+}
+
+function seo_product_items(array $products): array
+{
+    $items = [];
+
+    foreach ($products as $product) {
+        $slug = (string) ($product['slug'] ?? '');
+        $items[] = [
+            'name' => (string) ($product['title'] ?? ''),
+            'url' => $slug === 'aparate'
+                ? 'https://' . SITE_DOMAIN . '/aparate.php'
+                : 'https://' . SITE_DOMAIN . '/produse.php#' . $slug,
+        ];
+    }
+
+    return $items;
+}
+
+function seo_graph(string $page, string $title, string $description, array $items = []): array
+{
+    $origin = 'https://' . SITE_DOMAIN;
+    $canonical = canonical_url();
+    $orgId = $origin . '/#organization';
+    $siteId = $origin . '/#website';
+    $labels = [
+        'cafea' => ['Cafea', $origin . '/produse.php'],
+        'aparate' => ['Aparate', $origin . '/aparate.php'],
+        'despre' => ['Despre', $origin . '/despre.php'],
+        'contact' => ['Contact', $origin . '/contact.php'],
+    ];
+
+    $organization = [
+        '@type' => 'Organization',
+        '@id' => $orgId,
+        'name' => SITE_NAME,
+        'legalName' => SITE_LEGAL,
+        'url' => $origin . '/',
+        'email' => SITE_EMAIL,
+        'logo' => [
+            '@type' => 'ImageObject',
+            'url' => $origin . '/assets/img/logo.jpg',
+        ],
+        'image' => $origin . '/assets/img/hero-cafea.jpg',
+        'description' => SITE_DESCRIPTION,
+        'areaServed' => [
+            '@type' => 'Country',
+            'name' => 'Republica Moldova',
+        ],
+        'brand' => [
+            '@type' => 'Brand',
+            'name' => SITE_NAME,
+        ],
+        'contactPoint' => [
+            '@type' => 'ContactPoint',
+            'contactType' => 'customer service',
+            'email' => SITE_EMAIL,
+            'areaServed' => 'MD',
+            'availableLanguage' => 'ro',
+        ],
+    ];
+
+    if (SITE_PHONE !== '') {
+        $organization['telephone'] = SITE_PHONE;
+        $organization['contactPoint']['telephone'] = SITE_PHONE;
+    }
+
+    $graph = [
+        $organization,
+        [
+            '@type' => 'WebSite',
+            '@id' => $siteId,
+            'url' => $origin . '/',
+            'name' => SITE_NAME,
+            'description' => SITE_DESCRIPTION,
+            'inLanguage' => 'ro',
+            'publisher' => ['@id' => $orgId],
+        ],
+    ];
+
+    $webPage = [
+        '@type' => 'WebPage',
+        '@id' => $canonical . '#webpage',
+        'url' => $canonical,
+        'name' => $title,
+        'description' => $description,
+        'inLanguage' => 'ro',
+        'isPartOf' => ['@id' => $siteId],
+        'about' => ['@id' => $orgId],
+        'publisher' => ['@id' => $orgId],
+    ];
+
+    if (isset($labels[$page])) {
+        $crumbId = $canonical . '#breadcrumb';
+        $graph[] = [
+            '@type' => 'BreadcrumbList',
+            '@id' => $crumbId,
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Acasă',
+                    'item' => $origin . '/',
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => $labels[$page][0],
+                    'item' => $labels[$page][1],
+                ],
+            ],
+        ];
+        $webPage['breadcrumb'] = ['@id' => $crumbId];
+    }
+
+    if ($items !== []) {
+        $list = [];
+        foreach (array_values($items) as $index => $item) {
+            $list[] = [
+                '@type' => 'ListItem',
+                'position' => $index + 1,
+                'name' => (string) ($item['name'] ?? ''),
+                'url' => (string) ($item['url'] ?? ''),
+            ];
+        }
+        $graph[] = [
+            '@type' => 'ItemList',
+            'name' => $title,
+            'numberOfItems' => count($list),
+            'itemListElement' => $list,
+        ];
+    }
+
+    $graph[] = $webPage;
+
+    return [
+        '@context' => 'https://schema.org',
+        '@graph' => $graph,
+    ];
 }
 
 function wave_svg(): string

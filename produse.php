@@ -11,13 +11,17 @@ $products = array_values(array_filter(
     }
 ));
 $page = 'cafea';
-$pageTitle = 'Cialde, capsule și cafea boabe';
-$pageDescription = 'Cialde, capsule și cafea boabe Casa Bradu Caffè, importate din Italia. Gust aromat și fin, cu Arabica și Robusta în echilibru.';
+$pageTitle = 'Cialde, capsule și boabe din Italia';
+$pageDescription = 'Cialde, capsule și cafea boabe Casa Bradu Caffè, importate din Italia pentru Moldova. Alegi bucăți sau cutii, iar la boabe 250 g, 500 g sau 1 kg.';
+$pageImage = 'assets/img/produs-boabe.jpg';
+$pageImageAlt = 'Boabe de cafea Casa Bradu Caffè, importate din Italia';
+$seoItems = seo_product_items($products);
 require __DIR__ . '/includes/header.php';
 ?>
 
 <section class="page-hero">
     <div class="wrap">
+        <?= breadcrumb_nav($page) ?>
         <p class="eyebrow">Cafea</p>
         <h1>Cialde, capsule și boabe.</h1>
         <p class="lede">Același gust, în trei forme: aromat, fin, cu un raport echilibrat între Arabica și Robusta. Cafeaua vine din Italia.</p>

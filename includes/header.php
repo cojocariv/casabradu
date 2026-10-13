@@ -8,8 +8,12 @@ $page = $page ?? 'acasa';
 $pageTitle = $pageTitle ?? SITE_NAME;
 $pageDescription = $pageDescription ?? SITE_DESCRIPTION;
 $fullTitle = $page === 'acasa'
-    ? SITE_NAME . ' · Cafea artizanală din Italia'
+    ? 'Cafea artizanală din Italia · ' . SITE_NAME
     : $pageTitle . ' · ' . SITE_NAME;
+$pageImage = $pageImage ?? 'assets/img/hero-cafea.jpg';
+$pageImageAlt = $pageImageAlt ?? 'Cafea artizanală Casa Bradu Caffè, importată din Italia';
+$ogImage = 'https://' . SITE_DOMAIN . '/' . ltrim($pageImage, '/');
+$seoItems = $seoItems ?? [];
 
 $client = current_user();
 $nav = [
@@ -23,25 +27,7 @@ $nav = [
         : ['Cont', url('autentificare.php')],
 ];
 
-$schema = [
-    '@context' => 'https://schema.org',
-    '@type' => 'Organization',
-    'name' => SITE_NAME,
-    'legalName' => SITE_LEGAL,
-    'url' => 'https://' . SITE_DOMAIN . '/',
-    'email' => SITE_EMAIL,
-    'logo' => 'https://' . SITE_DOMAIN . '/assets/img/logo.jpg?v=4',
-    'description' => SITE_DESCRIPTION,
-    'areaServed' => 'MD',
-    'brand' => [
-        '@type' => 'Brand',
-        'name' => SITE_NAME,
-    ],
-];
-
-if (SITE_PHONE !== '') {
-    $schema['telephone'] = SITE_PHONE;
-}
+$schema = seo_graph($page, $fullTitle, $pageDescription, is_array($seoItems) ? $seoItems : []);
 ?>
 <!DOCTYPE html>
 <html lang="ro">
@@ -51,17 +37,24 @@ if (SITE_PHONE !== '') {
     <title><?= e($fullTitle) ?></title>
     <meta name="description" content="<?= e($pageDescription) ?>">
     <?php if (!empty($noindex)): ?>
-        <meta name="robots" content="noindex">
+        <meta name="robots" content="noindex, follow">
     <?php endif; ?>
-    <link rel="canonical" href="<?= e(canonical_url()) ?>">
+    <?php if (empty($noCanonical)): ?>
+        <link rel="canonical" href="<?= e(canonical_url()) ?>">
+    <?php endif; ?>
     <meta name="theme-color" content="#16352b">
     <meta property="og:locale" content="ro_RO">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="<?= e(SITE_NAME) ?>">
     <meta property="og:title" content="<?= e($fullTitle) ?>">
     <meta property="og:description" content="<?= e($pageDescription) ?>">
-    <meta property="og:url" content="<?= e(canonical_url()) ?>">
-    <meta property="og:image" content="https://<?= e(SITE_DOMAIN) ?>/assets/img/hero-cafea.jpg">
+    <meta property="og:url" content="<?= e(empty($noCanonical) ? canonical_url() : 'https://' . SITE_DOMAIN . '/') ?>">
+    <meta property="og:image" content="<?= e($ogImage) ?>">
+    <meta property="og:image:alt" content="<?= e($pageImageAlt) ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($fullTitle) ?>">
+    <meta name="twitter:description" content="<?= e($pageDescription) ?>">
+    <meta name="twitter:image" content="<?= e($ogImage) ?>">
     <link rel="icon" href="<?= e(asset('assets/img/favicon.jpg')) ?>?v=3" type="image/jpeg">
     <link rel="apple-touch-icon" href="<?= e(asset('assets/img/favicon.jpg')) ?>?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">

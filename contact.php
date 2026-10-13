@@ -7,13 +7,17 @@ require __DIR__ . '/includes/mesaj.php';
 
 $sent = isset($_GET['trimis']) && ($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST';
 $page = 'contact';
-$pageTitle = 'Contact';
-$pageDescription = 'Scrie-ne pentru cialde, capsule, cafea boabe sau aparate Casa Bradu Caffè. Import din Italia și distribuție în Republica Moldova.';
+$pageTitle = 'Contact pentru cafea și aparate';
+$pageDescription = 'Scrie la info@casabradu.md pentru cialde, capsule, cafea boabe sau aparate. Import din Italia, distribuție în Republica Moldova.';
+if ($sent) {
+    $noindex = true;
+}
 require __DIR__ . '/includes/header.php';
 ?>
 
 <section class="page-hero">
     <div class="wrap">
+        <?= breadcrumb_nav($page) ?>
         <p class="eyebrow">Contact</p>
         <h1>Spune-ne ce cafea cauți.</h1>
         <p class="lede">Răspundem pentru cialde, capsule, boabe și aparate. Pentru acasă, pentru birou sau pentru o colaborare.</p>

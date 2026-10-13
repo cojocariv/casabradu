@@ -13,6 +13,9 @@ $frames = ['visual-soft', 'visual-round', 'visual-arch'];
 $page = 'acasa';
 $pageTitle = 'Cafea artizanală din Italia';
 $pageDescription = SITE_DESCRIPTION;
+$pageImage = 'assets/img/hero-cafea.jpg';
+$pageImageAlt = 'Ceașcă de cafea Casa Bradu Caffè, cu boabe prăjite';
+$seoItems = seo_product_items($products);
 require __DIR__ . '/includes/header.php';
 ?>
 
@@ -22,7 +25,7 @@ require __DIR__ . '/includes/header.php';
             <p class="eyebrow">Caffè artigianale</p>
             <h1>Cafeaua bună aduce</h1>
             <p class="script">zile mai fine</p>
-            <p class="lede">La Casa Bradu Caffè importăm din Italia cafea artizanală și o distribuim sub brandul nostru. Cialde, capsule și boabe, cu un gust aromat și fin și un raport echilibrat între Arabica și Robusta.</p>
+            <p class="lede">La Casa Bradu Caffè importăm din Italia cafea artizanală și o distribuim în Republica Moldova. Cialde, capsule și boabe, cu un gust aromat și fin și un raport echilibrat între Arabica și Robusta.</p>
             <a class="btn btn-dark" href="#produse">Vezi selecția</a>
         </div>
         <div class="hero-photo reveal">

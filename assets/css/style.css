@@ -867,6 +867,30 @@ button, input, select, textarea { font: inherit; }
 
 .page-hero h1 { max-width: 16ch; }
 
+.crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+    font-size: 0.86rem;
+}
+
+.crumbs a,
+.crumbs span {
+    color: var(--forest-2);
+    text-decoration: none;
+}
+
+.crumbs a:hover { text-decoration: underline; }
+
+.crumbs li:not(:last-child)::after {
+    content: "/";
+    margin-left: 6px;
+    color: rgba(22, 53, 43, 0.4);
+}
+
 .filters {
     display: flex;
     flex-wrap: wrap;

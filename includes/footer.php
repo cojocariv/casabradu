@@ -6,9 +6,9 @@
     <div class="wrap footer-grid">
         <div>
             <a class="brand-lockup" href="<?= e(url()) ?>">
-                <img src="<?= e(asset('assets/img/logo-alb.png?v=1')) ?>" alt="">
+                <img src="<?= e(asset('assets/img/logo-alb.png?v=1')) ?>" alt="<?= e(SITE_NAME) ?>">
             </a>
-            <p>Importăm din Italia cafea artizanală și o distribuim sub brandul Casa Bradu Caffè. Cialde, capsule, boabe și aparate de cafea.</p>
+            <p>Importăm din Italia cafea artizanală și o distribuim în Republica Moldova, sub brandul Casa Bradu Caffè. Cialde, capsule, boabe și aparate de cafea.</p>
         </div>
         <div>
             <h2>Navigare</h2>

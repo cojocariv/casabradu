@@ -2,8 +2,19 @@ DirectoryIndex index.php
 
 Options -Indexes
 
+ErrorDocument 404 /404.php
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    RewriteCond %{HTTP_HOST} ^www\.casabradu\.md$ [NC]
+    RewriteRule ^ https://casabradu.md%{REQUEST_URI} [L,R=301]
+
+    RewriteCond %{HTTP_HOST} ^casabradu\.md$ [NC]
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^ https://casabradu.md%{REQUEST_URI} [L,R=301]
+
     RewriteRule ^storage/ - [F,L]
 </IfModule>
 
@@ -26,6 +37,7 @@ Options -Indexes
 </FilesMatch>
 
 <IfModule mod_headers.c>
+    Header set Content-Language "ro"
     Header set X-Content-Type-Options "nosniff"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
     Header set X-Frame-Options "SAMEORIGIN"
