@@ -122,4 +122,18 @@
             option.addEventListener('change', showPrice);
         });
     });
+
+    if (!document.body.classList.contains('page-admin')) {
+        function blockCopy(event) {
+            var field = event.target && event.target.closest
+                ? event.target.closest('input, textarea, select')
+                : null;
+            if (field) {
+                return;
+            }
+            event.preventDefault();
+        }
+        document.addEventListener('copy', blockCopy);
+        document.addEventListener('cut', blockCopy);
+    }
 })();

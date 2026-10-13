@@ -28,6 +28,18 @@ body {
     background: var(--cream);
 }
 
+body:not(.page-admin) {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+body:not(.page-admin) input,
+body:not(.page-admin) textarea,
+body:not(.page-admin) select {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
 img { max-width: 100%; }
 
 h1, h2, h3 {
