@@ -16,10 +16,20 @@
         }
         .toolbar {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 12px;
             padding: 16px;
         }
+        .toolbar form { display: contents; }
+        .mail-note {
+            width: min(820px, calc(100% - 24px));
+            margin: 16px auto 0;
+            text-align: center;
+            font-family: Outfit, "Segoe UI", sans-serif;
+        }
+        .mail-note.ok { color: #1c3b30; }
+        .mail-note.err { color: #7a3328; }
         .toolbar a, .toolbar button {
             font-family: Outfit, "Segoe UI", sans-serif;
             border-radius: 999px;
@@ -75,15 +85,26 @@
         }
         @media print {
             body { background: #fff; }
-            .toolbar { display: none; }
+            .toolbar, .mail-note { display: none; }
             .sheet { width: auto; margin: 0; box-shadow: none; padding: 0; }
         }
     </style>
 </head>
 <body>
+    <?php if (($invoiceNotice ?? '') !== ''): ?>
+        <p class="mail-note ok" role="status"><?= e($invoiceNotice) ?></p>
+    <?php endif; ?>
+    <?php if (($invoiceError ?? '') !== ''): ?>
+        <p class="mail-note err" role="alert"><?= e($invoiceError) ?></p>
+    <?php endif; ?>
     <div class="toolbar">
         <a href="<?= e($back) ?>">Înapoi la cabinet</a>
         <button type="button" onclick="window.print()">Printează sau salvează PDF</button>
+        <form method="post" action="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">
+            <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+            <input type="hidden" name="actiune" value="email">
+            <button type="submit">Trimite contul prin email</button>
+        </form>
     </div>
     <article class="sheet">
         <div class="brand">

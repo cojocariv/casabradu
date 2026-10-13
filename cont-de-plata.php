@@ -36,6 +36,34 @@ if ($payer['nume'] === '') {
 
 $logo = asset('assets/img/logo.jpg?v=4');
 $back = url($asAdmin ? 'admin.php' : 'cabinet.php');
+$replyTo = (string) ($order['email'] ?? $user['email'] ?? '');
+if (($order['email'] ?? '') === '' && $replyTo !== '') {
+    $order['email'] = $replyTo;
+}
+$invoiceNotice = '';
+$invoiceError = '';
+
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && (string) ($_POST['actiune'] ?? '') === 'email') {
+    if (!hash_equals((string) ($_SESSION['csrf'] ?? ''), (string) ($_POST['csrf'] ?? ''))) {
+        $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Sesiunea a expirat. Reîncarcă pagina și încearcă din nou.'];
+    } elseif (send_invoice_mail($order, $invoiceDate, $payer, $table, $replyTo)) {
+        $_SESSION['invoice_mail'] = ['ok' => true, 'text' => 'Contul de plată a fost trimis la ' . SITE_EMAIL . '.'];
+    } else {
+        $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Emailul nu a putut fi trimis. Încearcă din nou peste câteva minute.'];
+    }
+    header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? ''))));
+    exit;
+}
+
+$mailResult = $_SESSION['invoice_mail'] ?? null;
+unset($_SESSION['invoice_mail']);
+if (is_array($mailResult) && ($mailResult['text'] ?? '') !== '') {
+    if (!empty($mailResult['ok'])) {
+        $invoiceNotice = (string) $mailResult['text'];
+    } else {
+        $invoiceError = (string) $mailResult['text'];
+    }
+}
 
 require __DIR__ . '/includes/factura-document.php';
 

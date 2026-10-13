@@ -50,3 +50,67 @@ function invoice_table(array $lines): array
         'tva' => $complete && $rows !== [] ? (int) round($total * 20 / 120) : null,
     ];
 }
+
+function invoice_message(array $order, string $date, array $payer, array $table): string
+{
+    $lines = '';
+    foreach ($table['rows'] as $index => $row) {
+        $lines .= ($index + 1) . '. ' . $row['titlu']
+            . '  × ' . $row['cantitate']
+            . '  preț ' . lei($row['pret'])
+            . '  suma ' . lei($row['suma']) . "\n";
+    }
+
+    $body = "Cont de plată nr. " . ($order['id'] ?? '') . " din " . $date . "\n\n"
+        . "Furnizor: " . COMPANY_LEGAL . "\n"
+        . "IDNO: " . COMPANY_IDNO . "\n"
+        . "TVA: " . COMPANY_TVA . "\n"
+        . "Bancă: " . COMPANY_BANK . "\n"
+        . "IBAN: " . COMPANY_IBAN . "\n\n"
+        . "Plătitor: " . ($payer['nume'] ?? '') . "\n";
+    if (($payer['idno'] ?? '') !== '') {
+        $body .= "IDNO: " . $payer['idno'] . "\n";
+    }
+    if (($payer['tva'] ?? '') !== '') {
+        $body .= "TVA: " . $payer['tva'] . "\n";
+    }
+    if (($payer['adresa'] ?? '') !== '') {
+        $body .= "Adresă: " . $payer['adresa'] . "\n";
+    }
+    $body .= "\n" . $lines . "\n"
+        . "Total de plată: " . ($table['total'] === null ? 'la confirmare' : lei($table['total']) . ' lei') . "\n";
+    if ($table['tva'] !== null) {
+        $body .= "Inclusiv TVA: " . lei($table['tva']) . " lei\n";
+    }
+    if (($order['adresa'] ?? '') !== '') {
+        $body .= "\nAdresă de livrare: " . $order['adresa'] . "\n";
+    }
+    if (($order['email'] ?? '') !== '') {
+        $body .= "Email client: " . $order['email'] . "\n";
+    }
+
+    return $body;
+}
+
+function send_invoice_mail(array $order, string $date, array $payer, array $table, string $replyTo): bool
+{
+    if (!function_exists('mail')) {
+        return false;
+    }
+
+    $replyTo = str_replace(["\r", "\n"], '', $replyTo);
+    if (!filter_var($replyTo, FILTER_VALIDATE_EMAIL)) {
+        $replyTo = SITE_EMAIL;
+    }
+    $headers = "MIME-Version: 1.0\r\n"
+        . "Content-Type: text/plain; charset=UTF-8\r\n"
+        . "From: Casa Bradu Caffe <" . SITE_EMAIL . ">\r\n"
+        . "Reply-To: {$replyTo}\r\n";
+
+    return @mail(
+        SITE_EMAIL,
+        'Cont de plată ' . ($order['id'] ?? ''),
+        invoice_message($order, $date, $payer, $table),
+        $headers
+    );
+}
