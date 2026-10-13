@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/bootstrap.php';
+require_once __DIR__ . '/includes/products.php';
 
 $errors = [];
 $flash = flash_get();
@@ -33,6 +34,19 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             header('Location: ' . url($next));
             exit;
         }
+    } elseif ($form === 'preturi' && admin_logged_in()) {
+        $postedPrices = $_POST['pret'] ?? [];
+        if (!is_array($postedPrices)) {
+            $postedPrices = [];
+        }
+        $priceError = product_save_prices($postedPrices);
+        if ($priceError === '') {
+            flash_set('Prețurile au fost salvate.');
+            header('Location: ' . url('admin.php#preturi'));
+            exit;
+        }
+        $errors['form'] = $priceError;
+        $pricePosted = $postedPrices;
     } elseif ($form === 'intrare') {
         $user = text_line((string) ($_POST['utilizator'] ?? ''), 80);
         $password = (string) ($_POST['parola'] ?? '');
@@ -55,6 +69,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     }
 }
 
+$pricePosted = $pricePosted ?? [];
 $loggedIn = admin_logged_in();
 $filter = text_line((string) ($_GET['stare'] ?? ''), 20);
 if (!isset(order_statuses()[$filter])) {
@@ -139,6 +154,51 @@ require __DIR__ . '/includes/header.php';
                     <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                     <input type="hidden" name="formular" value="iesire">
                     <button class="btn btn-line btn-sm" type="submit">Ieși</button>
+                </form>
+            </div>
+            <div class="price-board" id="preturi">
+                <p class="kicker">Produse</p>
+                <h2>Prețuri</h2>
+                <p class="form-note">Prețul este în lei. Lasă câmpul gol dacă îl confirmi la comandă.</p>
+                <form method="post" action="<?= e(url('admin.php#preturi')) ?>">
+                    <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                    <input type="hidden" name="formular" value="preturi">
+                    <div class="table-wrap orders-sheet">
+                        <table class="sheet-table price-table">
+                            <thead>
+                                <tr>
+                                    <th>Produs</th>
+                                    <th>Variantă</th>
+                                    <th>Preț, lei</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $priced = [];
+                                foreach (product_catalog() as $item) {
+                                    $priced[(string) $item['slug']] = $item;
+                                }
+                                foreach (product_price_rows() as $row):
+                                    $field = product_price_field($row);
+                                    $item = $priced[$row['slug']] ?? null;
+                                    $choice = is_array($item) ? product_choice($item, $row['optiune']) : null;
+                                    $value = array_key_exists($field, $pricePosted)
+                                        ? (string) $pricePosted[$field]
+                                        : product_price_input(is_array($choice) ? ($choice['pret'] ?? null) : null);
+                                    ?>
+                                    <tr>
+                                        <td><?= e($row['produs']) ?></td>
+                                        <td><?= e($row['varianta'] !== '' ? $row['varianta'] : '—') ?></td>
+                                        <td>
+                                            <label class="sr-only" for="pret-<?= e($field) ?>">Preț <?= e($row['produs'] . ($row['varianta'] !== '' ? ', ' . $row['varianta'] : '')) ?></label>
+                                            <input id="pret-<?= e($field) ?>" name="pret[<?= e($field) ?>]" type="text" inputmode="decimal" maxlength="12" placeholder="la confirmare" value="<?= e($value) ?>">
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-dark" type="submit">Salvează prețurile</button>
                 </form>
             </div>
             <?php if (is_array($orders) && $visible === []): ?>

@@ -109,6 +109,15 @@ function db_install(PDO $pdo): void
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
 
+    $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS preturi (
+            slug VARCHAR(40) NOT NULL,
+            optiune VARCHAR(20) NOT NULL DEFAULT \'\',
+            pret DECIMAL(10,2) NULL DEFAULT NULL,
+            PRIMARY KEY (slug, optiune)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+    );
+
     db_add_column($pdo, 'comenzi_linii', 'pret', 'DECIMAL(10,2) NULL DEFAULT NULL');
     db_add_column($pdo, 'clienti', 'rechizite', "VARCHAR(2000) NOT NULL DEFAULT ''");
     db_add_column($pdo, 'comenzi', 'rechizite', "VARCHAR(2000) NOT NULL DEFAULT ''");

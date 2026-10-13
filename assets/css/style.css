@@ -1300,6 +1300,29 @@ button, input, select, textarea { font: inherit; }
 
 .admin-login { max-width: 460px; }
 
+.price-board {
+    background: #fff;
+    border-radius: 24px;
+    padding: 22px 22px 18px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+}
+
+.price-board h2 {
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+}
+
+.price-board .form-note { margin-bottom: 14px; }
+
+.price-table input[type="text"] {
+    width: 9rem;
+    border: 1px solid rgba(28, 52, 43, 0.16);
+    border-radius: 999px;
+    padding: 8px 12px;
+    background: #fff;
+}
+
 .admin-bar {
     display: flex;
     flex-wrap: wrap;
