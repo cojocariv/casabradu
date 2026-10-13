@@ -92,17 +92,23 @@ function invoice_message(array $order, string $date, array $payer, array $table)
     return $body;
 }
 
-function send_invoice_mail(array $order, string $date, array $payer, array $table, string $replyTo): bool
+function send_invoice_mail(array $order, string $date, array $payer, array $table, string $clientEmail): bool
 {
-    $replyTo = str_replace(["\r", "\n"], '', $replyTo);
-    if (!filter_var($replyTo, FILTER_VALIDATE_EMAIL)) {
-        $replyTo = SITE_EMAIL;
+    $clientEmail = str_replace(["\r", "\n"], '', $clientEmail);
+    if (!filter_var($clientEmail, FILTER_VALIDATE_EMAIL)) {
+        site_mail_status('În contul personal nu este indicat un email.');
+
+        return false;
     }
+    if (($order['email'] ?? '') === '') {
+        $order['email'] = $clientEmail;
+    }
+
     return site_mail(
-        SITE_EMAIL,
+        $clientEmail,
         'Cont de plată ' . ($order['id'] ?? ''),
         invoice_message($order, $date, $payer, $table),
-        $replyTo,
+        SITE_ORDERS_EMAIL,
         '',
         SITE_ORDERS_EMAIL
     );
