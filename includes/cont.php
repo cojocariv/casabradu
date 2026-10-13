@@ -396,17 +396,26 @@ function place_order(array $user, array $lines, string $address, string $note): 
 
 function notify_order(array $order, array $user): void
 {
+    require_once __DIR__ . '/factura.php';
+    $table = invoice_table($order['linii'] ?? []);
     $lines = '';
-    foreach ($order['linii'] as $line) {
-        $lines .= '- ' . $line['titlu'] . ': ' . $line['cantitate'] . "\n";
+    foreach ($table['rows'] as $row) {
+        $lines .= '- ' . $row['titlu'] . ': ' . $row['cantitate'];
+        if ($row['suma'] !== null) {
+            $lines .= ' × ' . lei($row['pret']) . ' lei = ' . lei($row['suma']) . ' lei';
+        }
+        $lines .= "\n";
     }
+    $total = $table['total'] === null ? 'la confirmare' : lei($table['total']) . ' lei';
 
     $body = "Comandă nouă " . $order['id'] . "\n\n"
         . "Client: " . $user['nume'] . "\n"
         . "Email: " . $user['email'] . "\n"
         . "Telefon: " . $user['telefon'] . "\n\n"
         . $lines . "\n"
-        . "Adresă: " . $order['adresa'] . "\n\n"
+        . "Total de plată: " . $total . "\n"
+        . ($table['tva'] !== null ? "Inclusiv TVA: " . lei($table['tva']) . " lei\n" : '')
+        . "\nAdresă: " . $order['adresa'] . "\n\n"
         . "Rechizite pentru cont de plată:\n" . ($order['rechizite'] !== '' ? $order['rechizite'] : '—') . "\n\n"
         . ($order['nota'] !== '' ? $order['nota'] . "\n" : '');
 
