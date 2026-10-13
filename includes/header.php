@@ -99,3 +99,14 @@ if (SITE_PHONE !== '') {
     </div>
 </header>
 <main id="continut">
+<?php
+$headerFlash = '';
+if (!isset($flash)) {
+    $headerFlash = flash_get();
+}
+?>
+<?php if ($headerFlash !== ''): ?>
+    <div class="wrap flash-bar">
+        <p class="notice" role="status"><?= e($headerFlash) ?></p>
+    </div>
+<?php endif; ?>

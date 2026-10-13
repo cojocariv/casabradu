@@ -43,7 +43,7 @@ require __DIR__ . '/includes/header.php';
                                 <li><?= e($point) ?></li>
                             <?php endforeach; ?>
                         </ul>
-                        <?php buy_form($item['slug'], 'produse.php#' . $item['slug'], 'btn btn-dark'); ?>
+                        <?php buy_form($item['slug'], 'produse.php', 'btn btn-dark'); ?>
                     </div>
                 </article>
             <?php endforeach; ?>

@@ -25,7 +25,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         } else {
             flash_set($item['title'] . ' a fost adăugat în coș.');
         }
-        header('Location: ' . url('cos.php'));
+        header('Location: ' . url(cart_return((string) ($_POST['inapoi'] ?? ''))));
         exit;
     } elseif ($action === 'actualizeaza') {
         $posted = $_POST['qty'] ?? [];

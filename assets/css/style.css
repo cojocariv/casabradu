@@ -207,6 +207,8 @@ button, input, select, textarea { font: inherit; }
 
 .cart-total { margin: 16px 0 4px; }
 
+.flash-bar { padding-top: 18px; }
+
 .cart-checkout { margin-top: 28px; }
 
 .nav-links a:hover {
