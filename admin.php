@@ -149,6 +149,7 @@ require __DIR__ . '/includes/header.php';
                         <thead>
                             <tr>
                                 <th>Comandă</th>
+                                <th>Companie</th>
                                 <th>Data</th>
                                 <th>Stare</th>
                             </tr>
@@ -158,17 +159,19 @@ require __DIR__ . '/includes/header.php';
                             $orderId = (string) ($order['id'] ?? '');
                             $status = (string) ($order['status'] ?? 'inregistrata');
                             $detailId = 'det-' . $orderId;
+                            $company = requisite_value((string) ($order['rechizite'] ?? ''), 'Denumirea companiei');
                             ?>
                             <tbody>
                                 <tr class="order-summary">
                                     <td>
                                         <button class="order-toggle" type="button" aria-expanded="false" aria-controls="<?= e($detailId) ?>"><?= e($orderId) ?></button>
                                     </td>
+                                    <td><?= e($company !== '' ? $company : '—') ?></td>
                                     <td><?= e(date('d.m.Y H:i', strtotime((string) ($order['la'] ?? 'now')) ?: time())) ?></td>
                                     <td><span class="status status-<?= e($status) ?>"><?= e(order_status_label($status)) ?></span></td>
                                 </tr>
                                 <tr class="order-detail" id="<?= e($detailId) ?>" hidden>
-                                    <td colspan="3">
+                                    <td colspan="4">
                                         <table class="sheet-table order-more">
                                             <tbody>
                                                 <tr>
