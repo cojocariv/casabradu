@@ -15,15 +15,20 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $errors['form'] = 'Sesiunea a expirat. Reîncarcă pagina și încearcă din nou.';
     } elseif ($action === 'adauga') {
         $slug = text_line((string) ($_POST['slug'] ?? ''), 40);
+        $option = text_line((string) ($_POST['optiune'] ?? ''), 20);
+        if (preg_match('/^[a-z0-9]*$/', $option) !== 1) {
+            $option = '';
+        }
         $qty = (int) ($_POST['cantitate'] ?? 1);
         if ($qty < 1 || $qty > 999) {
             $qty = 1;
         }
         $item = product_by_slug($slug);
-        if ($item === null || !cart_add($slug, $qty)) {
+        $choice = $item === null ? null : product_choice($item, $option);
+        if ($item === null || $choice === null || !cart_add($slug, $qty, (string) $choice['key'])) {
             flash_set('Produsul nu a putut fi adăugat în coș.');
         } else {
-            flash_set($item['title'] . ' a fost adăugat în coș.');
+            flash_set(product_line_title($item, $choice) . ' a fost adăugat în coș.');
         }
         header('Location: ' . url(cart_return((string) ($_POST['inapoi'] ?? ''))));
         exit;

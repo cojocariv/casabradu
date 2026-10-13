@@ -205,6 +205,96 @@ button, input, select, textarea { font: inherit; }
     color: var(--ink);
 }
 
+.buy-options,
+.buy-price { flex: 1 0 100%; }
+
+.buy-price {
+    margin: 0;
+    font-family: Outfit, "Segoe UI", sans-serif;
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: var(--forest);
+}
+
+.buy-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.buy-option { position: relative; }
+
+.buy-option input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.buy-option span {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(28, 52, 43, 0.18);
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: #fff;
+    font-family: Outfit, "Segoe UI", sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+}
+
+.buy-option input:checked + span {
+    background: #16352b;
+    border-color: #16352b;
+    color: #f6f1e6;
+}
+
+.buy-option input:focus-visible + span {
+    outline: 2px solid #c4a15a;
+    outline-offset: 2px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.product-card {
+    display: grid;
+    grid-template-columns: 132px 1fr;
+    background: #fff;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.product-card-photo { background: #efeae3; }
+
+.product-card-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 1;
+}
+
+.product-card-body { padding: 14px 16px 16px; }
+
+.product-card h2 {
+    font-size: 1.7rem;
+    line-height: 1.05;
+    margin: 0 0 6px;
+}
+
+.product-short {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.product-card .buy-form { margin-top: 8px; }
+
 .cart-total { margin: 16px 0 4px; }
 
 .flash-bar { padding-top: 18px; }
@@ -1349,6 +1439,7 @@ button, input, select, textarea { font: inherit; }
     .footer-grid,
     .blend,
     .catalog-row,
+    .product-grid,
     .cards,
     .values,
     .cabinet-grid,

@@ -100,4 +100,21 @@
             applyFilter(initial);
         }
     }
+
+    document.querySelectorAll('.buy-form').forEach(function (form) {
+        var price = form.querySelector('.buy-price');
+        var options = form.querySelectorAll('input[name="optiune"]');
+        if (!price || options.length < 2) {
+            return;
+        }
+        function showPrice() {
+            var selected = form.querySelector('input[name="optiune"]:checked');
+            if (selected) {
+                price.textContent = selected.getAttribute('data-price') || '';
+            }
+        }
+        options.forEach(function (option) {
+            option.addEventListener('change', showPrice);
+        });
+    });
 })();

@@ -24,6 +24,11 @@ function product_catalog_items(): array
             'Preparare rapidă, la aparat de cialde',
             'Același amestec ca în capsule și boabe',
         ],
+        'choice' => 'Bucăți sau cutii',
+        'options' => [
+            ['key' => 'bucata', 'label' => 'Bucăți', 'pret' => null],
+            ['key' => 'cutie', 'label' => 'Cutii', 'pret' => null],
+        ],
     ],
     [
         'slug' => 'capsule',
@@ -39,6 +44,11 @@ function product_catalog_items(): array
             'Potrivite pentru acasă și pentru birou',
             'Gust aromat, cu corp echilibrat',
         ],
+        'choice' => 'Bucăți sau cutii',
+        'options' => [
+            ['key' => 'bucata', 'label' => 'Bucăți', 'pret' => null],
+            ['key' => 'cutie', 'label' => 'Cutii', 'pret' => null],
+        ],
     ],
     [
         'slug' => 'boabe',
@@ -53,6 +63,12 @@ function product_catalog_items(): array
             'Măcinare proaspătă, înainte de ceașcă',
             'Pentru espresso, moka sau filtru',
             'Raport echilibrat între Arabica și Robusta',
+        ],
+        'choice' => 'Cantitate',
+        'options' => [
+            ['key' => '250', 'label' => '250 g', 'pret' => null],
+            ['key' => '500', 'label' => '500 g', 'pret' => null],
+            ['key' => '1000', 'label' => '1 kg', 'pret' => null],
         ],
     ],
     [

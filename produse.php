@@ -28,22 +28,17 @@ require __DIR__ . '/includes/header.php';
             <?php endforeach; ?>
         </div>
 
-        <div class="catalog">
+        <div class="product-grid">
             <?php foreach ($products as $item): ?>
-                <article class="catalog-row reveal" id="<?= e($item['slug']) ?>" data-cat="<?= e($item['slug']) ?>">
-                    <div class="catalog-photo">
-                        <img src="<?= e(asset($item['image'])) ?>" alt="<?= e($item['alt']) ?>" width="900" height="900">
+                <article class="product-card reveal" id="<?= e($item['slug']) ?>" data-cat="<?= e($item['slug']) ?>">
+                    <div class="product-card-photo">
+                        <img src="<?= e(asset($item['image'])) ?>" alt="<?= e($item['alt']) ?>" width="640" height="640">
                     </div>
-                    <div>
+                    <div class="product-card-body">
                         <p class="kicker"><?= e($item['kicker']) ?></p>
                         <h2><?= e($item['title']) ?></h2>
-                        <p><?= e($item['long']) ?></p>
-                        <ul class="ticks">
-                            <?php foreach ($item['points'] as $point): ?>
-                                <li><?= e($point) ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <?php buy_form($item['slug'], 'produse.php', 'btn btn-dark'); ?>
+                        <p class="product-short"><?= e($item['short']) ?></p>
+                        <?php buy_form($item['slug'], 'produse.php', 'btn btn-dark btn-sm'); ?>
                     </div>
                 </article>
             <?php endforeach; ?>

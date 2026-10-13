@@ -27,6 +27,87 @@ function product_by_slug(string $slug): ?array
     return null;
 }
 
+function product_choices(array $item): array
+{
+    $options = $item['options'] ?? [];
+    $choices = [];
+    if (is_array($options)) {
+        foreach ($options as $option) {
+            if (!is_array($option)) {
+                continue;
+            }
+            $key = (string) ($option['key'] ?? '');
+            if (preg_match('/^[a-z0-9]{1,20}$/', $key) !== 1) {
+                continue;
+            }
+            $choices[] = [
+                'key' => $key,
+                'label' => (string) ($option['label'] ?? ''),
+                'pret' => $option['pret'] ?? null,
+            ];
+        }
+    }
+    if ($choices === []) {
+        $choices[] = [
+            'key' => '',
+            'label' => '',
+            'pret' => $item['pret'] ?? null,
+        ];
+    }
+
+    return $choices;
+}
+
+function product_choice(array $item, string $key): ?array
+{
+    $choices = product_choices($item);
+    if ($key === '') {
+        return $choices[0];
+    }
+    foreach ($choices as $choice) {
+        if ($choice['key'] === $key) {
+            return $choice;
+        }
+    }
+
+    return null;
+}
+
+function product_line_title(array $item, array $choice): string
+{
+    $title = (string) ($item['title'] ?? '');
+    $label = (string) ($choice['label'] ?? '');
+    if ($label === '') {
+        return $title;
+    }
+
+    return $title . ', ' . $label;
+}
+
+function product_money($pret): string
+{
+    if (!is_numeric($pret) || (float) $pret <= 0) {
+        return 'la confirmare';
+    }
+    $bani = (int) round(((float) $pret) * 100);
+    $sign = $bani < 0 ? '-' : '';
+    $bani = abs($bani);
+
+    return $sign . number_format(intdiv($bani, 100), 0, ',', ' ') . ',' . str_pad((string) ($bani % 100), 2, '0', STR_PAD_LEFT) . ' lei';
+}
+
+function cart_storage_key(string $slug, string $option): string
+{
+    return $option === '' ? $slug : $slug . ':' . $option;
+}
+
+function cart_parse_key(string $key): array
+{
+    $parts = explode(':', $key, 2);
+
+    return [$parts[0], $parts[1] ?? ''];
+}
+
 function cart_items(): array
 {
     $cart = $_SESSION['cos'] ?? [];
@@ -34,13 +115,19 @@ function cart_items(): array
         return [];
     }
     $clean = [];
-    foreach ($cart as $slug => $qty) {
-        $slug = (string) $slug;
+    foreach ($cart as $key => $qty) {
+        [$slug, $option] = cart_parse_key((string) $key);
         $qty = (int) $qty;
-        if (product_by_slug($slug) === null || $qty < 1) {
+        $item = product_by_slug($slug);
+        if ($item === null || $qty < 1) {
             continue;
         }
-        $clean[$slug] = min(999, $qty);
+        $choice = product_choice($item, $option);
+        if ($choice === null) {
+            continue;
+        }
+        $stored = cart_storage_key($slug, (string) $choice['key']);
+        $clean[$stored] = min(999, ($clean[$stored] ?? 0) + $qty);
     }
     $_SESSION['cos'] = $clean;
 
@@ -55,19 +142,22 @@ function cart_count(): int
 function cart_lines(): array
 {
     $lines = [];
-    foreach (cart_items() as $slug => $qty) {
+    foreach (cart_items() as $key => $qty) {
+        [$slug, $option] = cart_parse_key($key);
         $item = product_by_slug($slug);
         if ($item === null) {
             continue;
         }
-        $pret = (isset($item['pret']) && is_numeric($item['pret']) && (float) $item['pret'] > 0)
-            ? round((float) $item['pret'], 2)
-            : null;
+        $choice = product_choice($item, $option);
+        if ($choice === null) {
+            continue;
+        }
+        $pret = $choice['pret'] ?? null;
         $lines[] = [
-            'slug' => $slug,
-            'titlu' => (string) $item['title'],
+            'slug' => $key,
+            'titlu' => product_line_title($item, $choice),
             'cantitate' => $qty,
-            'pret' => $pret,
+            'pret' => (is_numeric($pret) && (float) $pret > 0) ? round((float) $pret, 2) : null,
             'image' => (string) ($item['image'] ?? ''),
         ];
     }
@@ -75,13 +165,19 @@ function cart_lines(): array
     return $lines;
 }
 
-function cart_add(string $slug, int $qty): bool
+function cart_add(string $slug, int $qty, string $option = ''): bool
 {
-    if (product_by_slug($slug) === null || $qty < 1) {
+    $item = product_by_slug($slug);
+    if ($item === null || $qty < 1) {
         return false;
     }
+    $choice = product_choice($item, $option);
+    if ($choice === null) {
+        return false;
+    }
+    $key = cart_storage_key($slug, (string) $choice['key']);
     $cart = cart_items();
-    $cart[$slug] = min(999, ($cart[$slug] ?? 0) + $qty);
+    $cart[$key] = min(999, ($cart[$key] ?? 0) + $qty);
     $_SESSION['cos'] = $cart;
 
     return true;
@@ -90,14 +186,20 @@ function cart_add(string $slug, int $qty): bool
 function cart_set(array $posted): void
 {
     $cart = [];
-    foreach ($posted as $slug => $raw) {
-        $slug = (string) $slug;
-        if (product_by_slug($slug) === null) {
+    foreach ($posted as $key => $raw) {
+        [$slug, $option] = cart_parse_key((string) $key);
+        $item = product_by_slug($slug);
+        if ($item === null) {
+            continue;
+        }
+        $choice = product_choice($item, $option);
+        if ($choice === null || (string) $choice['key'] !== $option) {
             continue;
         }
         $qty = (int) $raw;
         if ($qty > 0) {
-            $cart[$slug] = min(999, $qty);
+            $stored = cart_storage_key($slug, $option);
+            $cart[$stored] = min(999, $qty);
         }
     }
     $_SESSION['cos'] = $cart;
@@ -119,14 +221,34 @@ function cart_return(string $target): string
 
 function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dark btn-sm'): void
 {
+    $item = product_by_slug($slug);
+    if ($item === null) {
+        return;
+    }
+    $choices = product_choices($item);
+    $field = str_replace(['.', '#', ':'], '-', $slug . '-' . $back);
+    $first = $choices[0];
     ?>
     <form class="buy-form" method="post" action="<?= e(url('cos.php')) ?>">
         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
         <input type="hidden" name="actiune" value="adauga">
         <input type="hidden" name="slug" value="<?= e($slug) ?>">
         <input type="hidden" name="inapoi" value="<?= e($back) ?>">
-        <label class="sr-only" for="cant-<?= e($slug) ?>-<?= e(str_replace(['.', '#'], '-', $back)) ?>">Cantitate</label>
-        <input id="cant-<?= e($slug) ?>-<?= e(str_replace(['.', '#'], '-', $back)) ?>" name="cantitate" type="number" min="1" max="999" step="1" value="1" inputmode="numeric">
+        <?php if (count($choices) > 1): ?>
+            <div class="buy-options" role="radiogroup" aria-label="<?= e((string) ($item['choice'] ?? 'Opțiune')) ?>">
+                <?php foreach ($choices as $index => $choice): ?>
+                    <label class="buy-option">
+                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e('Preț: ' . product_money($choice['pret'])) ?>"<?= $index === 0 ? ' checked' : '' ?>>
+                        <span><?= e($choice['label']) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        <?php elseif ($first['key'] !== ''): ?>
+            <input type="hidden" name="optiune" value="<?= e($first['key']) ?>">
+        <?php endif; ?>
+        <p class="buy-price">Preț: <?= e(product_money($first['pret'])) ?></p>
+        <label class="sr-only" for="cant-<?= e($field) ?>">Cantitate</label>
+        <input id="cant-<?= e($field) ?>" name="cantitate" type="number" min="1" max="999" step="1" value="1" inputmode="numeric">
         <button class="<?= e($buttonClass) ?>" type="submit">Adaugă în coș</button>
     </form>
     <?php
