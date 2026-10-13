@@ -26,6 +26,8 @@ function site_mail(string $to, string $subject, string $body, string $replyTo = 
         : $subject;
 
     if (smtp_ready()) {
+        site_mail_status('');
+
         return site_mail_auth($to, $subject, $body, $replyHeader, $from);
     }
 
@@ -150,14 +152,35 @@ function site_mail_auth(string $to, string $subject, string $body, string $reply
     foreach ($ports as $port) {
         $result = site_mail_auth_port($to, $subject, $body, $replyHeader, $from, $port);
         if ($result === 'sent') {
+            site_mail_status('');
+
             return true;
         }
         if ($result === 'auth') {
+            site_mail_status('Cutia ' . SMTP_USER . ' a refuzat parola.');
+
+            return false;
+        }
+        if ($result === 'reject') {
+            site_mail_status('Mesajul nu a fost acceptat pentru ' . $to . '.');
+
             return false;
         }
     }
 
+    site_mail_status('Conexiunea securizată cu serverul de mail a eșuat.');
+
     return false;
+}
+
+function site_mail_status(?string $set = null): string
+{
+    static $status = '';
+    if ($set !== null) {
+        $status = $set;
+    }
+
+    return $status;
 }
 
 function site_mail_auth_port(string $to, string $subject, string $body, string $replyHeader, string $from, int $port): string
@@ -215,13 +238,31 @@ function site_mail_auth_port(string $to, string $subject, string $body, string $
         fclose($socket);
     };
 
-    if ($command('') !== '220' || $command('EHLO ' . SITE_DOMAIN) !== '250') {
+    $banner = $read();
+    $tlsName = $host;
+    if (preg_match('/^220[\s-]+([A-Za-z0-9.-]+\.[A-Za-z]{2,})/', $banner, $match) === 1) {
+        $tlsName = $match[1];
+    }
+    if (substr($banner, 0, 3) !== '220' || $command('EHLO ' . SITE_DOMAIN) !== '250') {
         $close();
 
         return 'connect';
     }
     if ($port !== 465) {
-        if ($command('STARTTLS') !== '220' || !@stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+        if ($command('STARTTLS') !== '220') {
+            $close();
+
+            return 'connect';
+        }
+        stream_context_set_option($socket, 'ssl', 'peer_name', $tlsName);
+        $crypto = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+        if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
+            $crypto |= STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+        }
+        if (defined('STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT')) {
+            $crypto |= STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT;
+        }
+        if (!@stream_socket_enable_crypto($socket, true, $crypto)) {
             $close();
 
             return 'connect';
@@ -251,7 +292,7 @@ function site_mail_auth_port(string $to, string $subject, string $body, string $
     if (!$accepted) {
         $close();
 
-        return 'auth';
+        return 'reject';
     }
 
     $lines = explode("\n", $body);
