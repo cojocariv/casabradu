@@ -49,7 +49,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && (string) ($_POST['actiun
     } elseif (!smtp_ready()) {
         $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Pentru trimitere, adaugă parola cutiei comenzi@casabradu.md în configurarea site-ului.'];
     } elseif (send_invoice_mail($order, $invoiceDate, $payer, $table, $replyTo)) {
-        $_SESSION['invoice_mail'] = ['ok' => true, 'text' => 'Contul de plată a fost trimis la ' . SITE_EMAIL . '.'];
+        $_SESSION['invoice_mail'] = ['ok' => true, 'text' => 'Contul de plată a fost trimis.'];
     } else {
         $reason = site_mail_status();
         $_SESSION['invoice_mail'] = ['ok' => false, 'text' => $reason !== '' ? $reason : 'Emailul nu a putut fi trimis. Încearcă din nou peste câteva minute.'];
