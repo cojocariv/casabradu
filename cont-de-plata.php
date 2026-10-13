@@ -46,10 +46,12 @@ $invoiceError = '';
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && (string) ($_POST['actiune'] ?? '') === 'email') {
     if (!hash_equals((string) ($_SESSION['csrf'] ?? ''), (string) ($_POST['csrf'] ?? ''))) {
         $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Sesiunea a expirat. Reîncarcă pagina și încearcă din nou.'];
+    } elseif (!smtp_ready()) {
+        $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Pentru trimitere, adaugă parola cutiei comenzi@casabradu.md în configurarea site-ului.'];
     } elseif (send_invoice_mail($order, $invoiceDate, $payer, $table, $replyTo)) {
         $_SESSION['invoice_mail'] = ['ok' => true, 'text' => 'Contul de plată a fost trimis la ' . SITE_EMAIL . '.'];
     } else {
-        $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Emailul nu a putut fi trimis. Încearcă din nou peste câteva minute.'];
+        $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Cutia comenzi@casabradu.md a refuzat trimiterea. Verifică parola.'];
     }
     header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? ''))));
     exit;
