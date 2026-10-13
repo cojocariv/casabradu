@@ -1034,6 +1034,10 @@ button, input, select, textarea { font: inherit; }
 
 .orders-sheet .sheet-table th { background: #f7f5f1; }
 
+.orders-sheet .line-item,
+.orders-sheet .invoice-link,
+.orders-sheet td:first-child { white-space: nowrap; }
+
 .order-lines { display: grid; gap: 14px; margin-top: 8px; }
 
 .order-line {
@@ -1168,7 +1172,15 @@ button, input, select, textarea { font: inherit; }
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    margin: 8px 0 16px;
+    margin: 0;
+}
+
+.sheet-table .status-form select { min-width: 140px; }
+
+.sheet-table td.requisites {
+    white-space: pre-wrap;
+    min-width: 180px;
+    font-size: 0.88rem;
 }
 
 .status-form label { margin: 0; }

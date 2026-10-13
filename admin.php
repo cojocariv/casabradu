@@ -143,55 +143,66 @@ require __DIR__ . '/includes/header.php';
             <?php if (is_array($orders) && $visible === []): ?>
                 <p class="lede">Nu există comenzi<?= $filter === '' ? '' : ' în starea aceasta' ?>.</p>
             <?php elseif (is_array($orders)): ?>
-                <div class="order-list">
-                    <?php foreach ($visible as $order): ?>
-                        <?php $status = (string) ($order['status'] ?? 'inregistrata'); ?>
-                        <article class="order-card">
-                            <div class="order-top">
-                                <h3><?= e((string) ($order['id'] ?? '')) ?></h3>
-                                <span class="status status-<?= e($status) ?>"><?= e(order_status_label($status)) ?></span>
-                            </div>
-                            <p class="order-date"><?= e(date('d.m.Y H:i', strtotime((string) ($order['la'] ?? 'now')) ?: time())) ?></p>
-                            <p class="order-client">
-                                <?= e((string) ($order['nume'] ?? 'Client')) ?>
-                                <?php if (($order['email'] ?? '') !== ''): ?>
-                                    · <a href="mailto:<?= e((string) $order['email']) ?>"><?= e((string) $order['email']) ?></a>
-                                <?php endif; ?>
-                                <?php if (($order['telefon'] ?? '') !== ''): ?>
-                                    · <?= e((string) $order['telefon']) ?>
-                                <?php endif; ?>
-                            </p>
-                            <ul class="ticks">
-                                <?php foreach (($order['linii'] ?? []) as $line): ?>
-                                    <?php if (!is_array($line)) { continue; } ?>
-                                    <li><?= e((string) ($line['titlu'] ?? '')) ?> · <?= (int) ($line['cantitate'] ?? 0) ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <?php if (($order['adresa'] ?? '') !== ''): ?>
-                                <p><?= e((string) $order['adresa']) ?></p>
-                            <?php endif; ?>
-                            <?php if (($order['nota'] ?? '') !== ''): ?>
-                                <p><?= e((string) $order['nota']) ?></p>
-                            <?php endif; ?>
-                            <?php if (($order['rechizite'] ?? '') !== ''): ?>
-                                <p class="requisites"><?= e((string) $order['rechizite']) ?></p>
-                            <?php endif; ?>
-                            <p><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">Cont de plată</a></p>
-                            <form class="status-form" method="post" action="<?= e(url('admin.php')) ?>">
-                                <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
-                                <input type="hidden" name="formular" value="stare">
-                                <input type="hidden" name="id" value="<?= e((string) ($order['id'] ?? '')) ?>">
-                                <input type="hidden" name="filtru" value="<?= e($filter) ?>">
-                                <label for="status-<?= e((string) ($order['id'] ?? '')) ?>">Stare</label>
-                                <select id="status-<?= e((string) ($order['id'] ?? '')) ?>" name="status">
-                                    <?php foreach (order_statuses() as $key => $label): ?>
-                                        <option value="<?= e($key) ?>" <?= $status === $key ? 'selected' : '' ?>><?= e($label) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <button class="btn btn-dark btn-sm" type="submit">Salvează</button>
-                            </form>
-                        </article>
-                    <?php endforeach; ?>
+                <div class="table-wrap orders-sheet">
+                    <table class="sheet-table">
+                        <thead>
+                            <tr>
+                                <th>Comandă</th>
+                                <th>Data</th>
+                                <th>Client</th>
+                                <th>Produse</th>
+                                <th>Adresă</th>
+                                <th>Rechizite</th>
+                                <th>Stare</th>
+                                <th>Document</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($visible as $order): ?>
+                                <?php $status = (string) ($order['status'] ?? 'inregistrata'); ?>
+                                <tr>
+                                    <td><?= e((string) ($order['id'] ?? '')) ?></td>
+                                    <td><?= e(date('d.m.Y H:i', strtotime((string) ($order['la'] ?? 'now')) ?: time())) ?></td>
+                                    <td>
+                                        <span class="line-item"><?= e((string) ($order['nume'] ?? 'Client')) ?></span>
+                                        <?php if (($order['email'] ?? '') !== ''): ?>
+                                            <span class="line-item"><a href="mailto:<?= e((string) $order['email']) ?>"><?= e((string) $order['email']) ?></a></span>
+                                        <?php endif; ?>
+                                        <?php if (($order['telefon'] ?? '') !== ''): ?>
+                                            <span class="line-note"><?= e((string) $order['telefon']) ?></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php foreach (($order['linii'] ?? []) as $line): ?>
+                                            <?php if (!is_array($line)) { continue; } ?>
+                                            <span class="line-item"><?= e((string) ($line['titlu'] ?? '')) ?> × <?= (int) ($line['cantitate'] ?? 0) ?></span>
+                                        <?php endforeach; ?>
+                                        <?php if (($order['nota'] ?? '') !== ''): ?>
+                                            <span class="line-note"><?= e((string) $order['nota']) ?></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?= e((string) ($order['adresa'] ?? '')) ?></td>
+                                    <td class="requisites"><?= e((string) ($order['rechizite'] ?? '')) ?></td>
+                                    <td>
+                                        <form class="status-form" method="post" action="<?= e(url('admin.php')) ?>">
+                                            <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                                            <input type="hidden" name="formular" value="stare">
+                                            <input type="hidden" name="id" value="<?= e((string) ($order['id'] ?? '')) ?>">
+                                            <input type="hidden" name="filtru" value="<?= e($filter) ?>">
+                                            <label class="sr-only" for="status-<?= e((string) ($order['id'] ?? '')) ?>">Stare</label>
+                                            <select id="status-<?= e((string) ($order['id'] ?? '')) ?>" name="status">
+                                                <?php foreach (order_statuses() as $key => $label): ?>
+                                                    <option value="<?= e($key) ?>" <?= $status === $key ? 'selected' : '' ?>><?= e($label) ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <button class="btn btn-dark btn-sm" type="submit">Salvează</button>
+                                        </form>
+                                    </td>
+                                    <td><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">Cont de plată</a></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             <?php endif; ?>
         <?php endif; ?>
