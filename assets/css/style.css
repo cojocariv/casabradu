@@ -857,6 +857,10 @@ html[lang="ru"] .script {
     color: var(--ink);
 }
 
+.contact-form .btn {
+    margin-top: 22px;
+}
+
 .contact-form textarea { resize: vertical; min-height: 120px; }
 
 .contact-form--dark input,
