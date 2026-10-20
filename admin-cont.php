@@ -319,10 +319,18 @@ require __DIR__ . '/includes/header.php';
                                 <th>Produs</th>
                                 <th>Cantitate</th>
                                 <th>Preț, lei</th>
+                                <th>Suma, lei</th>
                             </tr>
                         </thead>
                         <tbody id="invoice-lines">
                             <?php foreach ($form['lines'] as $index => $line): ?>
+                                <?php
+                                $qtyShow = (int) ($line['cantitate'] ?? 0);
+                                $priceParsed = product_parse_price((string) ($line['pret'] ?? ''));
+                                $sumShow = ($qtyShow > 0 && is_string($priceParsed) && $priceParsed !== 'invalid')
+                                    ? number_format($qtyShow * (float) $priceParsed, 2, ',', '')
+                                    : '';
+                                ?>
                                 <tr>
                                     <td>
                                         <input type="hidden" name="slug[]" value="<?= e((string) $line['slug']) ?>">
@@ -331,11 +339,14 @@ require __DIR__ . '/includes/header.php';
                                     </td>
                                     <td>
                                         <label class="sr-only" for="cant-<?= (int) $index ?>">Cantitate</label>
-                                        <input id="cant-<?= (int) $index ?>" name="cantitate[]" type="number" min="0" max="99999" step="1" value="<?= e((string) $line['cantitate']) ?>" inputmode="numeric">
+                                        <input id="cant-<?= (int) $index ?>" class="invoice-qty" name="cantitate[]" type="number" min="0" max="99999" step="1" value="<?= e((string) $line['cantitate']) ?>" inputmode="numeric">
                                     </td>
                                     <td>
                                         <label class="sr-only" for="pret-<?= (int) $index ?>">Preț</label>
-                                        <input id="pret-<?= (int) $index ?>" name="pret[]" type="text" inputmode="decimal" maxlength="12" value="<?= e((string) $line['pret']) ?>" placeholder="12,50">
+                                        <input id="pret-<?= (int) $index ?>" class="invoice-price" name="pret[]" type="text" inputmode="decimal" maxlength="12" value="<?= e((string) $line['pret']) ?>" placeholder="12,50">
+                                    </td>
+                                    <td>
+                                        <span class="invoice-sum" aria-live="polite"><?= e($sumShow) ?></span>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -362,11 +373,14 @@ require __DIR__ . '/includes/header.php';
         </td>
         <td>
             <label class="sr-only">Cantitate</label>
-            <input name="cantitate[]" type="number" min="0" max="99999" step="1" value="" inputmode="numeric">
+            <input class="invoice-qty" name="cantitate[]" type="number" min="0" max="99999" step="1" value="" inputmode="numeric">
         </td>
         <td>
             <label class="sr-only">Preț</label>
-            <input name="pret[]" type="text" inputmode="decimal" maxlength="12" value="" placeholder="12,50">
+            <input class="invoice-price" name="pret[]" type="text" inputmode="decimal" maxlength="12" value="" placeholder="12,50">
+        </td>
+        <td>
+            <span class="invoice-sum" aria-live="polite"></span>
         </td>
     </tr>
 </template>
@@ -376,12 +390,67 @@ require __DIR__ . '/includes/header.php';
     var button = document.getElementById('add-invoice-line');
     var body = document.getElementById('invoice-lines');
     var template = document.getElementById('invoice-line-template');
-    if (!button || !body || !template) {
+    if (!body) {
         return;
     }
-    button.addEventListener('click', function () {
-        body.appendChild(template.content.cloneNode(true));
+
+    function parsePrice(raw) {
+        raw = String(raw || '').replace(/\u00a0/g, '').replace(/\s+/g, '').replace(',', '.');
+        if (raw === '') {
+            return null;
+        }
+        var value = Number(raw);
+        if (!isFinite(value) || value <= 0) {
+            return null;
+        }
+        return value;
+    }
+
+    function formatSum(value) {
+        var fixed = value.toFixed(2).split('.');
+        return fixed[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ',' + fixed[1];
+    }
+
+    function updateRow(row) {
+        if (!row) {
+            return;
+        }
+        var qtyInput = row.querySelector('.invoice-qty');
+        var priceInput = row.querySelector('.invoice-price');
+        var sumNode = row.querySelector('.invoice-sum');
+        if (!qtyInput || !priceInput || !sumNode) {
+            return;
+        }
+        var qty = parseInt(qtyInput.value, 10);
+        var price = parsePrice(priceInput.value);
+        if (!qty || qty < 1 || price === null) {
+            sumNode.textContent = '';
+            return;
+        }
+        sumNode.textContent = formatSum(qty * price);
+    }
+
+    function updateAll() {
+        body.querySelectorAll('tr').forEach(updateRow);
+    }
+
+    body.addEventListener('input', function (event) {
+        var target = event.target;
+        if (!target || !target.classList) {
+            return;
+        }
+        if (target.classList.contains('invoice-qty') || target.classList.contains('invoice-price')) {
+            updateRow(target.closest('tr'));
+        }
     });
+
+    if (button && template) {
+        button.addEventListener('click', function () {
+            body.appendChild(template.content.cloneNode(true));
+        });
+    }
+
+    updateAll();
 })();
 </script>
 

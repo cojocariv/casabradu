@@ -1476,6 +1476,31 @@ html[lang="ru"] .script {
     min-width: 160px;
 }
 
+.invoice-lines .invoice-sum {
+    display: block;
+    min-width: 88px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.invoice-lines th:nth-child(3),
+.invoice-lines th:nth-child(4),
+.invoice-lines td:nth-child(3),
+.invoice-lines td:nth-child(4) {
+    text-align: right;
+}
+
+.invoice-lines td:nth-child(2) {
+    width: 110px;
+}
+
+.invoice-lines td:nth-child(3),
+.invoice-lines td:nth-child(4) {
+    width: 120px;
+}
+
 .invoice-actions {
     margin-top: 24px;
 }
