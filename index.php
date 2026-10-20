@@ -20,10 +20,9 @@ require __DIR__ . '/includes/header.php';
 
 <section class="hero hero-bleed">
     <div class="hero-media">
-        <img src="<?= e(asset('assets/img/hero-cafea.jpg')) ?>" alt="<?= tr('Ceașcă de cafea cu lapte, boabe prăjite și frunze verzi') ?>" width="1600" height="1067">
+        <img src="<?= e(asset('assets/img/hero-cafea.jpg')) ?>?v=2" alt="<?= tr('Ceașcă de cafea cu lapte, boabe prăjite și frunze verzi') ?>" width="1600" height="1067">
     </div>
     <div class="wrap hero-content reveal">
-        <p class="hero-brand"><?= e(SITE_NAME) ?></p>
         <h1><?= tr('Cafeaua bună aduce') ?> <span class="script"><?= tr('zile mai fine') ?></span></h1>
         <p class="lede"><?= tr(SITE_DESCRIPTION) ?></p>
         <div class="hero-actions">

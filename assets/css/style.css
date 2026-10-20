@@ -11,7 +11,7 @@
     --line: rgba(18, 48, 40, 0.1);
     --card: #fffcf8;
     --shadow: 0 12px 40px rgba(18, 48, 40, 0.08);
-    --header: 96px;
+    --header: 108px;
     --radius: 18px;
     --radius-sm: 12px;
 }
@@ -116,12 +116,14 @@ button, input, select, textarea { font: inherit; }
     position: sticky;
     top: 0;
     z-index: 30;
-    background: rgba(246, 243, 238, 0.86);
-    backdrop-filter: blur(18px) saturate(1.2);
+    background: transparent;
+    backdrop-filter: none;
     border-bottom: 1px solid transparent;
 }
 
 .site-header.is-scrolled {
+    background: rgba(246, 243, 238, 0.92);
+    backdrop-filter: blur(16px) saturate(1.15);
     border-bottom-color: var(--line);
     box-shadow: 0 10px 30px rgba(18, 48, 40, 0.06);
 }
@@ -143,7 +145,7 @@ button, input, select, textarea { font: inherit; }
 }
 
 .logo img {
-    height: 88px;
+    height: 96px;
     width: auto;
     display: block;
 }
@@ -170,8 +172,8 @@ button, input, select, textarea { font: inherit; }
     gap: 2px;
     padding: 3px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px solid var(--line);
+    background: transparent;
+    border: 1px solid transparent;
 }
 
 .lang-switch a {
@@ -200,8 +202,8 @@ html[lang="ru"] .script {
     gap: 2px;
     padding: 4px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid var(--line);
+    background: transparent;
+    border: 1px solid transparent;
 }
 
 .nav a {
@@ -553,10 +555,13 @@ html[lang="ru"] .script {
 .hero-media::after {
     content: "";
     position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(105deg, rgba(8, 18, 14, 0.7) 0%, rgba(8, 18, 14, 0.35) 48%, rgba(8, 18, 14, 0.1) 100%),
-        linear-gradient(180deg, rgba(8, 18, 14, 0.05) 0%, rgba(8, 18, 14, 0.08) 42%, rgba(8, 18, 14, 0.58) 100%);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    height: 42%;
+    background: linear-gradient(180deg, transparent 0%, rgba(8, 18, 14, 0.55) 100%);
+    pointer-events: none;
 }
 
 .hero-content {
@@ -575,17 +580,23 @@ html[lang="ru"] .script {
     line-height: 0.94;
     color: #fff;
     text-wrap: balance;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+}
+
+.hero-bleed .lede,
+.hero-bleed h1 {
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.4);
 }
 
 .hero-bleed h1 {
-    max-width: 22ch;
+    max-width: 16ch;
     margin: 0 0 16px;
-    color: rgba(247, 243, 234, 0.94);
-    font-family: Outfit, "Segoe UI", sans-serif;
-    font-size: clamp(1.2rem, 2.4vw, 1.55rem);
-    font-weight: 400;
-    letter-spacing: 0.01em;
-    line-height: 1.4;
+    color: #fff;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
 }
 
 .hero-bleed h1 .script {
@@ -1724,7 +1735,8 @@ html[lang="ru"] .script {
 @media (max-width: 860px) {
     :root { --header: 80px; }
 
-    .logo img { height: 72px; }
+    .logo img { height: 80px; }
+    .page-acasa .logo img { height: 104px; }
 
     .nav-toggle { display: inline-flex; }
 
@@ -1848,21 +1860,17 @@ html[lang="ru"] .script {
     .page-acasa .hero-media img { animation: none; }
 }
 
-/* Homepage: transparent header over hero — cup stays visible */
+/* Homepage: header floats over hero — truly transparent */
 .page-acasa .site-header {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     background: transparent !important;
-    border-bottom-color: transparent;
-    box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-}
-
-.page-acasa .site-header .header-inner {
-    min-height: 80px;
+    border-bottom-color: transparent;
+    box-shadow: none !important;
 }
 
 .page-acasa .site-header.is-scrolled {
@@ -1880,6 +1888,7 @@ html[lang="ru"] .script {
 
 .page-acasa .site-header:not(.is-scrolled) .logo .logo-light {
     display: block;
+    filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 2px rgba(0, 0, 0, 0.85));
 }
 
 .page-acasa .site-header.is-scrolled .logo .logo-light {
@@ -1890,34 +1899,32 @@ html[lang="ru"] .script {
     display: block;
 }
 
+.page-acasa .logo img {
+    height: 132px;
+}
+
+.page-acasa .site-header .header-inner {
+    min-height: 96px;
+    align-items: center;
+}
+
 .page-acasa .hero-bleed {
     min-height: 100svh;
-    margin-top: 0;
-    padding-top: 0;
 }
 
 .page-acasa .hero-media img {
-    object-position: center 30%;
-    transform: scale(1.28) translate3d(0, 16%, 0);
+    object-position: center 40%;
+    transform: scale(1.06);
     animation: hero-pan-home 18s ease-in-out infinite alternate;
 }
 
 @keyframes hero-pan-home {
-    from { transform: scale(1.28) translate3d(0, 16%, 0); }
-    to { transform: scale(1.32) translate3d(-0.6%, 14%, 0); }
-}
-
-.page-acasa .logo img {
-    height: 108px;
-}
-
-.page-acasa .site-header:not(.is-scrolled) .lang-switch {
-    background: rgba(255, 255, 255, 0.14);
-    border-color: rgba(255, 255, 255, 0.28);
+    from { transform: scale(1.06) translate3d(0, 0, 0); }
+    to { transform: scale(1.1) translate3d(-0.8%, -0.5%, 0); }
 }
 
 .page-acasa .site-header:not(.is-scrolled) .lang-switch a {
-    color: rgba(247, 243, 234, 0.9);
+    color: rgba(247, 243, 234, 0.92);
 }
 
 .page-acasa .site-header:not(.is-scrolled) .lang-switch a[aria-current="true"] {
@@ -1925,17 +1932,13 @@ html[lang="ru"] .script {
     color: var(--forest);
 }
 
-.page-acasa .site-header:not(.is-scrolled) .nav-links {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.22);
-}
-
 .page-acasa .site-header:not(.is-scrolled) .nav-links a {
     color: #f7f3ea;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav-links a:hover {
-    background: rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.14);
     color: #fff;
 }
 
@@ -1943,11 +1946,12 @@ html[lang="ru"] .script {
     background: #fff;
     color: var(--forest);
     box-shadow: none;
+    text-shadow: none;
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav-toggle {
-    background: rgba(255, 255, 255, 0.14);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.35);
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav-toggle .bar {
@@ -1955,14 +1959,14 @@ html[lang="ru"] .script {
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav .btn-dark {
-    background: #fffaf3;
+    background: #fff;
     color: var(--forest);
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    border-color: transparent;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav .btn-dark:hover {
-    background: #fff;
+    background: #fffaf3;
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav.is-open {
@@ -1971,6 +1975,7 @@ html[lang="ru"] .script {
 
 .page-acasa .site-header:not(.is-scrolled) .nav.is-open .nav-links a {
     color: var(--forest-2);
+    text-shadow: none;
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav.is-open .nav-links a[aria-current="page"] {
@@ -1979,6 +1984,6 @@ html[lang="ru"] .script {
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav.is-open .btn-dark {
-    background: linear-gradient(180deg, #245244 0%, #16352b 100%);
+    background: var(--forest-2);
     color: #f6f1e6;
 }

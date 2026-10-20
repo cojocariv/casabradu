@@ -65,9 +65,9 @@ $schema = seo_graph($page, $fullTitle, $pageDescription, is_array($seoItems) ? $
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Great+Vibes&family=Marck+Script&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= e(asset('assets/css/style.css')) ?>?v=17">
+    <link rel="stylesheet" href="<?= e(asset('assets/css/style.css')) ?>?v=26">
     <?php if ($page === 'acasa'): ?>
-        <link rel="preload" as="image" href="<?= e(asset('assets/img/hero-cafea.jpg')) ?>">
+        <link rel="preload" as="image" href="<?= e(asset('assets/img/hero-cafea.jpg')) ?>?v=2">
     <?php endif; ?>
     <script>document.documentElement.classList.add('js')</script>
     <script type="application/ld+json"><?= json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>
