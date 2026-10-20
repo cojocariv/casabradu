@@ -88,7 +88,7 @@ function admin_invoice_form_state(?array $client, array $post = []): array
         'client_id' => text_line((string) ($post['client_id'] ?? ($client['id'] ?? '')), 32),
         'email' => text_line((string) ($post['email'] ?? ($client['email'] ?? '')), 120),
         'nume' => text_line((string) ($post['nume'] ?? ($client['nume'] ?? '')), 80),
-        'telefon' => text_line((string) ($post['telefon'] ?? ($client['telefon'] ?? '')), 20),
+        'telefon' => text_line((string) ($post['telefon'] ?? (($client['telefon'] ?? '') === '-' ? '' : ($client['telefon'] ?? ''))), 20),
         'adresa' => text_line((string) ($post['adresa'] ?? ($client['adresa'] ?? '')), 300),
         'nota' => text_block((string) ($post['nota'] ?? ''), 1000),
         'companie' => '',
@@ -146,7 +146,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if (!$csrfOk) {
         $errors['form'] = 'Sesiunea a expirat. Reîncarcă pagina și încearcă din nou.';
     } elseif ($action === 'incarca') {
-        header('Location: ' . url('admin-cont.php?client=' . rawurlencode($form['client_id'])));
+        $loadId = text_line((string) ($_POST['client_id'] ?? ''), 32);
+        header('Location: ' . url('admin-cont.php' . ($loadId !== '' ? '?client=' . rawurlencode($loadId) : '')));
         exit;
     } elseif ($action === 'genereaza' || $action === 'email') {
         if (!filter_var($form['email'], FILTER_VALIDATE_EMAIL)) {
@@ -261,7 +262,7 @@ require __DIR__ . '/includes/header.php';
 
                 <label for="client_id">Client salvat</label>
                 <div class="invoice-client-row">
-                    <select id="client_id" name="client_id">
+                    <select id="client_id" name="client_id" data-load-url="<?= e(url('admin-cont.php')) ?>">
                         <option value="">Client nou / manual</option>
                         <?php foreach ($clientRows as $row): ?>
                             <option value="<?= e((string) $row['id']) ?>" <?= $form['client_id'] === (string) $row['id'] ? 'selected' : '' ?>>
@@ -269,7 +270,7 @@ require __DIR__ . '/includes/header.php';
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <button class="btn btn-line btn-sm" type="submit" name="actiune" value="incarca">Încarcă datele</button>
+                    <button class="btn btn-line btn-sm" type="submit" name="actiune" value="incarca" formnovalidate>Încarcă datele</button>
                 </div>
 
                 <label for="email">Email client</label>
@@ -387,6 +388,15 @@ require __DIR__ . '/includes/header.php';
 
 <script>
 (function () {
+    var clientSelect = document.getElementById('client_id');
+    if (clientSelect) {
+        clientSelect.addEventListener('change', function () {
+            var base = clientSelect.getAttribute('data-load-url') || 'admin-cont.php';
+            var id = clientSelect.value || '';
+            window.location.href = id ? (base + (base.indexOf('?') >= 0 ? '&' : '?') + 'client=' + encodeURIComponent(id)) : base;
+        });
+    }
+
     var button = document.getElementById('add-invoice-line');
     var body = document.getElementById('invoice-lines');
     var template = document.getElementById('invoice-line-template');
