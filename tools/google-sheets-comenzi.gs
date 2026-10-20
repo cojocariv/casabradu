@@ -40,19 +40,18 @@ function setupSheet() {
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
   }
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
-  }
+  ensureHeaders_(sheet);
 }
 
 function doPost(e) {
   try {
+    if (!e || !e.postData || !e.postData.contents) {
+      return jsonOut({ ok: false, error: 'empty_body' });
+    }
+
     var data = JSON.parse(e.postData.contents);
     if ((data.secret || '') !== WEBHOOK_SECRET) {
-      return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'secret' }))
-        .setMimeType(ContentService.MimeType.JSON);
+      return jsonOut({ ok: false, error: 'secret' });
     }
 
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -61,24 +60,38 @@ function doPost(e) {
     if (!sheet) {
       sheet = ss.insertSheet(name);
     }
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(HEADERS);
-      sheet.setFrozenRows(1);
-    }
+    ensureHeaders_(sheet);
 
     var row = data.row;
     if (!row || !row.length) {
-      return ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'row' }))
-        .setMimeType(ContentService.MimeType.JSON);
+      return jsonOut({ ok: false, error: 'row' });
     }
 
     sheet.appendRow(row);
-    return ContentService.createTextOutput(JSON.stringify({ ok: true }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return jsonOut({ ok: true });
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ ok: false, error: String(err) }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return jsonOut({ ok: false, error: String(err) });
   }
+}
+
+function ensureHeaders_(sheet) {
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
+    return;
+  }
+  var first = String(sheet.getRange(1, 1).getValue() || '');
+  if (first !== HEADERS[0]) {
+    sheet.insertRowBefore(1);
+    sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+}
+
+function jsonOut(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doGet() {
