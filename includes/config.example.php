@@ -9,6 +9,11 @@ const DB_PASS = '';
 
 const GOOGLE_CLIENT_ID = '';
 
+/** Web app URL from Apps Script bound to spreadsheet "Contacte clienti" (sheet "de pe site"). */
+const GOOGLE_SHEETS_WEBHOOK_URL = '';
+/** Shared secret checked by the Apps Script doPost handler. */
+const GOOGLE_SHEETS_WEBHOOK_SECRET = '';
+
 const ADMIN_USER = '';
 const ADMIN_PASS = '';
 

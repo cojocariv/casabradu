@@ -390,6 +390,9 @@ function place_order(array $user, array $lines, string $address, string $note): 
     }
 
     notify_order($order, $user);
+    if (function_exists('sheets_append_order')) {
+        sheets_append_order($order, $user);
+    }
 
     return $order;
 }

@@ -326,6 +326,7 @@ require_once __DIR__ . '/cont.php';
 require_once __DIR__ . '/cos.php';
 require_once __DIR__ . '/admin.php';
 require_once __DIR__ . '/google.php';
+require_once __DIR__ . '/sheets.php';
 
 if (!headers_sent()) {
     header('Content-Language: ' . lang());
