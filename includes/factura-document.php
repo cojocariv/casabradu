@@ -102,6 +102,11 @@
         <button type="button" onclick="window.print()"><?= tr('Printează sau salvează PDF') ?></button>
         <form method="post" action="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">
             <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+            <input type="hidden" name="actiune" value="pdf">
+            <button type="submit">Descarcă PDF</button>
+        </form>
+        <form method="post" action="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">
+            <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
             <input type="hidden" name="actiune" value="email">
             <button type="submit"><?= tr('Trimite contul prin email') ?></button>
         </form>

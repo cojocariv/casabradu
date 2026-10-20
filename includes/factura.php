@@ -104,12 +104,24 @@ function send_invoice_mail(array $order, string $date, array $payer, array $tabl
         $order['email'] = $clientEmail;
     }
 
+    require_once __DIR__ . '/pdf.php';
+    $pdf = invoice_pdf($order, $date, $payer, $table);
+    $filename = 'cont-de-plata-' . preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) ($order['id'] ?? 'casa-bradu')) . '.pdf';
+
     return site_mail(
         $clientEmail,
         'Cont de plată ' . ($order['id'] ?? ''),
-        invoice_message($order, $date, $payer, $table),
+        invoice_message($order, $date, $payer, $table)
+            . "\n\nGăsești contul de plată și în atașamentul PDF.",
         SITE_ORDERS_EMAIL,
         '',
-        SITE_ORDERS_EMAIL
+        SITE_ORDERS_EMAIL,
+        [
+            [
+                'name' => $filename,
+                'type' => 'application/pdf',
+                'data' => $pdf,
+            ],
+        ]
     );
 }

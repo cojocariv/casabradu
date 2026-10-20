@@ -179,11 +179,14 @@ require __DIR__ . '/includes/header.php';
                 <?php else: ?>
                     <p class="notice notice-error" role="alert">Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.</p>
                 <?php endif; ?>
-                <form method="post" action="<?= e(url('admin.php')) ?>">
-                    <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
-                    <input type="hidden" name="formular" value="iesire">
-                    <button class="btn btn-line btn-sm" type="submit">Ieși</button>
-                </form>
+                <div class="admin-bar-actions">
+                    <a class="btn btn-dark btn-sm" href="<?= e(url('admin-cont.php')) ?>">Cont de plată</a>
+                    <form method="post" action="<?= e(url('admin.php')) ?>">
+                        <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                        <input type="hidden" name="formular" value="iesire">
+                        <button class="btn btn-line btn-sm" type="submit">Ieși</button>
+                    </form>
+                </div>
             </div>
             <div class="price-board" id="preturi">
                 <p class="kicker">Produse</p>

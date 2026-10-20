@@ -43,19 +43,36 @@ if (($order['email'] ?? '') === '' && $replyTo !== '') {
 $invoiceNotice = '';
 $invoiceError = '';
 
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && (string) ($_POST['actiune'] ?? '') === 'email') {
-    if (!hash_equals((string) ($_SESSION['csrf'] ?? ''), (string) ($_POST['csrf'] ?? ''))) {
-        $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Sesiunea a expirat. Reîncarcă pagina și încearcă din nou.'];
-    } elseif (!smtp_ready()) {
-        $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Pentru trimitere, adaugă parola cutiei comenzi@casabradu.md în configurarea site-ului.'];
-    } elseif (send_invoice_mail($order, $invoiceDate, $payer, $table, $replyTo)) {
-        $_SESSION['invoice_mail'] = ['ok' => true, 'text' => 'Contul de plată a fost trimis.'];
-    } else {
-        $reason = site_mail_status();
-        $_SESSION['invoice_mail'] = ['ok' => false, 'text' => $reason !== '' ? $reason : 'Emailul nu a putut fi trimis. Încearcă din nou peste câteva minute.'];
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+    $action = (string) ($_POST['actiune'] ?? '');
+    if ($action === 'email') {
+        if (!hash_equals((string) ($_SESSION['csrf'] ?? ''), (string) ($_POST['csrf'] ?? ''))) {
+            $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Sesiunea a expirat. Reîncarcă pagina și încearcă din nou.'];
+        } elseif (!smtp_ready()) {
+            $_SESSION['invoice_mail'] = ['ok' => false, 'text' => 'Pentru trimitere, adaugă parola cutiei comenzi@casabradu.md în configurarea site-ului.'];
+        } elseif (send_invoice_mail($order, $invoiceDate, $payer, $table, $replyTo)) {
+            $_SESSION['invoice_mail'] = ['ok' => true, 'text' => 'Contul de plată a fost trimis.'];
+        } else {
+            $reason = site_mail_status();
+            $_SESSION['invoice_mail'] = ['ok' => false, 'text' => $reason !== '' ? $reason : 'Emailul nu a putut fi trimis. Încearcă din nou peste câteva minute.'];
+        }
+        header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? ''))));
+        exit;
     }
-    header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? ''))));
-    exit;
+    if ($action === 'pdf') {
+        if (!hash_equals((string) ($_SESSION['csrf'] ?? ''), (string) ($_POST['csrf'] ?? ''))) {
+            header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? ''))));
+            exit;
+        }
+        require_once __DIR__ . '/includes/pdf.php';
+        $pdf = invoice_pdf($order, $invoiceDate, $payer, $table);
+        $filename = 'cont-de-plata-' . preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) ($order['id'] ?? 'casa-bradu')) . '.pdf';
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Length: ' . (string) strlen($pdf));
+        echo $pdf;
+        exit;
+    }
 }
 
 $mailResult = $_SESSION['invoice_mail'] ?? null;
