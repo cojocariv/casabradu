@@ -148,21 +148,6 @@ button, input, select, textarea { font: inherit; }
     display: block;
 }
 
-.logo .logo-light {
-    display: none;
-}
-
-.page-acasa .site-header:not(.is-scrolled) .logo .logo-dark {
-    display: none;
-}
-
-.page-acasa .site-header:not(.is-scrolled) .logo .logo-light {
-    display: block;
-}
-
-.page-acasa .site-header.is-scrolled .logo .logo-light {
-    display: none;
-}
 
 .header-tools {
     display: flex;
@@ -551,9 +536,15 @@ html[lang="ru"] .script {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center 45%;
     display: block;
-    transform: scale(1.02);
+    transform: scale(1.04);
     animation: hero-pan 18s ease-in-out infinite alternate;
+}
+
+@keyframes hero-pan {
+    from { transform: scale(1.04) translate3d(0, 0, 0); }
+    to { transform: scale(1.08) translate3d(-1%, -0.6%, 0); }
 }
 
 .hero-media::after {
@@ -561,13 +552,8 @@ html[lang="ru"] .script {
     position: absolute;
     inset: 0;
     background:
-        linear-gradient(105deg, rgba(8, 18, 14, 0.82) 0%, rgba(8, 18, 14, 0.48) 42%, rgba(8, 18, 14, 0.2) 100%),
-        linear-gradient(180deg, rgba(8, 18, 14, 0.28) 0%, rgba(8, 18, 14, 0.12) 40%, rgba(8, 18, 14, 0.62) 100%);
-}
-
-@keyframes hero-pan {
-    from { transform: scale(1.02) translate3d(0, 0, 0); }
-    to { transform: scale(1.06) translate3d(-1.2%, -0.8%, 0); }
+        linear-gradient(105deg, rgba(8, 18, 14, 0.78) 0%, rgba(8, 18, 14, 0.4) 45%, rgba(8, 18, 14, 0.15) 100%),
+        linear-gradient(180deg, rgba(8, 18, 14, 0.12) 0%, rgba(8, 18, 14, 0.08) 40%, rgba(8, 18, 14, 0.58) 100%);
 }
 
 .hero-content {
@@ -1858,99 +1844,6 @@ html[lang="ru"] .script {
     .hero-media img { animation: none; }
 }
 
-/* Immersive homepage: header over full-bleed hero */
-.page-acasa .site-header {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    background: transparent;
-    border-bottom-color: transparent;
-    box-shadow: none;
-}
-
-.page-acasa .site-header.is-scrolled {
-    position: fixed;
-    background: rgba(246, 243, 238, 0.92);
-    backdrop-filter: blur(18px) saturate(1.2);
-    border-bottom-color: var(--line);
-    box-shadow: 0 10px 30px rgba(18, 48, 40, 0.06);
-}
-
 .page-acasa .hero-bleed {
-    min-height: 100svh;
-    padding-top: calc(var(--header) + 20px);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .lang-switch {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.22);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .lang-switch a {
-    color: rgba(247, 243, 234, 0.88);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .lang-switch a[aria-current="true"] {
-    background: #fff;
-    color: var(--forest);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav-links {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav-links a {
-    color: #f7f3ea;
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav-links a:hover {
-    background: rgba(255, 255, 255, 0.14);
-    color: #fff;
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav-links a[aria-current="page"] {
-    background: #fff;
-    color: var(--forest);
-    box-shadow: none;
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav-toggle {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.28);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav-toggle .bar {
-    background: #f7f3ea;
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav .btn-dark {
-    background: #fffaf3;
-    color: var(--forest);
-    border-color: rgba(255, 255, 255, 0.35);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav .btn-dark:hover {
-    background: #fff;
-    color: var(--forest);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav.is-open {
-    background: rgba(255, 252, 248, 0.98);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav.is-open .nav-links a {
-    color: var(--forest-2);
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav.is-open .nav-links a[aria-current="page"] {
-    background: var(--forest-2);
-    color: #f6f1e6;
-}
-
-.page-acasa .site-header:not(.is-scrolled) .nav.is-open .btn-dark {
-    background: linear-gradient(180deg, #245244 0%, #16352b 100%);
-    color: #f6f1e6;
+    min-height: calc(100svh - var(--header));
 }
