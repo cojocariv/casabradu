@@ -11,7 +11,7 @@
     --line: rgba(18, 48, 40, 0.1);
     --card: #fffcf8;
     --shadow: 0 12px 40px rgba(18, 48, 40, 0.08);
-    --header: 88px;
+    --header: 128px;
     --radius: 18px;
     --radius-sm: 12px;
 }
@@ -143,21 +143,25 @@ button, input, select, textarea { font: inherit; }
 }
 
 .logo img {
-    height: 68px;
+    height: 120px;
     width: auto;
     display: block;
 }
 
-.logo-light {
+.logo .logo-light {
     display: none;
 }
 
-.page-acasa .site-header:not(.is-scrolled) .logo-dark {
+.page-acasa .site-header:not(.is-scrolled) .logo .logo-dark {
     display: none;
 }
 
-.page-acasa .site-header:not(.is-scrolled) .logo-light {
+.page-acasa .site-header:not(.is-scrolled) .logo .logo-light {
     display: block;
+}
+
+.page-acasa .site-header.is-scrolled .logo .logo-light {
+    display: none;
 }
 
 .header-tools {
@@ -1729,9 +1733,9 @@ html[lang="ru"] .script {
 }
 
 @media (max-width: 860px) {
-    :root { --header: 76px; }
+    :root { --header: 104px; }
 
-    .logo img { height: 56px; }
+    .logo img { height: 88px; }
 
     .nav-toggle { display: inline-flex; }
 
