@@ -136,6 +136,7 @@ button, input, select, textarea { font: inherit; }
 }
 
 .logo {
+    position: relative;
     display: flex;
     align-items: center;
     text-decoration: none;
@@ -144,6 +145,18 @@ button, input, select, textarea { font: inherit; }
 .logo img {
     height: 68px;
     width: auto;
+    display: block;
+}
+
+.logo-light {
+    display: none;
+}
+
+.page-acasa .site-header:not(.is-scrolled) .logo-dark {
+    display: none;
+}
+
+.page-acasa .site-header:not(.is-scrolled) .logo-light {
     display: block;
 }
 
