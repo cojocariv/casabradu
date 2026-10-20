@@ -288,7 +288,7 @@ function invoice_pdf(array $order, string $date, array $payer, array $table): st
     }
 
     $y -= 36;
-    $ops[] = pdf_text($margin, $y, 'Conducator: ________________________ / ________________________ /', 10, 'F1');
+    $ops[] = pdf_text($margin, $y, 'Administrator: ________________________ / Cojocari Tatiana /', 10, 'F1');
 
     $content = pdf_ops($ops);
     $objects = [];

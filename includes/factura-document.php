@@ -168,7 +168,7 @@
                 <p><?= tr('Inclusiv TVA') ?>: <?= e(lei($table['tva'])) ?> <?= tr('lei') ?></p>
             <?php endif; ?>
         </div>
-        <p class="sign"><?= tr('Conducător:') ?> <span></span> / <span></span> /</p>
+        <p class="sign"><?= tr('Administrator:') ?> <span></span> / Cojocari Tatiana /</p>
     </article>
 </body>
 </html>

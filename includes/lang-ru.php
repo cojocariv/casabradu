@@ -305,6 +305,7 @@ return [
     'Cant.' => 'Кол.',
     'Total de plată' => 'Итого к оплате',
     'Conducător:' => 'Руководитель:',
+    'Administrator:' => 'Администратор:',
     'Cont de plată nr. %s din %s' => 'Счёт на оплату № %s от %s',
     'ATENȚIE' => 'ВНИМАНИЕ',
     'Emailul nu a putut fi trimis. Încearcă din nou peste câteva minute.' => 'Письмо не отправилось. Попробуйте снова через несколько минут.',
