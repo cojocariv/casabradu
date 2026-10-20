@@ -17,6 +17,7 @@ return [
     'Cont' => 'Вход',
     'Coș' => 'Корзина',
     'Solicită ofertă' => 'Заявка',
+    'De ce Casa Bradu' => 'Почему Casa Bradu',
     'Sari la conținut' => 'К содержанию',
     'Meniu' => 'Меню',
     'Principal' => 'Основное',

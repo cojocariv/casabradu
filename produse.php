@@ -38,16 +38,16 @@ require __DIR__ . '/includes/header.php';
             <?php endforeach; ?>
         </div>
 
-        <div class="product-grid">
+        <div class="shop-grid product-shop">
             <?php foreach ($products as $item): ?>
-                <article class="product-card reveal" id="<?= e($item['slug']) ?>" data-cat="<?= e($item['slug']) ?>">
-                    <div class="product-card-photo">
-                        <img src="<?= e(asset($item['image'])) ?>" alt="<?= tr($item['alt']) ?>" width="640" height="640">
+                <article class="shop-item reveal" id="<?= e($item['slug']) ?>" data-cat="<?= e($item['slug']) ?>">
+                    <div class="shop-item-photo">
+                        <img src="<?= e(asset($item['image'])) ?>" alt="<?= tr($item['alt']) ?>" width="800" height="800">
                     </div>
-                    <div class="product-card-body">
+                    <div class="shop-item-body">
                         <p class="kicker"><?= tr($item['kicker']) ?></p>
                         <h2><?= tr($item['title']) ?></h2>
-                        <p class="product-short"><?= tr($item['short']) ?></p>
+                        <p><?= tr($item['short']) ?></p>
                         <?php buy_form($item['slug'], 'produse.php', 'btn btn-dark btn-sm'); ?>
                     </div>
                 </article>

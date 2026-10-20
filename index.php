@@ -8,7 +8,6 @@ $products = require __DIR__ . '/includes/products.php';
 $coffee = array_values(array_filter($products, static function (array $item): bool {
     return $item['slug'] !== 'aparate';
 }));
-$frames = ['visual-soft', 'visual-round', 'visual-arch'];
 
 $page = 'acasa';
 $pageTitle = 'Cafea artizanală din Italia';
@@ -19,19 +18,22 @@ $seoItems = seo_product_items($products);
 require __DIR__ . '/includes/header.php';
 ?>
 
-<section class="hero">
-    <div class="wrap hero-grid">
-        <div class="hero-copy reveal">
-            <p class="eyebrow">Caffè artigianale</p>
-            <h1><?= tr('Cafeaua bună aduce') ?></h1>
-            <p class="script"><?= tr('zile mai fine') ?></p>
-            <p class="lede"><?= tr('La Casa Bradu Caffè importăm din Italia cafea artizanală și o livrăm în toată țara, în Republica Moldova. Cialde, capsule și boabe, cu aromă și un raport ideal între Arabica și Robusta.') ?></p>
-            <a class="btn btn-dark" href="#produse"><?= tr('Vezi selecția') ?></a>
-        </div>
-        <div class="hero-photo reveal">
-            <img src="<?= e(asset('assets/img/hero-cafea.jpg')) ?>" alt="<?= tr('Ceașcă de cafea cu lapte, boabe prăjite și frunze verzi') ?>" width="1200" height="900">
+<section class="hero hero-bleed">
+    <div class="hero-media">
+        <img src="<?= e(asset('assets/img/hero-cafea.jpg')) ?>" alt="<?= tr('Ceașcă de cafea cu lapte, boabe prăjite și frunze verzi') ?>" width="1600" height="1067">
+    </div>
+    <div class="wrap hero-content reveal">
+        <p class="hero-brand"><?= e(SITE_NAME) ?></p>
+        <h1><?= tr('Cafeaua bună aduce') ?> <span class="script"><?= tr('zile mai fine') ?></span></h1>
+        <p class="lede"><?= tr(SITE_DESCRIPTION) ?></p>
+        <div class="hero-actions">
+            <a class="btn btn-light" href="#produse"><?= tr('Vezi selecția') ?></a>
+            <a class="btn btn-ghost" href="<?= e(url('contact.php')) ?>"><?= tr('Solicită ofertă') ?></a>
         </div>
     </div>
+</section>
+
+<section class="trust" aria-label="<?= tr('De ce Casa Bradu') ?>">
     <div class="wrap">
         <ul class="features">
             <li>
@@ -51,7 +53,6 @@ require __DIR__ . '/includes/header.php';
                 <span><?= tr('Livrare în țară') ?></span>
             </li>
         </ul>
-        <div class="ornament" aria-hidden="true"><span></span><i></i><span></span></div>
     </div>
 </section>
 
@@ -60,18 +61,20 @@ require __DIR__ . '/includes/header.php';
         <div class="section-head reveal">
             <p class="kicker"><?= tr('Alegeri de casă') ?></p>
             <h2><?= tr('Cafeaua noastră') ?></h2>
-            <p class="script"><?= tr('gust fin') ?></p>
+            <p class="section-lead"><?= tr('gust fin') ?></p>
         </div>
-        <div class="cards">
-            <?php foreach ($coffee as $index => $item): ?>
-                <article class="card reveal">
-                    <div class="card-visual <?= e($frames[$index % 3]) ?>">
+        <div class="shop-grid">
+            <?php foreach ($coffee as $item): ?>
+                <article class="shop-item reveal">
+                    <div class="shop-item-photo">
                         <img src="<?= e(asset($item['image'])) ?>" alt="<?= tr($item['alt']) ?>" width="800" height="800">
                     </div>
-                    <h3><?= tr($item['title']) ?></h3>
-                    <p><?= tr($item['short']) ?></p>
-                    <p class="card-meta"><?= tr($item['meta']) ?></p>
-                    <?php buy_form($item['slug'], 'index.php'); ?>
+                    <div class="shop-item-body">
+                        <p class="kicker"><?= tr($item['meta']) ?></p>
+                        <h3><?= tr($item['title']) ?></h3>
+                        <p><?= tr($item['short']) ?></p>
+                        <?php buy_form($item['slug'], 'index.php'); ?>
+                    </div>
                 </article>
             <?php endforeach; ?>
         </div>
