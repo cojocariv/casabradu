@@ -209,7 +209,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                         if ($payer['nume'] === '') {
                             $payer['nume'] = (string) ($client['nume'] ?? '');
                         }
-                        if (send_invoice_mail($order, $invoiceDate, $payer, $table, (string) $client['email'])) {
+                        if (send_invoice_mail($order, $invoiceDate, $payer, $table, (string) $client['email'], $client)) {
                             $_SESSION['invoice_mail'] = ['ok' => true, 'text' => 'Contul de plată a fost trimis.'];
                         } else {
                             $reason = site_mail_status();

@@ -92,7 +92,7 @@ function invoice_message(array $order, string $date, array $payer, array $table)
     return $body;
 }
 
-function send_invoice_mail(array $order, string $date, array $payer, array $table, string $clientEmail): bool
+function send_invoice_mail(array $order, string $date, array $payer, array $table, string $clientEmail, array $user = []): bool
 {
     $clientEmail = str_replace(["\r", "\n"], '', $clientEmail);
     if (!filter_var($clientEmail, FILTER_VALIDATE_EMAIL)) {
@@ -108,7 +108,7 @@ function send_invoice_mail(array $order, string $date, array $payer, array $tabl
     $pdf = invoice_pdf($order, $date, $payer, $table);
     $filename = 'cont-de-plata-' . preg_replace('/[^A-Za-z0-9_-]+/', '-', (string) ($order['id'] ?? 'casa-bradu')) . '.pdf';
 
-    return site_mail(
+    $sent = site_mail(
         $clientEmail,
         'Cont de plată ' . ($order['id'] ?? ''),
         invoice_message($order, $date, $payer, $table)
@@ -124,4 +124,20 @@ function send_invoice_mail(array $order, string $date, array $payer, array $tabl
             ],
         ]
     );
+
+    if ($sent && function_exists('sheets_append_order')) {
+        if ($user === []) {
+            $user = [
+                'nume' => (string) ($order['nume'] ?? $payer['nume'] ?? ''),
+                'telefon' => (string) ($order['telefon'] ?? ''),
+                'email' => $clientEmail,
+                'rechizite' => (string) ($order['rechizite'] ?? ''),
+            ];
+        } elseif (($user['email'] ?? '') === '') {
+            $user['email'] = $clientEmail;
+        }
+        sheets_append_order($order, $user);
+    }
+
+    return $sent;
 }

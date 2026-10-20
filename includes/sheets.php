@@ -96,7 +96,7 @@ function sheets_append_order(array $order, array $user): bool
             (string) ($order['adresa'] ?? ''),
             (string) ($order['nota'] ?? ''),
             (string) ($order['status'] ?? 'inregistrata'),
-            'site',
+            'cont email',
         ],
     ];
 
