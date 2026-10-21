@@ -123,6 +123,111 @@
         });
     });
 
+    (function initCartLive() {
+        var root = document.getElementById('cart-live');
+        if (!root) {
+            return;
+        }
+
+        var confirmLabel = root.getAttribute('data-confirm') || 'la confirmare';
+        var leiLabel = root.getAttribute('data-lei') || 'lei';
+        var totalEl = document.querySelector('.cart-total-value');
+        var tvaLine = document.querySelector('.cart-tva-line');
+        var tvaEl = document.querySelector('.cart-tva-value');
+        var confirmNote = document.querySelector('.cart-confirm-note');
+        var qtyInputs = root.querySelectorAll('.cart-qty');
+
+        function formatLei(bani) {
+            var neg = bani < 0;
+            bani = Math.abs(Math.round(bani));
+            var whole = Math.floor(bani / 100);
+            var frac = String(bani % 100);
+            if (frac.length < 2) {
+                frac = '0' + frac;
+            }
+            var wholeStr = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            return (neg ? '-' : '') + wholeStr + ',' + frac;
+        }
+
+        function recalc() {
+            var total = 0;
+            var complete = true;
+            var hasPricedQty = false;
+
+            root.querySelectorAll('.cart-row').forEach(function (row) {
+                var input = row.querySelector('.cart-qty');
+                var sumCell = row.querySelector('.cart-line-sum');
+                if (!input || !sumCell) {
+                    return;
+                }
+
+                var qty = parseInt(input.value, 10);
+                if (isNaN(qty) || qty < 0) {
+                    qty = 0;
+                }
+                if (qty > 999) {
+                    qty = 999;
+                }
+
+                var priceAttr = row.getAttribute('data-price-bani');
+                if (priceAttr === null || priceAttr === '') {
+                    if (qty > 0) {
+                        complete = false;
+                    }
+                    sumCell.textContent = confirmLabel;
+                    return;
+                }
+
+                var price = parseInt(priceAttr, 10);
+                if (isNaN(price) || price < 0) {
+                    if (qty > 0) {
+                        complete = false;
+                    }
+                    sumCell.textContent = confirmLabel;
+                    return;
+                }
+
+                var sum = price * qty;
+                sumCell.textContent = formatLei(sum);
+                if (qty > 0) {
+                    hasPricedQty = true;
+                    total += sum;
+                }
+            });
+
+            if (!totalEl) {
+                return;
+            }
+
+            if (!complete || !hasPricedQty) {
+                totalEl.textContent = confirmLabel;
+                if (tvaLine) {
+                    tvaLine.hidden = true;
+                }
+                if (confirmNote) {
+                    confirmNote.hidden = false;
+                }
+                return;
+            }
+
+            totalEl.textContent = formatLei(total) + ' ' + leiLabel;
+            if (tvaEl) {
+                tvaEl.textContent = formatLei(Math.round(total * 20 / 120));
+            }
+            if (tvaLine) {
+                tvaLine.hidden = false;
+            }
+            if (confirmNote) {
+                confirmNote.hidden = true;
+            }
+        }
+
+        qtyInputs.forEach(function (input) {
+            input.addEventListener('input', recalc);
+            input.addEventListener('change', recalc);
+        });
+    })();
+
     if (!document.body.classList.contains('page-admin')) {
         function blockCopy(event) {
             var field = event.target && event.target.closest

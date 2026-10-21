@@ -4,15 +4,18 @@
  * SETUP (o singură dată):
  * 1. Deschide spreadsheet-ul "Contacte clienti"
  * 2. Extensii → Apps Script
- * 3. Șterge codul implicit și lipește acest fișier
- * 4. În WEBHOOK_SECRET pune aceeași valoare ca GOOGLE_SHEETS_WEBHOOK_SECRET din config.php
- * 5. Salvează → Implementare → Aplicatie web nouă
+ * 3. ȘTERGE tot codul vechi (inclusiv myFunction) și lipește acest fișier
+ * 4. În SPREADSHEET_ID pune ID-ul din URL-ul foii:
+ *    https://docs.google.com/spreadsheets/d/<<<ACEST_ID>>>/edit
+ * 5. În WEBHOOK_SECRET pune aceeași valoare ca GOOGLE_SHEETS_WEBHOOK_SECRET din config.php
+ * 6. Salvează → Rulează setupSheet() o dată (▶) și acceptă permisiunile
+ * 7. Implementare → Gestionează implementările → creion → Versiune nouă → Implementează
  *    - Executare ca: Eu
  *    - Cine are acces: Oricine
- * 6. Copiază URL-ul și pune-l în config.php ca GOOGLE_SHEETS_WEBHOOK_URL
- * 7. Rulează o dată funcția setupSheet() din editor (▶) ca să creeze anteturile
+ * 8. Copiază URL-ul /exec în GOOGLE_SHEETS_WEBHOOK_URL din config.php
  */
 
+var SPREADSHEET_ID = ''; // OBLIGATORIU — ID din URL-ul Google Sheet
 var SHEET_NAME = 'de pe site';
 var WEBHOOK_SECRET = '1dcc3373279d145d433b1e53dc671607';
 
@@ -34,27 +37,42 @@ var HEADERS = [
   'Sursă'
 ];
 
+function getSpreadsheet_() {
+  if (SPREADSHEET_ID && String(SPREADSHEET_ID).trim() !== '') {
+    return SpreadsheetApp.openById(String(SPREADSHEET_ID).trim());
+  }
+  var active = SpreadsheetApp.getActiveSpreadsheet();
+  if (active) {
+    return active;
+  }
+  throw new Error('Setează SPREADSHEET_ID în script (din URL-ul foii Google).');
+}
+
 function setupSheet() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSpreadsheet_();
   var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
   }
   ensureHeaders_(sheet);
+  Logger.log('OK sheet="' + SHEET_NAME + '" id=' + ss.getId());
 }
 
 function doPost(e) {
   try {
+    Logger.log('doPost start');
     if (!e || !e.postData || !e.postData.contents) {
-      return jsonOut({ ok: false, error: 'empty_body' });
+      Logger.log('empty_body');
+      return jsonOut_({ ok: false, error: 'empty_body' });
     }
 
     var data = JSON.parse(e.postData.contents);
     if ((data.secret || '') !== WEBHOOK_SECRET) {
-      return jsonOut({ ok: false, error: 'secret' });
+      Logger.log('secret mismatch');
+      return jsonOut_({ ok: false, error: 'secret' });
     }
 
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = getSpreadsheet_();
     var name = data.sheet || SHEET_NAME;
     var sheet = ss.getSheetByName(name);
     if (!sheet) {
@@ -64,13 +82,32 @@ function doPost(e) {
 
     var row = data.row;
     if (!row || !row.length) {
-      return jsonOut({ ok: false, error: 'row' });
+      return jsonOut_({ ok: false, error: 'row' });
     }
 
-    sheet.appendRow(row);
-    return jsonOut({ ok: true });
+    // appendRow accepts only primitives
+    var clean = [];
+    for (var i = 0; i < row.length; i++) {
+      var v = row[i];
+      if (v === null || v === undefined) {
+        clean.push('');
+      } else if (typeof v === 'object') {
+        clean.push(JSON.stringify(v));
+      } else {
+        clean.push(v);
+      }
+    }
+
+    sheet.appendRow(clean);
+    Logger.log('appended order=' + (clean[1] || ''));
+    return jsonOut_({ ok: true });
   } catch (err) {
-    return jsonOut({ ok: false, error: String(err) });
+    Logger.log('doPost error: ' + err);
+    try {
+      return jsonOut_({ ok: false, error: String(err) });
+    } catch (e2) {
+      return ContentService.createTextOutput('{"ok":false,"error":"fatal"}');
+    }
   }
 }
 
@@ -89,11 +126,43 @@ function ensureHeaders_(sheet) {
   }
 }
 
-function jsonOut(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
+function jsonOut_(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doGet() {
   return ContentService.createTextOutput('Casa Bradu sheets webhook OK');
+}
+
+/** Rulează din editor ca să simulezi un POST (fără site). */
+function testDoPost() {
+  var fake = {
+    postData: {
+      contents: JSON.stringify({
+        secret: WEBHOOK_SECRET,
+        sheet: SHEET_NAME,
+        row: [
+          Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd.MM.yyyy HH:mm'),
+          'TEST-EDITOR',
+          'Test Companie',
+          'Test Nume',
+          '060000000',
+          'test@casabradu.md',
+          'Cafea × 1',
+          '',
+          '1',
+          '0',
+          '',
+          'Chișinău',
+          'test editor',
+          'test',
+          'cont email'
+        ]
+      })
+    }
+  };
+  var out = doPost(fake);
+  Logger.log(out.getContent());
 }

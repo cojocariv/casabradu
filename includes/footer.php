@@ -38,6 +38,6 @@
         <p><?= e(SITE_DOMAIN) ?></p>
     </div>
 </footer>
-<script src="<?= e(asset('assets/js/main.js')) ?>" defer></script>
+<script src="<?= e(asset('assets/js/main.js')) ?>?v=2" defer></script>
 </body>
 </html>

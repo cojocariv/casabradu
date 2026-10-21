@@ -135,7 +135,9 @@ require __DIR__ . '/includes/header.php';
                 <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                 <input type="hidden" name="actiune" value="actualizeaza">
             </form>
-            <div class="table-wrap orders-sheet">
+            <div class="table-wrap orders-sheet" id="cart-live"
+                 data-confirm="<?= e(t('la confirmare')) ?>"
+                 data-lei="<?= e(t('lei')) ?>">
                 <table class="sheet-table">
                     <thead>
                         <tr>
@@ -148,14 +150,19 @@ require __DIR__ . '/includes/header.php';
                     </thead>
                     <tbody>
                         <?php foreach ($lines as $index => $line): ?>
-                            <?php $row = $table['rows'][$index] ?? ['pret' => null, 'suma' => null]; ?>
-                            <tr>
+                            <?php
+                            $row = $table['rows'][$index] ?? ['pret' => null, 'suma' => null];
+                            $pretBani = $row['pret'] ?? null;
+                            $pretLabel = ($money = lei($pretBani)) === 'la confirmare' ? t('la confirmare') : $money;
+                            $sumaLabel = ($money = lei($row['suma'] ?? null)) === 'la confirmare' ? t('la confirmare') : $money;
+                            ?>
+                            <tr class="cart-row" data-price-bani="<?= $pretBani === null ? '' : (int) $pretBani ?>">
                                 <td><?= tr($line['titlu']) ?></td>
                                 <td>
-                                    <input form="cart-update" name="qty[<?= e($line['slug']) ?>]" type="number" min="0" max="999" step="1" value="<?= (int) $line['cantitate'] ?>" inputmode="numeric" aria-label="<?= e(t('Cantitate') . ' ' . t($line['titlu'])) ?>">
+                                    <input class="cart-qty" form="cart-update" name="qty[<?= e($line['slug']) ?>]" type="number" min="0" max="999" step="1" value="<?= (int) $line['cantitate'] ?>" inputmode="numeric" aria-label="<?= e(t('Cantitate') . ' ' . t($line['titlu'])) ?>">
                                 </td>
-                                <td><?= e(lei($row['pret'] ?? null)) ?></td>
-                                <td><?= e(lei($row['suma'] ?? null)) ?></td>
+                                <td><?= e($pretLabel) ?></td>
+                                <td class="cart-line-sum"><?= e($sumaLabel) ?></td>
                                 <td>
                                     <form method="post" action="<?= e(url('cos.php')) ?>">
                                         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
@@ -169,12 +176,9 @@ require __DIR__ . '/includes/header.php';
                     </tbody>
                 </table>
             </div>
-            <p class="cart-total"><strong><?= tr('Total') ?>: <?= e($table['total'] === null ? t('la confirmare') : lei($table['total']) . ' ' . t('lei')) ?></strong></p>
-            <?php if ($table['tva'] !== null): ?>
-                <p class="form-note"><?= tr('Inclusiv TVA') ?>: <?= e(lei($table['tva'])) ?> <?= tr('lei') ?></p>
-            <?php else: ?>
-                <p class="form-note"><?= tr('Prețul îl confirmăm împreună, înainte de contul de plată. Cantitatea 0 scoate produsul din coș.') ?></p>
-            <?php endif; ?>
+            <p class="cart-total"><strong><?= tr('Total') ?>: <span class="cart-total-value"><?= e($table['total'] === null ? t('la confirmare') : lei($table['total']) . ' ' . t('lei')) ?></span></strong></p>
+            <p class="form-note cart-tva-line"<?= $table['tva'] === null ? ' hidden' : '' ?>><?= tr('Inclusiv TVA') ?>: <span class="cart-tva-value"><?= e($table['tva'] === null ? '' : lei($table['tva'])) ?></span> <?= tr('lei') ?></p>
+            <p class="form-note cart-confirm-note"<?= $table['tva'] !== null ? ' hidden' : '' ?>><?= tr('Prețul îl confirmăm împreună, înainte de contul de plată. Cantitatea 0 scoate produsul din coș.') ?></p>
             <button class="btn btn-line" type="submit" form="cart-update"><?= tr('Actualizează coșul') ?></button>
 
             <div class="contact-card cart-checkout">
