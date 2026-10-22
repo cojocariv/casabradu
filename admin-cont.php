@@ -163,10 +163,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             . "Adresa juridică: {$form['adresa_juridica']}\n"
             . "IBAN și banca: {$form['iban']}"
         );
-        if (!requisites_filled($requisites)) {
-            $errors['rechizite'] = 'Completează denumirea, IDNO, adresa juridică și IBAN-ul. Codul TVA poate rămâne gol.';
-        }
-
         $lines = [];
         if ($action !== 'salveaza') {
             $parsed = admin_invoice_parse_lines($_POST);

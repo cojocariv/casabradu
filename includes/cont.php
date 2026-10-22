@@ -236,13 +236,7 @@ function client_order(string $userId, string $orderId): ?array
 
 function requisites_filled(string $text): bool
 {
-    $normalized = requisite_normalize($text);
-    foreach (['Denumirea companiei', 'IDNO', 'Adresa juridică', 'IBAN și banca'] as $label) {
-        if (preg_match('/^' . preg_quote($label, '/') . ':[ \t]*\S/mu', $normalized) !== 1) {
-            return false;
-        }
-    }
-
+    // Toate câmpurile de rechizite sunt opționale.
     return true;
 }
 
