@@ -13,6 +13,18 @@ declare(strict_types=1);
 $logo = asset('assets/img/logo.jpg?v=4');
 $totalBani = $table['total'] ?? null;
 $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
+$note = trim((string) ($order['nota'] ?? ''));
+$showNote = $note !== '' && stripos($note, 'Act de predare') === false;
+
+function act_html_fill(string $value): string
+{
+    $value = trim($value);
+    if ($value === '' || $value === '-') {
+        return '<span class="blank"></span>';
+    }
+
+    return e($value);
+}
 ?>
 <!DOCTYPE html>
 <html lang="ro">
@@ -37,6 +49,7 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
             gap: 12px;
             padding: 16px;
         }
+        .toolbar form { margin: 0; }
         .toolbar a, .toolbar button {
             font-family: Outfit, "Segoe UI", sans-serif;
             border-radius: 999px;
@@ -91,6 +104,19 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
             margin: 0 0 12px;
             text-align: justify;
         }
+        .blank {
+            display: inline-block;
+            min-width: 11em;
+            border-bottom: 1px solid #1a1a1a;
+            min-height: 1.05em;
+            vertical-align: bottom;
+        }
+        .hand-lines { margin: 6px 0 12px; }
+        .hand-lines .line {
+            border-bottom: 1px solid #1a1a1a;
+            height: 1.45em;
+            margin: 0 0 6px;
+        }
         table.goods {
             width: 100%;
             border-collapse: collapse;
@@ -107,15 +133,9 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
             font-weight: 700;
             text-align: center;
         }
-        table.goods td.num, table.goods td.qty, table.goods td.money {
-            text-align: right;
-            white-space: nowrap;
-        }
+        table.goods td.qty, table.goods td.money { text-align: right; white-space: nowrap; }
         table.goods td.center { text-align: center; }
-        .totals {
-            margin: 8px 0 16px;
-            font-size: 1rem;
-        }
+        .totals { margin: 8px 0 16px; font-size: 1rem; }
         .totals p { margin: 4px 0; }
         .signs {
             display: grid;
@@ -124,17 +144,18 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
             margin-top: 28px;
             font-size: 0.98rem;
         }
-        .signs .box p { margin: 0 0 6px; }
+        .signs .box p { margin: 0 0 8px; }
         .sign-line {
-            margin-top: 36px;
-            border-top: 1px solid #1a1a1a;
-            padding-top: 6px;
-            font-size: 0.9rem;
+            margin-top: 10px;
+            border-bottom: 1px solid #1a1a1a;
+            min-height: 1.6em;
         }
-        .stamp {
-            margin-top: 18px;
-            font-size: 0.9rem;
+        .sign-caption {
+            font-size: 0.88rem;
+            margin-top: 4px !important;
+            color: #333;
         }
+        .stamp { margin-top: 18px; font-size: 0.9rem; }
         .legal-note {
             margin-top: 22px;
             font-size: 0.82rem;
@@ -154,7 +175,12 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
 <body>
     <div class="toolbar">
         <a href="<?= e($back) ?>">Înapoi</a>
-        <button type="button" onclick="window.print()">Printează sau salvează PDF</button>
+        <form method="post" action="<?= e(url('act-predare.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>">
+            <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+            <input type="hidden" name="actiune" value="pdf">
+            <button type="submit">Descarcă PDF precompletat</button>
+        </form>
+        <button type="button" onclick="window.print()">Printează</button>
     </div>
     <article class="sheet">
         <div class="brand">
@@ -182,27 +208,25 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
             </div>
             <div>
                 <p><strong>Primitor (Cumpărător):</strong></p>
-                <p><?= e($receiver['nume'] !== '' ? $receiver['nume'] : '—') ?></p>
-                <p>IDNO: <?= e($receiver['idno'] !== '' ? $receiver['idno'] : '—') ?></p>
-                <?php if ($receiver['tva'] !== ''): ?>
-                    <p>Cod TVA: <?= e($receiver['tva']) ?></p>
-                <?php endif; ?>
-                <p>Adresa juridică: <?= e($receiver['adresa'] !== '' ? $receiver['adresa'] : '—') ?></p>
-                <?php if ($receiver['iban'] !== ''): ?>
-                    <p>IBAN / banca: <?= e($receiver['iban']) ?></p>
-                <?php endif; ?>
-                <?php if ($receiver['contact'] !== '' && $receiver['contact'] !== $receiver['nume']): ?>
-                    <p>Persoană de contact: <?= e($receiver['contact']) ?></p>
-                <?php endif; ?>
-                <?php if ($receiver['telefon'] !== '' && $receiver['telefon'] !== '-'): ?>
-                    <p>Telefon: <?= e($receiver['telefon']) ?></p>
-                <?php endif; ?>
+                <p><?= act_html_fill((string) $receiver['nume']) ?></p>
+                <p>IDNO: <?= act_html_fill((string) $receiver['idno']) ?></p>
+                <p>Cod TVA: <?= act_html_fill((string) $receiver['tva']) ?></p>
+                <p>Adresa juridică: <?= act_html_fill((string) $receiver['adresa']) ?></p>
+                <p>IBAN / banca: <?= act_html_fill((string) $receiver['iban']) ?></p>
+                <p>Persoană de contact: <?= act_html_fill(
+                    ($receiver['contact'] !== '' && $receiver['contact'] !== $receiver['nume'])
+                        ? (string) $receiver['contact']
+                        : ''
+                ) ?></p>
+                <p>Telefon: <?= act_html_fill(
+                    ($receiver['telefon'] !== '' && $receiver['telefon'] !== '-')
+                        ? (string) $receiver['telefon']
+                        : ''
+                ) ?></p>
                 <?php if ($receiver['email'] !== ''): ?>
                     <p>Email: <?= e($receiver['email']) ?></p>
                 <?php endif; ?>
-                <?php if ($receiver['livrare'] !== ''): ?>
-                    <p>Locul predării: <?= e($receiver['livrare']) ?></p>
-                <?php endif; ?>
+                <p>Locul predării: <?= act_html_fill((string) $receiver['livrare']) ?></p>
             </div>
         </div>
 
@@ -210,6 +234,10 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
             În temeiul comenzii / contului de plată nr. <strong><?= e((string) ($order['id'] ?? '')) ?></strong>
             din <strong><?= e($actDate) ?></strong>, părțile au întocmit prezentul act, prin care se confirmă că
             Predătorul a predat, iar Primitorul a primit mărfurile enumerate mai jos.
+        </p>
+        <p class="intro">
+            Data predării efective: <span class="blank" style="min-width:8em"></span>
+            &nbsp; Ora: <span class="blank" style="min-width:5em"></span>
         </p>
 
         <table class="goods">
@@ -228,26 +256,46 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
                     <?php
                     $line = ($order['linii'] ?? [])[$index] ?? [];
                     $um = act_unit_for_line(is_array($line) ? $line : []);
+                    $pretLabel = (($money = lei($row['pret'] ?? null)) === 'la confirmare') ? '' : $money;
+                    $sumaLabel = (($money = lei($row['suma'] ?? null)) === 'la confirmare') ? '' : $money;
                     ?>
                     <tr>
                         <td class="center"><?= (int) $index + 1 ?></td>
                         <td><?= e((string) ($row['titlu'] ?? '')) ?></td>
                         <td class="center"><?= e($um) ?></td>
                         <td class="qty"><?= (int) ($row['cantitate'] ?? 0) ?></td>
-                        <td class="money"><?= e(($money = lei($row['pret'] ?? null)) === 'la confirmare' ? '—' : $money) ?></td>
-                        <td class="money"><?= e(($money = lei($row['suma'] ?? null)) === 'la confirmare' ? '—' : $money) ?></td>
+                        <td class="money"><?= $pretLabel !== '' ? e($pretLabel) : '<span class="blank" style="min-width:4em"></span>' ?></td>
+                        <td class="money"><?= $sumaLabel !== '' ? e($sumaLabel) : '<span class="blank" style="min-width:4em"></span>' ?></td>
                     </tr>
                 <?php endforeach; ?>
+                <tr>
+                    <td class="center">&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="center">&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
             </tbody>
         </table>
 
         <div class="totals">
             <p><strong>Valoarea totală:</strong>
-                <?= e($totalBani === null ? 'la confirmare' : lei($totalBani) . ' lei') ?>
+                <?= $totalBani === null
+                    ? '<span class="blank" style="min-width:8em"></span> lei'
+                    : e(lei($totalBani) . ' lei') ?>
             </p>
-            <?php if ($totalWords !== ''): ?>
-                <p><strong>În litere:</strong> <?= e($totalWords) ?></p>
-            <?php endif; ?>
+            <p><strong>În litere:</strong>
+                <?= $totalWords !== '' ? e($totalWords) : '<span class="blank" style="min-width:18em"></span>' ?>
+            </p>
             <?php if (($table['tva'] ?? null) !== null): ?>
                 <p>Inclusiv TVA: <?= e(lei($table['tva'])) ?> lei</p>
             <?php endif; ?>
@@ -258,10 +306,19 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
             Primitorul confirmă recepția și declară că nu are pretenții față de Predător privind cantitatea, calitatea
             și aspectul mărfurilor la momentul predării, în afara rezervelor menționate eventual mai jos.
         </p>
-        <p class="clause">
-            <strong>Rezerve / mențiuni:</strong>
-            <?= e(trim((string) ($order['nota'] ?? '')) !== '' ? (string) $order['nota'] : 'Fără rezerve.') ?>
+        <p class="clause"><strong>Rezerve / mențiuni<?= $showNote ? '' : ' (completați cu pixul, dacă e cazul)' ?>:</strong>
+            <?php if ($showNote): ?>
+                <?= e($note) ?>
+            <?php endif; ?>
         </p>
+        <?php if (!$showNote): ?>
+            <div class="hand-lines">
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        <?php else: ?>
+            <div class="hand-lines"><div class="line"></div></div>
+        <?php endif; ?>
         <p class="copies">
             Prezentul act este întocmit în două exemplare, cu aceeași putere juridică, câte unul pentru fiecare parte.
         </p>
@@ -270,22 +327,31 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
             <div class="box">
                 <p><strong>Predat mărfuri</strong></p>
                 <p><?= e($supplier['nume']) ?></p>
-                <div class="sign-line">Nume, prenume / semnătura</div>
-                <p class="stamp">L.Ș.</p>
+                <p>Nume, prenume:</p>
+                <div class="sign-line"></div>
+                <p>Funcția:</p>
+                <div class="sign-line"></div>
+                <p>Semnătura:</p>
+                <div class="sign-line"></div>
+                <p class="stamp">L.Ș. &nbsp;&nbsp; Data: <span class="blank" style="min-width:6em"></span></p>
             </div>
             <div class="box">
                 <p><strong>Primit mărfuri</strong></p>
-                <p><?= e($receiver['nume'] !== '' ? $receiver['nume'] : 'Cumpărător') ?></p>
-                <div class="sign-line">Nume, prenume / semnătura</div>
-                <p class="stamp">L.Ș.</p>
+                <p><?= act_html_fill((string) $receiver['nume']) ?></p>
+                <p>Nume, prenume:</p>
+                <div class="sign-line"></div>
+                <p>Funcția:</p>
+                <div class="sign-line"></div>
+                <p>Semnătura:</p>
+                <div class="sign-line"></div>
+                <p class="stamp">L.Ș. &nbsp;&nbsp; Data: <span class="blank" style="min-width:6em"></span></p>
             </div>
         </div>
 
         <p class="legal-note">
             Document întocmit ca act de predare-primire a mărfurilor între entități, în conformitate cu uzanțele
-            comerciale și cu cerințele generale privind documentele primare din Republica Moldova
-            (denumirea părților, IDNO, obiectul predării, cantități, valori, data, locul și semnăturile).
-            Nu înlocuiește factura fiscală / contul de plată.
+            comerciale și cu cerințele generale privind documentele primare din Republica Moldova.
+            Câmpurile goale (linii) sunt destinate completării olografe. Nu înlocuiește factura fiscală / contul de plată.
         </p>
     </article>
 </body>
