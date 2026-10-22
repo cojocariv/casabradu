@@ -13,6 +13,7 @@ const COMPANY_IDNO = '1026023149244';
 const COMPANY_TVA = '0615161';
 const COMPANY_IBAN = 'MD50AG000000022517877084';
 const COMPANY_BANK = "BC 'MAIB' S.A.";
+const COMPANY_ADDRESS = 'Republica Moldova';
 const SITE_DESCRIPTION = 'Cafea din Italia, cu aromă și un raport ideal între Arabica și Robusta. Livrăm în toată Republica Moldova. Aparate în comodat.';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {

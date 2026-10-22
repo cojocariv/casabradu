@@ -176,11 +176,12 @@ function admin_client(string $clientId): ?array
     }
 }
 
-function admin_ensure_client(string $email, string $name, string $phone, string $requisites): ?array
+function admin_ensure_client(string $email, string $name, string $phone, string $requisites, string $address = ''): ?array
 {
     $email = strtolower(text_line($email, 120));
     $name = text_line($name, 80);
     $phone = text_line($phone, 20);
+    $address = text_line($address, 300);
     $requisites = requisite_normalize($requisites);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $name === '') {
         return null;
@@ -195,18 +196,21 @@ function admin_ensure_client(string $email, string $name, string $phone, string 
         $row = $stmt->fetch();
         if (is_array($row)) {
             $nextPhone = $phone !== '' ? $phone : (string) ($row['telefon'] ?? '');
+            $nextAddress = $address !== '' ? $address : (string) ($row['adresa'] ?? '');
             $nextRequisites = $requisites !== '' ? $requisites : (string) ($row['rechizite'] ?? '');
             $update = $pdo->prepare(
-                'UPDATE clienti SET nume = ?, telefon = ?, rechizite = ? WHERE id = ?'
+                'UPDATE clienti SET nume = ?, telefon = ?, adresa = ?, rechizite = ? WHERE id = ?'
             );
             $update->execute([
                 $name,
                 $nextPhone !== '' ? $nextPhone : '-',
+                $nextAddress,
                 $nextRequisites,
                 (string) $row['id'],
             ]);
             $row['nume'] = $name;
             $row['telefon'] = $nextPhone !== '' ? $nextPhone : '-';
+            $row['adresa'] = $nextAddress;
             $row['rechizite'] = $nextRequisites;
 
             return $row;
@@ -215,7 +219,7 @@ function admin_ensure_client(string $email, string $name, string $phone, string 
         $id = bin2hex(random_bytes(8));
         $insert = $pdo->prepare(
             'INSERT INTO clienti (id, nume, email, telefon, parola, adresa, creat, rechizite)
-             VALUES (?, ?, ?, ?, ?, \'\', ?, ?)'
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
         );
         $insert->execute([
             $id,
@@ -223,6 +227,7 @@ function admin_ensure_client(string $email, string $name, string $phone, string 
             $email,
             $phone !== '' ? $phone : '-',
             password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT),
+            $address,
             date('Y-m-d H:i:s'),
             $requisites,
         ]);
@@ -232,7 +237,7 @@ function admin_ensure_client(string $email, string $name, string $phone, string 
             'nume' => $name,
             'email' => $email,
             'telefon' => $phone !== '' ? $phone : '-',
-            'adresa' => '',
+            'adresa' => $address,
             'rechizite' => $requisites,
         ];
     } catch (Throwable $e) {
@@ -295,9 +300,9 @@ function admin_create_invoice(array $client, array $lines, string $requisites, s
                 is_numeric($pret) ? number_format((float) $pret, 2, '.', '') : null,
             ]);
         }
-        if ($requisites !== '') {
-            $reqUpdate = $pdo->prepare('UPDATE clienti SET rechizite = ? WHERE id = ?');
-            $reqUpdate->execute([$requisites, $order['user_id']]);
+        if ($requisites !== '' || $address !== '') {
+            $reqUpdate = $pdo->prepare('UPDATE clienti SET rechizite = ?, adresa = IF(? <> \'\', ?, adresa) WHERE id = ?');
+            $reqUpdate->execute([$requisites !== '' ? $requisites : (string) ($client['rechizite'] ?? ''), $address, $address, $order['user_id']]);
         }
         $pdo->commit();
     } catch (Throwable $e) {

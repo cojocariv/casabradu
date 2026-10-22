@@ -180,7 +180,7 @@ require __DIR__ . '/includes/header.php';
                     <p class="notice notice-error" role="alert">Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.</p>
                 <?php endif; ?>
                 <div class="admin-bar-actions">
-                    <a class="btn btn-dark btn-sm" href="<?= e(url('admin-cont.php')) ?>">Cont de plată</a>
+                    <a class="btn btn-dark btn-sm" href="<?= e(url('admin-cont.php')) ?>">Cont / Act</a>
                     <form method="post" action="<?= e(url('admin.php')) ?>">
                         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                         <input type="hidden" name="formular" value="iesire">
@@ -458,7 +458,11 @@ require __DIR__ . '/includes/header.php';
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Document</th>
-                                                    <td><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode($orderId))) ?>">Cont de plată</a></td>
+                                                    <td>
+                                                        <a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode($orderId))) ?>">Cont de plată</a>
+                                                        ·
+                                                        <a class="invoice-link" href="<?= e(url('act-predare.php?id=' . rawurlencode($orderId))) ?>">Act predare-primire</a>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Stare</th>

@@ -149,7 +149,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $loadId = text_line((string) ($_POST['client_id'] ?? ''), 32);
         header('Location: ' . url('admin-cont.php' . ($loadId !== '' ? '?client=' . rawurlencode($loadId) : '')));
         exit;
-    } elseif ($action === 'genereaza' || $action === 'email') {
+    } elseif ($action === 'salveaza' || $action === 'genereaza' || $action === 'email' || $action === 'act') {
         if (!filter_var($form['email'], FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Indică emailul clientului.';
         }
@@ -166,61 +166,74 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         if (!requisites_filled($requisites)) {
             $errors['rechizite'] = 'Completează denumirea, IDNO, adresa juridică și IBAN-ul. Codul TVA poate rămâne gol.';
         }
-        $parsed = admin_invoice_parse_lines($_POST);
-        if (isset($parsed['error'])) {
-            $errors['linii'] = $parsed['error'];
-            $lines = [];
-        } else {
-            $lines = $parsed['lines'];
-        }
-        if ($lines === []) {
-            $errors['linii'] = $errors['linii'] ?? 'Adaugă cel puțin un produs cu cantitate.';
+
+        $lines = [];
+        if ($action !== 'salveaza') {
+            $parsed = admin_invoice_parse_lines($_POST);
+            if (isset($parsed['error'])) {
+                $errors['linii'] = $parsed['error'];
+            } else {
+                $lines = $parsed['lines'];
+            }
+            if ($lines === []) {
+                $errors['linii'] = $errors['linii'] ?? 'Adaugă cel puțin un produs cu cantitate.';
+            }
         }
 
         if ($errors === []) {
-            $client = admin_ensure_client($form['email'], $form['nume'], $form['telefon'], $requisites);
+            $client = admin_ensure_client($form['email'], $form['nume'], $form['telefon'], $requisites, $form['adresa']);
             if ($client === null) {
                 $errors['form'] = db_failed()
                     ? 'Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.'
                     : 'Clientul nu a putut fi salvat.';
+            } elseif ($action === 'salveaza') {
+                flash_set('Rechizitele clientului au fost salvate. Le găsești precompletate la următoarea comandă.');
+                header('Location: ' . url('admin-cont.php?client=' . rawurlencode((string) $client['id'])));
+                exit;
+            } elseif ($action === 'email' && !smtp_ready()) {
+                $errors['form'] = 'Pentru trimitere PDF, adaugă parola cutiei comenzi@casabradu.md în configurarea site-ului.';
             } else {
-                if ($action === 'email' && !smtp_ready()) {
-                    $errors['form'] = 'Pentru trimitere PDF, adaugă parola cutiei comenzi@casabradu.md în configurarea site-ului.';
+                $note = $form['nota'];
+                if ($action === 'act' && trim($note) === '') {
+                    $note = 'Act de predare-primire generat din cabinetul administratorului.';
+                }
+                $order = admin_create_invoice($client, $lines, $requisites, $form['adresa'], $note);
+                if ($order === null) {
+                    $errors['form'] = db_failed()
+                        ? 'Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.'
+                        : 'Documentul nu a putut fi creat.';
+                } elseif ($action === 'act') {
+                    flash_set('Actul de predare-primire ' . $order['id'] . ' a fost generat. Rechizitele clientului sunt salvate.');
+                    header('Location: ' . url('act-predare.php?id=' . rawurlencode($order['id'])));
+                    exit;
+                } elseif ($action === 'genereaza') {
+                    flash_set('Contul de plată ' . $order['id'] . ' a fost generat.');
+                    header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode($order['id'])));
+                    exit;
                 } else {
-                    $order = admin_create_invoice($client, $lines, $requisites, $form['adresa'], $form['nota']);
-                    if ($order === null) {
-                        $errors['form'] = db_failed()
-                            ? 'Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.'
-                            : 'Contul de plată nu a putut fi creat.';
-                    } elseif ($action === 'genereaza') {
-                        flash_set('Contul de plată ' . $order['id'] . ' a fost generat.');
-                        header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode($order['id'])));
-                        exit;
-                    } else {
-                        $stamp = strtotime((string) ($order['la'] ?? '')) ?: time();
-                        $invoiceDate = date('d.m.Y', $stamp);
-                        $table = invoice_table($order['linii'] ?? []);
-                        $payer = [
-                            'nume' => requisite_value($requisites, 'Denumirea companiei'),
-                            'idno' => requisite_value($requisites, 'IDNO'),
-                            'tva' => requisite_value($requisites, 'Cod TVA'),
-                            'adresa' => requisite_value($requisites, 'Adresa juridică'),
-                        ];
-                        if ($payer['nume'] === '') {
-                            $payer['nume'] = (string) ($client['nume'] ?? '');
-                        }
-                        if (send_invoice_mail($order, $invoiceDate, $payer, $table, (string) $client['email'], $client)) {
-                            $_SESSION['invoice_mail'] = ['ok' => true, 'text' => 'Contul de plată a fost trimis.'];
-                        } else {
-                            $reason = site_mail_status();
-                            $_SESSION['invoice_mail'] = [
-                                'ok' => false,
-                                'text' => $reason !== '' ? $reason : 'Emailul nu a putut fi trimis. Încearcă din nou peste câteva minute.',
-                            ];
-                        }
-                        header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode($order['id'])));
-                        exit;
+                    $stamp = strtotime((string) ($order['la'] ?? '')) ?: time();
+                    $invoiceDate = date('d.m.Y', $stamp);
+                    $table = invoice_table($order['linii'] ?? []);
+                    $payer = [
+                        'nume' => requisite_value($requisites, 'Denumirea companiei'),
+                        'idno' => requisite_value($requisites, 'IDNO'),
+                        'tva' => requisite_value($requisites, 'Cod TVA'),
+                        'adresa' => requisite_value($requisites, 'Adresa juridică'),
+                    ];
+                    if ($payer['nume'] === '') {
+                        $payer['nume'] = (string) ($client['nume'] ?? '');
                     }
+                    if (send_invoice_mail($order, $invoiceDate, $payer, $table, (string) $client['email'], $client)) {
+                        $_SESSION['invoice_mail'] = ['ok' => true, 'text' => 'Contul de plată a fost trimis.'];
+                    } else {
+                        $reason = site_mail_status();
+                        $_SESSION['invoice_mail'] = [
+                            'ok' => false,
+                            'text' => $reason !== '' ? $reason : 'Emailul nu a putut fi trimis. Încearcă din nou peste câteva minute.',
+                        ];
+                    }
+                    header('Location: ' . url('cont-de-plata.php?id=' . rawurlencode($order['id'])));
+                    exit;
                 }
             }
         }
@@ -237,8 +250,8 @@ require __DIR__ . '/includes/header.php';
 <section class="page-hero">
     <div class="wrap">
         <p class="eyebrow">Administrator</p>
-        <h1>Cont de plată.</h1>
-        <p class="lede">Completează rechizitele clientului, produsele, cantitatea și prețul. Poți genera contul oricând și îl poți trimite clientului în PDF.</p>
+        <h1>Cont de plată și act.</h1>
+        <p class="lede">Completează rechizitele clientului, produsele, cantitatea și prețul. Rechizitele se salvează pe client și revin precompletate la următoarea comandă. Poți genera contul de plată sau actul de predare-primire.</p>
         <p><a class="invoice-link" href="<?= e(url('admin.php')) ?>">Înapoi la comenzi</a></p>
     </div>
 </section>
@@ -258,7 +271,7 @@ require __DIR__ . '/includes/header.php';
             <div class="price-board">
                 <p class="kicker">Client</p>
                 <h2>Datele și rechizitele</h2>
-                <p class="form-note">Poți alege un client salvat ca să precompletezi câmpurile, sau le completezi manual.</p>
+                <p class="form-note">Alege un client salvat ca să precompletezi câmpurile, sau completează un client nou — rechizitele rămân stocate pentru comenzile următoare.</p>
 
                 <label for="client_id">Client salvat</label>
                 <div class="invoice-client-row">
@@ -358,8 +371,10 @@ require __DIR__ . '/includes/header.php';
             </div>
 
             <div class="btn-row invoice-actions">
+                <button class="btn btn-line" type="submit" name="actiune" value="salveaza" formnovalidate>Salvează clientul</button>
                 <button class="btn btn-dark" type="submit" name="actiune" value="genereaza">Generează cont de plată</button>
                 <button class="btn btn-line" type="submit" name="actiune" value="email">Generează și trimite PDF</button>
+                <button class="btn btn-line" type="submit" name="actiune" value="act">Generează act de predare-primire</button>
             </div>
         </form>
     </div>
