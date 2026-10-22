@@ -59,9 +59,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $requisiteErrors['rechizite'] = 'Textul este prea lung. Păstrează datele lângă fiecare denumire.';
         }
         $oldRequisites = requisite_normalize($postedRequisites);
-        if ($requisiteErrors === [] && !requisites_filled($oldRequisites)) {
-            $requisiteErrors['rechizite'] = 'Completează denumirea, IDNO, adresa juridică și IBAN-ul. Codul TVA poate rămâne gol.';
-        }
         if ($requisiteErrors === [] && !save_client_requisites((string) $user['id'], $oldRequisites)) {
             $requisiteErrors['form'] = 'Rechizitele nu au putut fi salvate. Încearcă din nou.';
         }
@@ -124,9 +121,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         }
         if (strlen($oldAddress) < 5) {
             $orderErrors['adresa'] = 'Scrie adresa de livrare sau localitatea.';
-        }
-        if (!requisites_filled((string) ($user['rechizite'] ?? ''))) {
-            $orderErrors['form'] = 'Completează rechizitele companiei, la contul tău, ca să îți putem trimite contul de plată.';
         }
         if ($orderErrors === []) {
             $order = place_order($user, $lines, $oldAddress, $oldNote);
@@ -216,7 +210,7 @@ require __DIR__ . '/includes/header.php';
                                     <tr>
                                         <th scope="row"><label for="camp-<?= e($key) ?>"><?= tr($label) ?></label></th>
                                         <td>
-                                            <input id="camp-<?= e($key) ?>" name="camp[<?= e($key) ?>]" type="text" maxlength="400" value="<?= e(requisite_value($oldRequisites, $label)) ?>" <?= $key === 'tva' ? '' : 'required' ?> <?= isset($requisiteErrors['rechizite']) ? 'aria-invalid="true"' : '' ?>>
+                                            <input id="camp-<?= e($key) ?>" name="camp[<?= e($key) ?>]" type="text" maxlength="400" value="<?= e(requisite_value($oldRequisites, $label)) ?>" <?= isset($requisiteErrors['rechizite']) ? 'aria-invalid="true"' : '' ?>>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -225,7 +219,7 @@ require __DIR__ . '/includes/header.php';
                     </div>
                     <?php if (isset($requisiteErrors['rechizite'])): ?><small class="field-error"><?= e(t($requisiteErrors['rechizite'])) ?></small><?php endif; ?>
                     <button class="btn btn-dark" type="submit"><?= tr('Salvează rechizitele') ?></button>
-                    <p class="form-note"><?= tr('Scrie datele firmei în dreptul fiecărei denumiri. Codul TVA poate rămâne gol. Le atașăm comenzii pentru contul de plată.') ?></p>
+                    <p class="form-note"><?= tr('Toate câmpurile sunt opționale. Scrie datele firmei în dreptul fiecărei denumiri. Le atașăm comenzii pentru contul de plată.') ?></p>
                 </form>
                 <form method="post" action="<?= e(url('iesire.php')) ?>">
                     <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">

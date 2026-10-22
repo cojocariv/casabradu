@@ -267,7 +267,7 @@ require __DIR__ . '/includes/header.php';
             <div class="price-board">
                 <p class="kicker">Client</p>
                 <h2>Datele și rechizitele</h2>
-                <p class="form-note">Alege un client salvat ca să precompletezi câmpurile, sau completează un client nou — rechizitele rămân stocate pentru comenzile următoare.</p>
+                <p class="form-note">Alege un client salvat ca să precompletezi câmpurile, sau completează un client nou. Toate rechizitele sunt opționale și rămân stocate pentru comenzile următoare.</p>
 
                 <label for="client_id">Client salvat</label>
                 <div class="invoice-client-row">
@@ -292,21 +292,20 @@ require __DIR__ . '/includes/header.php';
                 <label for="telefon">Telefon <span>(opțional)</span></label>
                 <input id="telefon" name="telefon" type="text" maxlength="20" value="<?= e($form['telefon']) ?>">
 
-                <label for="companie">Denumirea companiei</label>
-                <input id="companie" name="companie" type="text" maxlength="120" value="<?= e($form['companie']) ?>" required>
+                <label for="companie">Denumirea companiei <span>(opțional)</span></label>
+                <input id="companie" name="companie" type="text" maxlength="120" value="<?= e($form['companie']) ?>">
 
-                <label for="idno">IDNO</label>
-                <input id="idno" name="idno" type="text" maxlength="40" value="<?= e($form['idno']) ?>" required>
+                <label for="idno">IDNO <span>(opțional)</span></label>
+                <input id="idno" name="idno" type="text" maxlength="40" value="<?= e($form['idno']) ?>">
 
                 <label for="tva">Cod TVA <span>(opțional)</span></label>
                 <input id="tva" name="tva" type="text" maxlength="40" value="<?= e($form['tva']) ?>">
 
-                <label for="adresa_juridica">Adresa juridică</label>
-                <input id="adresa_juridica" name="adresa_juridica" type="text" maxlength="300" value="<?= e($form['adresa_juridica']) ?>" required>
+                <label for="adresa_juridica">Adresa juridică <span>(opțional)</span></label>
+                <input id="adresa_juridica" name="adresa_juridica" type="text" maxlength="300" value="<?= e($form['adresa_juridica']) ?>">
 
-                <label for="iban">IBAN și banca</label>
-                <input id="iban" name="iban" type="text" maxlength="300" value="<?= e($form['iban']) ?>" required>
-                <?php if (isset($errors['rechizite'])): ?><small class="field-error"><?= e($errors['rechizite']) ?></small><?php endif; ?>
+                <label for="iban">IBAN și banca <span>(opțional)</span></label>
+                <input id="iban" name="iban" type="text" maxlength="300" value="<?= e($form['iban']) ?>">
 
                 <label for="adresa">Adresă de livrare <span>(opțional)</span></label>
                 <input id="adresa" name="adresa" type="text" maxlength="300" value="<?= e($form['adresa']) ?>">

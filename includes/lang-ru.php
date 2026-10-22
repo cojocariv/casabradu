@@ -276,6 +276,7 @@ return [
     'IBAN și banca' => 'IBAN и банк',
     'Salvează rechizitele' => 'Сохранить реквизиты',
     'Scrie datele firmei în dreptul fiecărei denumiri. Codul TVA poate rămâne gol. Le atașăm comenzii pentru contul de plată.' => 'Впишите данные фирмы напротив каждого названия. Код НДС можно оставить пустым. Мы приложим их к заказу для счёта на оплату.',
+    'Toate câmpurile sunt opționale. Scrie datele firmei în dreptul fiecărei denumiri. Le atașăm comenzii pentru contul de plată.' => 'Все поля необязательны. Впишите данные фирмы напротив каждого названия. Мы приложим их к заказу для счёта на оплату.',
     'Ieși din cont' => 'Выйти',
     'Schimbă parola' => 'Сменить пароль',
     'Parola actuală' => 'Текущий пароль',

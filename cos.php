@@ -64,9 +64,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         if (strlen($address) < 5) {
             $errors['adresa'] = 'Scrie adresa de livrare sau localitatea.';
         }
-        if (!requisites_filled((string) ($user['rechizite'] ?? ''))) {
-            $errors['form'] = 'Completează rechizitele companiei în cabinet, ca să putem emite contul de plată.';
-        }
         if ($errors === []) {
             $order = place_order($user, $lines, $address, $note);
             if ($order === null) {
@@ -95,8 +92,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 $note = (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') ? text_block((string) ($_POST['nota'] ?? ''), 1000) : '';
 $table = invoice_table($lines);
-$requisitesReady = $user !== null && requisites_filled((string) ($user['rechizite'] ?? ''));
-
 $page = 'cos';
 $noindex = true;
 $pageTitle = 'Coș';
@@ -188,10 +183,6 @@ require __DIR__ . '/includes/header.php';
                     <p><?= tr('Ca să înregistrăm comanda, intră în cont. Produsele rămân în coș.') ?></p>
                     <a class="btn btn-dark" href="<?= e(url('autentificare.php?next=' . rawurlencode('cos.php'))) ?>"><?= tr('Intră în cont') ?></a>
                 <?php else: ?>
-                    <?php if (!$requisitesReady): ?>
-                        <p class="notice notice-error" role="alert"><?= tr('Completează rechizitele companiei în cabinet înainte de comandă.') ?></p>
-                        <a class="btn btn-line" href="<?= e(url('cabinet.php')) ?>"><?= tr('Completează rechizitele') ?></a>
-                    <?php endif; ?>
                     <form class="contact-form" method="post" action="<?= e(url('cos.php')) ?>" accept-charset="UTF-8">
                         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
                         <label for="adresa"><?= tr('Adresă de livrare') ?></label>
@@ -200,8 +191,8 @@ require __DIR__ . '/includes/header.php';
                         <label for="nota"><?= tr('Mențiune') ?> <span><?= tr('(opțional)') ?></span></label>
                         <textarea id="nota" name="nota" maxlength="1000" rows="3"><?= e($note) ?></textarea>
                         <div class="btn-row">
-                            <button class="btn btn-dark" type="submit" name="actiune" value="comanda" <?= $requisitesReady ? '' : 'disabled' ?>><?= tr('Plasează comanda') ?></button>
-                            <button class="btn btn-line" type="submit" name="actiune" value="cont" <?= $requisitesReady ? '' : 'disabled' ?>><?= tr('Generează cont de plată') ?></button>
+                            <button class="btn btn-dark" type="submit" name="actiune" value="comanda"><?= tr('Plasează comanda') ?></button>
+                            <button class="btn btn-line" type="submit" name="actiune" value="cont"><?= tr('Generează cont de plată') ?></button>
                         </div>
                     </form>
                 <?php endif; ?>
