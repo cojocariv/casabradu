@@ -7,8 +7,12 @@ function pdf_latin(string $text): string
     $map = [
         'ă' => 'a', 'â' => 'a', 'î' => 'i', 'ș' => 's', 'ş' => 's', 'ț' => 't', 'ţ' => 't',
         'Ă' => 'A', 'Â' => 'A', 'Î' => 'I', 'Ș' => 'S', 'Ş' => 'S', 'Ț' => 'T', 'Ţ' => 'T',
+        'à' => 'a', 'á' => 'a', 'è' => 'e', 'é' => 'e', 'ì' => 'i', 'í' => 'i',
+        'ò' => 'o', 'ó' => 'o', 'ù' => 'u', 'ú' => 'u',
+        'À' => 'A', 'Á' => 'A', 'È' => 'E', 'É' => 'E', 'Ì' => 'I', 'Í' => 'I',
+        'Ò' => 'O', 'Ó' => 'O', 'Ù' => 'U', 'Ú' => 'U',
         '«' => '"', '»' => '"', '–' => '-', '—' => '-', '…' => '...', '€' => 'EUR',
-        '№' => 'Nr.', "\xc2\xa0" => ' ',
+        '№' => 'Nr.', '·' => '-', "\xc2\xa0" => ' ',
     ];
     $text = strtr($text, $map);
     if (function_exists('iconv')) {
@@ -92,6 +96,48 @@ function pdf_clip(string $text, int $max): string
     }
 
     return substr($text, 0, max(1, $max - 3)) . '...';
+}
+
+function pdf_wrap(string $text, int $maxChars, int $maxLines = 3): array
+{
+    $text = trim(preg_replace('/\s+/u', ' ', pdf_latin($text)) ?? '');
+    if ($text === '') {
+        return [];
+    }
+    $words = explode(' ', $text);
+    $lines = [];
+    $current = '';
+    foreach ($words as $word) {
+        if ($word === '') {
+            continue;
+        }
+        $candidate = $current === '' ? $word : $current . ' ' . $word;
+        if (strlen($candidate) <= $maxChars) {
+            $current = $candidate;
+            continue;
+        }
+        if ($current !== '') {
+            $lines[] = $current;
+            if (count($lines) >= $maxLines) {
+                return $lines;
+            }
+        }
+        if (strlen($word) > $maxChars) {
+            $chunk = substr($word, 0, $maxChars);
+            $lines[] = $chunk;
+            $current = '';
+            if (count($lines) >= $maxLines) {
+                return $lines;
+            }
+        } else {
+            $current = $word;
+        }
+    }
+    if ($current !== '' && count($lines) < $maxLines) {
+        $lines[] = $current;
+    }
+
+    return $lines;
 }
 
 function pdf_logo_image(): ?array

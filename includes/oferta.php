@@ -226,14 +226,14 @@ function oferta_pdf(array $meta, array $table): string
 
         if ($pageNo === 1) {
             $intro = trim((string) ($meta['intro'] ?? ''));
-            $ops[] = pdf_text(
-                $margin,
-                $y,
-                pdf_clip($intro !== '' ? $intro : 'Va propunem cafea artizanala Casa Bradu Caffe, import Italia, aromata si fina.', 92),
-                9,
-                'F1'
-            );
-            $y -= 15;
+            if ($intro === '') {
+                $intro = 'Va propunem cafea artizanala Casa Bradu Caffe, import Italia, aromata si fina.';
+            }
+            foreach (pdf_wrap($intro, 88, 3) as $introLine) {
+                $ops[] = pdf_text($margin, $y, $introLine, 9, 'F1');
+                $y -= 12;
+            }
+            $y -= 3;
         } else {
             $ops[] = pdf_text($margin, $y, 'Continuare oferta — pagina ' . $pageNo, 9, 'F1');
             $y -= 15;
