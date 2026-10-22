@@ -1627,16 +1627,45 @@ html[lang="ru"] .script {
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    margin-bottom: 14px;
+    margin: 0;
 }
 
 .invoice-client-row select {
-    flex: 1 1 260px;
+    flex: 1 1 220px;
     min-width: 0;
 }
 
+.invoice-meta {
+    width: 100%;
+}
+
+.invoice-meta th {
+    width: 11.5rem;
+    white-space: nowrap;
+    vertical-align: middle;
+    font-weight: 600;
+}
+
+.invoice-meta td,
+.invoice-meta th {
+    padding: 8px 10px;
+}
+
+.invoice-meta input,
+.invoice-meta textarea,
+.invoice-meta select {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+.invoice-meta textarea {
+    min-height: 64px;
+}
+
 .invoice-lines input[type="text"] {
-    min-width: 160px;
+    min-width: 140px;
+    width: 100%;
 }
 
 .invoice-lines .invoice-sum {
@@ -1648,19 +1677,25 @@ html[lang="ru"] .script {
     white-space: nowrap;
 }
 
-.invoice-lines th:nth-child(3),
+.invoice-lines .invoice-nr {
+    width: 2.5rem;
+    text-align: center;
+    color: rgba(26, 26, 26, 0.55);
+}
+
 .invoice-lines th:nth-child(4),
-.invoice-lines td:nth-child(3),
-.invoice-lines td:nth-child(4) {
+.invoice-lines th:nth-child(5),
+.invoice-lines td:nth-child(4),
+.invoice-lines td:nth-child(5) {
     text-align: right;
 }
 
-.invoice-lines td:nth-child(2) {
+.invoice-lines td:nth-child(3) {
     width: 110px;
 }
 
-.invoice-lines td:nth-child(3),
-.invoice-lines td:nth-child(4) {
+.invoice-lines td:nth-child(4),
+.invoice-lines td:nth-child(5) {
     width: 120px;
 }
 

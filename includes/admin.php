@@ -176,38 +176,84 @@ function admin_client(string $clientId): ?array
     }
 }
 
-function admin_ensure_client(string $email, string $name, string $phone, string $requisites, string $address = ''): ?array
-{
+function admin_ensure_client(
+    string $email,
+    string $name,
+    string $phone,
+    string $requisites,
+    string $address = '',
+    string $clientId = ''
+): ?array {
     $email = strtolower(text_line($email, 120));
     $name = text_line($name, 80);
     $phone = text_line($phone, 20);
     $address = text_line($address, 300);
+    $clientId = text_line($clientId, 32);
     $requisites = requisite_normalize($requisites);
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $name === '') {
-        return null;
+    if ($name === '') {
+        $name = 'Client';
     }
+    $emailValid = filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 
     try {
         $pdo = db();
-        $stmt = $pdo->prepare(
-            'SELECT id, nume, email, telefon, adresa, rechizite FROM clienti WHERE email = ? LIMIT 1'
-        );
-        $stmt->execute([$email]);
-        $row = $stmt->fetch();
+        $row = null;
+        if ($clientId !== '') {
+            $byId = $pdo->prepare(
+                'SELECT id, nume, email, telefon, adresa, rechizite FROM clienti WHERE id = ? LIMIT 1'
+            );
+            $byId->execute([$clientId]);
+            $found = $byId->fetch();
+            if (is_array($found)) {
+                $row = $found;
+            }
+        }
+        if ($row === null && $emailValid) {
+            $stmt = $pdo->prepare(
+                'SELECT id, nume, email, telefon, adresa, rechizite FROM clienti WHERE email = ? LIMIT 1'
+            );
+            $stmt->execute([$email]);
+            $found = $stmt->fetch();
+            if (is_array($found)) {
+                $row = $found;
+            }
+        }
+
         if (is_array($row)) {
             $nextPhone = $phone !== '' ? $phone : (string) ($row['telefon'] ?? '');
             $nextAddress = $address !== '' ? $address : (string) ($row['adresa'] ?? '');
             $nextRequisites = $requisites !== '' ? $requisites : (string) ($row['rechizite'] ?? '');
-            $update = $pdo->prepare(
-                'UPDATE clienti SET nume = ?, telefon = ?, adresa = ?, rechizite = ? WHERE id = ?'
-            );
-            $update->execute([
-                $name,
-                $nextPhone !== '' ? $nextPhone : '-',
-                $nextAddress,
-                $nextRequisites,
-                (string) $row['id'],
-            ]);
+            $nextEmail = $emailValid ? $email : (string) ($row['email'] ?? '');
+            if ($emailValid && $nextEmail !== (string) ($row['email'] ?? '')) {
+                $taken = $pdo->prepare('SELECT id FROM clienti WHERE email = ? AND id <> ? LIMIT 1');
+                $taken->execute([$nextEmail, (string) $row['id']]);
+                if ($taken->fetch() !== false) {
+                    return null;
+                }
+                $update = $pdo->prepare(
+                    'UPDATE clienti SET nume = ?, email = ?, telefon = ?, adresa = ?, rechizite = ? WHERE id = ?'
+                );
+                $update->execute([
+                    $name,
+                    $nextEmail,
+                    $nextPhone !== '' ? $nextPhone : '-',
+                    $nextAddress,
+                    $nextRequisites,
+                    (string) $row['id'],
+                ]);
+                $row['email'] = $nextEmail;
+            } else {
+                $update = $pdo->prepare(
+                    'UPDATE clienti SET nume = ?, telefon = ?, adresa = ?, rechizite = ? WHERE id = ?'
+                );
+                $update->execute([
+                    $name,
+                    $nextPhone !== '' ? $nextPhone : '-',
+                    $nextAddress,
+                    $nextRequisites,
+                    (string) $row['id'],
+                ]);
+            }
             $row['nume'] = $name;
             $row['telefon'] = $nextPhone !== '' ? $nextPhone : '-';
             $row['adresa'] = $nextAddress;
@@ -217,6 +263,9 @@ function admin_ensure_client(string $email, string $name, string $phone, string 
         }
 
         $id = bin2hex(random_bytes(8));
+        if (!$emailValid) {
+            $email = 'fara-email-' . $id . '@local.casabradu.md';
+        }
         $insert = $pdo->prepare(
             'INSERT INTO clienti (id, nume, email, telefon, parola, adresa, creat, rechizite)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)'

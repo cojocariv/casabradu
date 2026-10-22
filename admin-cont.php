@@ -150,8 +150,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         header('Location: ' . url('admin-cont.php' . ($loadId !== '' ? '?client=' . rawurlencode($loadId) : '')));
         exit;
     } elseif ($action === 'salveaza' || $action === 'genereaza' || $action === 'email' || $action === 'act') {
-        if (!filter_var($form['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'Indică emailul clientului.';
+        if ($form['email'] !== '' && !filter_var($form['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Emailul nu pare valid. Lasă câmpul gol sau scrie o adresă corectă.';
+        }
+        if ($action === 'email' && !filter_var($form['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Pentru trimitere pe email, indică adresa clientului.';
         }
         if ($form['nume'] === '') {
             $form['nume'] = $form['companie'] !== '' ? $form['companie'] : 'Client';
@@ -177,7 +180,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         }
 
         if ($errors === []) {
-            $client = admin_ensure_client($form['email'], $form['nume'], $form['telefon'], $requisites, $form['adresa']);
+            $client = admin_ensure_client(
+                $form['email'],
+                $form['nume'],
+                $form['telefon'],
+                $requisites,
+                $form['adresa'],
+                $form['client_id']
+            );
             if ($client === null) {
                 $errors['form'] = db_failed()
                     ? 'Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.'
@@ -247,7 +257,7 @@ require __DIR__ . '/includes/header.php';
     <div class="wrap">
         <p class="eyebrow">Administrator</p>
         <h1>Cont de plată și act.</h1>
-        <p class="lede">Completează rechizitele clientului, produsele, cantitatea și prețul. Rechizitele se salvează pe client și revin precompletate la următoarea comandă. Poți genera contul de plată sau actul de predare-primire.</p>
+        <p class="lede">Redactează în tabele datele clientului și liniile de produse. Toate câmpurile sunt opționale. Poți genera contul de plată sau actul de predare-primire.</p>
         <p><a class="invoice-link" href="<?= e(url('admin.php')) ?>">Înapoi la comenzi</a></p>
     </div>
 </section>
@@ -266,58 +276,79 @@ require __DIR__ . '/includes/header.php';
 
             <div class="price-board">
                 <p class="kicker">Client</p>
-                <h2>Datele și rechizitele</h2>
-                <p class="form-note">Alege un client salvat ca să precompletezi câmpurile, sau completează un client nou. Toate rechizitele sunt opționale și rămân stocate pentru comenzile următoare.</p>
-
-                <label for="client_id">Client salvat</label>
-                <div class="invoice-client-row">
-                    <select id="client_id" name="client_id" data-load-url="<?= e(url('admin-cont.php')) ?>">
-                        <option value="">Client nou / manual</option>
-                        <?php foreach ($clientRows as $row): ?>
-                            <option value="<?= e((string) $row['id']) ?>" <?= $form['client_id'] === (string) $row['id'] ? 'selected' : '' ?>>
-                                <?= e((string) $row['nume'] . ' · ' . (string) $row['email']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <button class="btn btn-line btn-sm" type="submit" name="actiune" value="incarca" formnovalidate>Încarcă datele</button>
+                <h2>Date și rechizite</h2>
+                <p class="form-note">Alege un client salvat sau completează manual. Numele, emailul și rechizitele sunt opționale.</p>
+                <div class="table-wrap orders-sheet">
+                    <table class="sheet-table invoice-meta">
+                        <tbody>
+                            <tr>
+                                <th scope="row"><label for="client_id">Client salvat</label></th>
+                                <td>
+                                    <div class="invoice-client-row">
+                                        <select id="client_id" name="client_id" data-load-url="<?= e(url('admin-cont.php')) ?>">
+                                            <option value="">Client nou / manual</option>
+                                            <?php foreach ($clientRows as $row): ?>
+                                                <option value="<?= e((string) $row['id']) ?>" <?= $form['client_id'] === (string) $row['id'] ? 'selected' : '' ?>>
+                                                    <?= e((string) $row['nume'] . ' · ' . (string) $row['email']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <button class="btn btn-line btn-sm" type="submit" name="actiune" value="incarca" formnovalidate>Încarcă</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="email">Email</label></th>
+                                <td>
+                                    <input id="email" name="email" type="email" maxlength="120" value="<?= e($form['email']) ?>" placeholder="opțional" <?= isset($errors['email']) ? 'aria-invalid="true"' : '' ?>>
+                                    <?php if (isset($errors['email'])): ?><small class="field-error"><?= e($errors['email']) ?></small><?php endif; ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="nume">Nume / contact</label></th>
+                                <td><input id="nume" name="nume" type="text" maxlength="80" value="<?= e($form['nume']) ?>" placeholder="opțional"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="telefon">Telefon</label></th>
+                                <td><input id="telefon" name="telefon" type="text" maxlength="20" value="<?= e($form['telefon']) ?>" placeholder="opțional"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="companie">Denumirea companiei</label></th>
+                                <td><input id="companie" name="companie" type="text" maxlength="120" value="<?= e($form['companie']) ?>" placeholder="opțional"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="idno">IDNO</label></th>
+                                <td><input id="idno" name="idno" type="text" maxlength="40" value="<?= e($form['idno']) ?>" placeholder="opțional"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="tva">Cod TVA</label></th>
+                                <td><input id="tva" name="tva" type="text" maxlength="40" value="<?= e($form['tva']) ?>" placeholder="opțional"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="adresa_juridica">Adresa juridică</label></th>
+                                <td><input id="adresa_juridica" name="adresa_juridica" type="text" maxlength="300" value="<?= e($form['adresa_juridica']) ?>" placeholder="opțional"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="iban">IBAN și banca</label></th>
+                                <td><input id="iban" name="iban" type="text" maxlength="300" value="<?= e($form['iban']) ?>" placeholder="opțional"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="adresa">Adresă de livrare</label></th>
+                                <td><input id="adresa" name="adresa" type="text" maxlength="300" value="<?= e($form['adresa']) ?>" placeholder="opțional"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><label for="nota">Mențiune</label></th>
+                                <td><textarea id="nota" name="nota" rows="2" maxlength="1000" placeholder="opțional"><?= e($form['nota']) ?></textarea></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-                <label for="email">Email client</label>
-                <input id="email" name="email" type="email" required maxlength="120" value="<?= e($form['email']) ?>" <?= isset($errors['email']) ? 'aria-invalid="true"' : '' ?>>
-                <?php if (isset($errors['email'])): ?><small class="field-error"><?= e($errors['email']) ?></small><?php endif; ?>
-
-                <label for="nume">Nume / persoană de contact</label>
-                <input id="nume" name="nume" type="text" maxlength="80" value="<?= e($form['nume']) ?>">
-
-                <label for="telefon">Telefon <span>(opțional)</span></label>
-                <input id="telefon" name="telefon" type="text" maxlength="20" value="<?= e($form['telefon']) ?>">
-
-                <label for="companie">Denumirea companiei <span>(opțional)</span></label>
-                <input id="companie" name="companie" type="text" maxlength="120" value="<?= e($form['companie']) ?>">
-
-                <label for="idno">IDNO <span>(opțional)</span></label>
-                <input id="idno" name="idno" type="text" maxlength="40" value="<?= e($form['idno']) ?>">
-
-                <label for="tva">Cod TVA <span>(opțional)</span></label>
-                <input id="tva" name="tva" type="text" maxlength="40" value="<?= e($form['tva']) ?>">
-
-                <label for="adresa_juridica">Adresa juridică <span>(opțional)</span></label>
-                <input id="adresa_juridica" name="adresa_juridica" type="text" maxlength="300" value="<?= e($form['adresa_juridica']) ?>">
-
-                <label for="iban">IBAN și banca <span>(opțional)</span></label>
-                <input id="iban" name="iban" type="text" maxlength="300" value="<?= e($form['iban']) ?>">
-
-                <label for="adresa">Adresă de livrare <span>(opțional)</span></label>
-                <input id="adresa" name="adresa" type="text" maxlength="300" value="<?= e($form['adresa']) ?>">
-
-                <label for="nota">Mențiune <span>(opțional)</span></label>
-                <textarea id="nota" name="nota" rows="2" maxlength="1000"><?= e($form['nota']) ?></textarea>
             </div>
 
             <div class="price-board" id="produse-cont">
                 <p class="kicker">Produse</p>
-                <h2>Linii de cont</h2>
-                <p class="form-note">Produsele din catalog sunt precompletate. Scrie cantitatea și ajustează prețul. Poți modifica denumirea sau adăuga o linie liberă.</p>
+                <h2>Linii document</h2>
+                <p class="form-note">Produsele din catalog sunt precompletate. Scrie cantitatea și prețul. Poți modifica denumirea sau adăuga o linie liberă.</p>
                 <?php if (isset($errors['linii'])): ?>
                     <p class="notice notice-error" role="alert"><?= e($errors['linii']) ?></p>
                 <?php endif; ?>
@@ -325,6 +356,7 @@ require __DIR__ . '/includes/header.php';
                     <table class="sheet-table invoice-lines">
                         <thead>
                             <tr>
+                                <th>Nr.</th>
                                 <th>Produs</th>
                                 <th>Cantitate</th>
                                 <th>Preț, lei</th>
@@ -341,6 +373,7 @@ require __DIR__ . '/includes/header.php';
                                     : '';
                                 ?>
                                 <tr>
+                                    <td class="invoice-nr"><?= (int) $index + 1 ?></td>
                                     <td>
                                         <input type="hidden" name="slug[]" value="<?= e((string) $line['slug']) ?>">
                                         <label class="sr-only" for="titlu-<?= (int) $index ?>">Produs</label>
@@ -377,6 +410,7 @@ require __DIR__ . '/includes/header.php';
 
 <template id="invoice-line-template">
     <tr>
+        <td class="invoice-nr"></td>
         <td>
             <input type="hidden" name="slug[]" value="manual">
             <label class="sr-only">Produs</label>
@@ -450,8 +484,18 @@ require __DIR__ . '/includes/header.php';
         sumNode.textContent = formatSum(qty * price);
     }
 
+    function renumber() {
+        body.querySelectorAll('tr').forEach(function (row, index) {
+            var nr = row.querySelector('.invoice-nr');
+            if (nr) {
+                nr.textContent = String(index + 1);
+            }
+        });
+    }
+
     function updateAll() {
         body.querySelectorAll('tr').forEach(updateRow);
+        renumber();
     }
 
     body.addEventListener('input', function (event) {
@@ -467,6 +511,7 @@ require __DIR__ . '/includes/header.php';
     if (button && template) {
         button.addEventListener('click', function () {
             body.appendChild(template.content.cloneNode(true));
+            updateAll();
         });
     }
 
