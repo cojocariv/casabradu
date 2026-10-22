@@ -139,8 +139,6 @@ function subject_options(): array
 {
     return [
         'cialde' => 'Cialde',
-        'cialde-deka' => 'Cialde Deka',
-        'cialde-intenso' => 'Cialde Intenso',
         'capsule' => 'Capsule',
         'boabe' => 'Cafea boabe',
         'pahare' => 'Pahare de unică folosință',
