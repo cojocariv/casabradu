@@ -141,6 +141,7 @@ require __DIR__ . '/includes/header.php';
                 <?php endif; ?>
                 <div class="admin-bar-actions">
                     <a class="btn btn-line btn-sm" href="<?= e(url('admin-preturi.php')) ?>">Prețuri</a>
+                    <a class="btn btn-line btn-sm" href="<?= e(url('admin-oferta.php')) ?>">Ofertă</a>
                     <a class="btn btn-dark btn-sm" href="<?= e(url('admin-cont.php')) ?>">Cont / Act</a>
                     <form method="post" action="<?= e(url('admin.php')) ?>">
                         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">

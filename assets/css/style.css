@@ -1769,6 +1769,53 @@ html[lang="ru"] .script {
     margin-top: 24px;
 }
 
+.offer-line {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 8px;
+    align-items: start;
+}
+
+.offer-line-visual {
+    grid-row: 1 / span 2;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f3efe7;
+    border: 1px solid rgba(28, 52, 43, 0.1);
+}
+
+.offer-line-visual img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.offer-line-placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f7f5f1, #e8e2d6);
+}
+
+.offer-line .invoice-line-head {
+    margin-bottom: 0;
+}
+
+.offer-line .invoice-line-metrics {
+    grid-column: 2;
+}
+
+@media (max-width: 720px) {
+    .offer-line {
+        grid-template-columns: 48px 1fr;
+    }
+}
+
 .admin-filters {
     display: flex;
     flex-wrap: wrap;

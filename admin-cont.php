@@ -312,7 +312,10 @@ require __DIR__ . '/includes/header.php';
         <p class="eyebrow">Administrator</p>
         <h1>Cont de plată și act.</h1>
         <p class="lede">Redactează în tabele datele clientului și liniile de produse. Toate câmpurile sunt opționale. Poți genera contul de plată sau actul de predare-primire.</p>
-        <p><a class="invoice-link" href="<?= e(url('admin.php')) ?>">Înapoi la comenzi</a></p>
+        <p>
+            <a class="invoice-link" href="<?= e(url('admin.php')) ?>">Înapoi la comenzi</a>
+            · <a class="invoice-link" href="<?= e(url('admin-oferta.php')) ?>">Ofertă comercială</a>
+        </p>
     </div>
 </section>
 

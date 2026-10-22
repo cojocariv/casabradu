@@ -96,24 +96,321 @@ function pdf_clip(string $text, int $max): string
 
 function pdf_logo_image(): ?array
 {
-    $path = dirname(__DIR__) . '/assets/img/logo.jpg';
+    return pdf_image_from_path('assets/img/logo.jpg');
+}
+
+function pdf_image_from_path(string $relative): ?array
+{
+    $relative = str_replace('\\', '/', $relative);
+    $relative = preg_replace('/[?#].*$/', '', $relative) ?? $relative;
+    $relative = ltrim($relative, '/');
+    if ($relative === '' || strpos($relative, '..') !== false) {
+        return null;
+    }
+    $path = dirname(__DIR__) . '/' . $relative;
     if (!is_file($path)) {
         return null;
     }
-    $data = file_get_contents($path);
-    if ($data === false || $data === '') {
+    $raw = @file_get_contents($path);
+    if ($raw === false || $raw === '') {
         return null;
     }
-    $info = @getimagesizefromstring($data);
-    if (!is_array($info) || (int) ($info[2] ?? 0) !== IMAGETYPE_JPEG) {
+    $info = @getimagesizefromstring($raw);
+    if (!is_array($info)) {
+        return null;
+    }
+    $type = (int) ($info[2] ?? 0);
+    $width = (int) ($info[0] ?? 0);
+    $height = (int) ($info[1] ?? 0);
+    if ($width < 1 || $height < 1) {
         return null;
     }
 
+    if ($type === IMAGETYPE_JPEG) {
+        return [
+            'filter' => 'DCTDecode',
+            'data' => $raw,
+            'width' => $width,
+            'height' => $height,
+        ];
+    }
+
+    if ($type === IMAGETYPE_PNG) {
+        if (function_exists('imagecreatefromstring') && function_exists('imagejpeg')) {
+            $src = @imagecreatefromstring($raw);
+            if ($src !== false) {
+                if (function_exists('imagepalettetotruecolor')) {
+                    @imagepalettetotruecolor($src);
+                }
+                if (function_exists('imagealphablending')) {
+                    imagealphablending($src, true);
+                }
+                $canvas = imagecreatetruecolor($width, $height);
+                if ($canvas !== false) {
+                    $white = imagecolorallocate($canvas, 255, 255, 255);
+                    imagefilledrectangle($canvas, 0, 0, $width, $height, $white);
+                    imagecopy($canvas, $src, 0, 0, 0, 0, $width, $height);
+                    imagedestroy($src);
+                    ob_start();
+                    imagejpeg($canvas, null, 82);
+                    $jpeg = ob_get_clean();
+                    imagedestroy($canvas);
+                    if (is_string($jpeg) && $jpeg !== '') {
+                        return [
+                            'filter' => 'DCTDecode',
+                            'data' => $jpeg,
+                            'width' => $width,
+                            'height' => $height,
+                        ];
+                    }
+                } else {
+                    imagedestroy($src);
+                }
+            }
+        }
+
+        $rgb = pdf_png_rgb($raw);
+        if ($rgb !== null) {
+            $rgb = pdf_rgb_scale($rgb, 160);
+            $compressed = gzcompress($rgb['data'], 6);
+            if ($compressed === false) {
+                return null;
+            }
+
+            return [
+                'filter' => 'FlateDecode',
+                'data' => $compressed,
+                'width' => $rgb['width'],
+                'height' => $rgb['height'],
+            ];
+        }
+    }
+
+    return null;
+}
+
+function pdf_rgb_scale(array $rgb, int $maxSide): array
+{
+    $width = (int) $rgb['width'];
+    $height = (int) $rgb['height'];
+    $data = (string) $rgb['data'];
+    if ($width < 1 || $height < 1 || $maxSide < 16) {
+        return $rgb;
+    }
+    $scale = min(1.0, $maxSide / max($width, $height));
+    if ($scale >= 0.999) {
+        return $rgb;
+    }
+    $newW = max(1, (int) round($width * $scale));
+    $newH = max(1, (int) round($height * $scale));
+    $out = '';
+    for ($y = 0; $y < $newH; $y++) {
+        $srcY = min($height - 1, (int) floor($y * $height / $newH));
+        for ($x = 0; $x < $newW; $x++) {
+            $srcX = min($width - 1, (int) floor($x * $width / $newW));
+            $o = ($srcY * $width + $srcX) * 3;
+            $out .= $data[$o] . $data[$o + 1] . $data[$o + 2];
+        }
+    }
+
     return [
-        'data' => $data,
-        'width' => (int) $info[0],
-        'height' => (int) $info[1],
+        'width' => $newW,
+        'height' => $newH,
+        'data' => $out,
     ];
+}
+
+function pdf_png_rgb(string $png): ?array
+{
+    if (strlen($png) < 24 || substr($png, 0, 8) !== "\x89PNG\r\n\x1a\n") {
+        return null;
+    }
+    $pos = 8;
+    $width = 0;
+    $height = 0;
+    $bitDepth = 0;
+    $colorType = -1;
+    $idat = '';
+    $lenAll = strlen($png);
+    while ($pos + 8 <= $lenAll) {
+        $len = unpack('N', substr($png, $pos, 4));
+        if ($len === false) {
+            return null;
+        }
+        $chunkLen = (int) $len[1];
+        $type = substr($png, $pos + 4, 4);
+        $data = substr($png, $pos + 8, $chunkLen);
+        if (strlen($data) !== $chunkLen) {
+            return null;
+        }
+        if ($type === 'IHDR') {
+            $hdr = unpack('Nwidth/Nheight/Cbit/Ccolor/Ccomp/Cfilter/Cinterlace', $data);
+            if ($hdr === false) {
+                return null;
+            }
+            $width = (int) $hdr['width'];
+            $height = (int) $hdr['height'];
+            $bitDepth = (int) $hdr['bit'];
+            $colorType = (int) $hdr['color'];
+            if ((int) $hdr['interlace'] !== 0 || $bitDepth !== 8 || ($colorType !== 2 && $colorType !== 6)) {
+                return null;
+            }
+        } elseif ($type === 'IDAT') {
+            $idat .= $data;
+        } elseif ($type === 'IEND') {
+            break;
+        }
+        $pos += 12 + $chunkLen;
+    }
+    if ($width < 1 || $height < 1 || $idat === '') {
+        return null;
+    }
+    $decoded = @gzuncompress($idat);
+    if ($decoded === false) {
+        $decoded = @gzinflate($idat);
+    }
+    if (!is_string($decoded) || $decoded === '') {
+        return null;
+    }
+
+    $bpp = $colorType === 6 ? 4 : 3;
+    $stride = $width * $bpp;
+    $expect = ($stride + 1) * $height;
+    if (strlen($decoded) < $expect) {
+        return null;
+    }
+
+    $rgb = '';
+    $prev = str_repeat("\0", $stride);
+    $offset = 0;
+    for ($y = 0; $y < $height; $y++) {
+        $filter = ord($decoded[$offset]);
+        $offset++;
+        $row = substr($decoded, $offset, $stride);
+        $offset += $stride;
+        $out = '';
+        for ($i = 0; $i < $stride; $i++) {
+            $x = ord($row[$i]);
+            $a = $i >= $bpp ? ord($out[$i - $bpp]) : 0;
+            $b = ord($prev[$i]);
+            $c = ($i >= $bpp) ? ord($prev[$i - $bpp]) : 0;
+            if ($filter === 1) {
+                $x = ($x + $a) & 255;
+            } elseif ($filter === 2) {
+                $x = ($x + $b) & 255;
+            } elseif ($filter === 3) {
+                $x = ($x + intdiv($a + $b, 2)) & 255;
+            } elseif ($filter === 4) {
+                $p = $a + $b - $c;
+                $pa = abs($p - $a);
+                $pb = abs($p - $b);
+                $pc = abs($p - $c);
+                if ($pa <= $pb && $pa <= $pc) {
+                    $pr = $a;
+                } elseif ($pb <= $pc) {
+                    $pr = $b;
+                } else {
+                    $pr = $c;
+                }
+                $x = ($x + $pr) & 255;
+            } elseif ($filter !== 0) {
+                return null;
+            }
+            $out .= chr($x);
+        }
+        $prev = $out;
+        if ($bpp === 3) {
+            $rgb .= $out;
+        } else {
+            for ($i = 0; $i < $width; $i++) {
+                $o = $i * 4;
+                $alpha = ord($out[$o + 3]) / 255;
+                $r = (int) round((ord($out[$o]) * $alpha) + (255 * (1 - $alpha)));
+                $g = (int) round((ord($out[$o + 1]) * $alpha) + (255 * (1 - $alpha)));
+                $bch = (int) round((ord($out[$o + 2]) * $alpha) + (255 * (1 - $alpha)));
+                $rgb .= chr($r) . chr($g) . chr($bch);
+            }
+        }
+    }
+
+    return [
+        'width' => $width,
+        'height' => $height,
+        'data' => $rgb,
+    ];
+}
+
+function pdf_assemble(array $pageContents, array $images = []): string
+{
+    if ($pageContents === []) {
+        $pageContents = [''];
+    }
+
+    $cleanImages = [];
+    foreach ($images as $image) {
+        if (!is_array($image) || empty($image['data'])) {
+            continue;
+        }
+        $filter = (string) ($image['filter'] ?? 'DCTDecode');
+        if ($filter !== 'DCTDecode' && $filter !== 'FlateDecode') {
+            $filter = 'DCTDecode';
+        }
+        $cleanImages[] = [
+            'data' => (string) $image['data'],
+            'width' => max(1, (int) ($image['width'] ?? 1)),
+            'height' => max(1, (int) ($image['height'] ?? 1)),
+            'filter' => $filter,
+        ];
+    }
+
+    $objects = [];
+    $objects[] = '<< /Type /Catalog /Pages 2 0 R >>'; // 1
+    $objects[] = ''; // 2 pages — filled later
+    $objects[] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>'; // 3
+    $objects[] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'; // 4
+
+    $xParts = [];
+    foreach ($cleanImages as $index => $image) {
+        $objNum = 5 + $index;
+        $name = 'Im' . ($index + 1);
+        $xParts[] = '/' . $name . ' ' . $objNum . ' 0 R';
+        $objects[] = '<< /Type /XObject /Subtype /Image /Width ' . $image['width']
+            . ' /Height ' . $image['height']
+            . ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /' . $image['filter'] . ' /Length '
+            . strlen($image['data']) . " >>\nstream\n" . $image['data'] . "\nendstream";
+    }
+
+    $xObjectRes = $xParts === [] ? '' : (' /XObject << ' . implode(' ', $xParts) . ' >>');
+    $pageKids = [];
+    foreach ($pageContents as $content) {
+        $pageObj = count($objects) + 1;
+        $contentObj = $pageObj + 1;
+        $pageKids[] = $pageObj . ' 0 R';
+        $objects[] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents '
+            . $contentObj . ' 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R >>'
+            . $xObjectRes . ' >> >>';
+        $objects[] = "<< /Length " . strlen((string) $content) . " >>\nstream\n" . $content . "endstream";
+    }
+
+    $objects[1] = '<< /Type /Pages /Kids [' . implode(' ', $pageKids) . '] /Count ' . count($pageKids) . ' >>';
+
+    $pdf = "%PDF-1.4\n";
+    $offsets = [0];
+    foreach ($objects as $index => $object) {
+        $offsets[] = strlen($pdf);
+        $pdf .= ($index + 1) . " 0 obj\n" . $object . "\nendobj\n";
+    }
+    $xref = strlen($pdf);
+    $count = count($objects) + 1;
+    $pdf .= "xref\n0 " . $count . "\n";
+    $pdf .= "0000000000 65535 f \n";
+    for ($i = 1; $i < $count; $i++) {
+        $pdf .= sprintf("%010d 00000 n \n", $offsets[$i]);
+    }
+    $pdf .= "trailer\n<< /Size " . $count . " /Root 1 0 R >>\n";
+    $pdf .= "startxref\n" . $xref . "\n%%EOF";
+
+    return $pdf;
 }
 
 function invoice_pdf(array $order, string $date, array $payer, array $table): string

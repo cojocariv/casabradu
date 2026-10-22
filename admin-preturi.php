@@ -51,7 +51,10 @@ require __DIR__ . '/includes/header.php';
         <p class="eyebrow">Administrator</p>
         <h1>Prețuri.</h1>
         <p class="lede">Prețul este în lei. Lasă câmpul gol dacă îl confirmi la comandă.</p>
-        <p><a class="invoice-link" href="<?= e(url('admin.php')) ?>">Înapoi la comenzi</a></p>
+        <p>
+            <a class="invoice-link" href="<?= e(url('admin.php')) ?>">Înapoi la comenzi</a>
+            · <a class="invoice-link" href="<?= e(url('admin-oferta.php')) ?>">Ofertă comercială</a>
+        </p>
     </div>
 </section>
 
