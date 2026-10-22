@@ -140,6 +140,8 @@ function subject_options(): array
         'cialde' => 'Cialde',
         'capsule' => 'Capsule',
         'boabe' => 'Cafea boabe',
+        'pahare' => 'Pahare de unică folosință',
+        'betisoare' => 'Bețișoare',
         'aparate' => 'Aparate de cafea',
         'colaborare' => 'Colaborare / distribuție',
     ];
