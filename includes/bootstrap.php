@@ -139,7 +139,13 @@ function subject_options(): array
 {
     return [
         'cialde' => 'Cialde',
+        'cialde-deka' => 'Cialde Deka',
+        'cialde-intenso' => 'Cialde Intenso',
         'capsule' => 'Capsule',
+        'capsule-ginseng' => 'Capsule Ginseng Nespresso',
+        'capsule-nocciliolino' => 'Capsule Nocciliolino Nespresso',
+        'capsule-tramonto' => 'Capsule Tramonto Nespresso',
+        'capsule-tramonto-grani' => 'Capsule Tramonto Grani',
         'boabe' => 'Cafea boabe',
         'pahare' => 'Pahare de unică folosință',
         'betisoare' => 'Bețișoare',

@@ -61,7 +61,7 @@ function safe_next(?string $next): string
     if ($next === 'cabinet.php' || $next === 'cos.php') {
         return $next;
     }
-    if (preg_match('/^cabinet\.php\?produs=(cialde|capsule|boabe|pahare|betisoare|aparate)$/', $next) === 1) {
+    if (preg_match('/^cabinet\.php\?produs=[a-z0-9-]+$/', $next) === 1) {
         return $next;
     }
 
