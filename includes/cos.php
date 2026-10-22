@@ -262,18 +262,17 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
     $flavors = $item['options'] ?? [];
     $packs = $item['packs'] ?? [];
     $hasPacks = is_array($packs) && $packs !== [] && is_array($flavors) && $flavors !== [];
-    $priceMap = [];
-    foreach ($choices as $choice) {
-        $priceMap[(string) $choice['key']] = product_price_label($choice['pret'] ?? null);
-    }
     ?>
-    <form class="buy-form<?= $hasPacks ? ' buy-form-split' : '' ?>" method="post" action="<?= e(url('cos.php')) ?>"<?= $hasPacks ? ' data-price-map="' . e(json_encode($priceMap, JSON_UNESCAPED_UNICODE)) . '"' : '' ?>>
+    <form class="buy-form<?= $hasPacks ? ' buy-form-split' : '' ?>" method="post" action="<?= e(url('cos.php')) ?>">
         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
         <input type="hidden" name="actiune" value="adauga">
         <input type="hidden" name="slug" value="<?= e($slug) ?>">
         <input type="hidden" name="inapoi" value="<?= e($back) ?>">
         <?php if ($hasPacks): ?>
             <input type="hidden" name="optiune" value="<?= e((string) $first['key']) ?>" data-optiune>
+            <?php foreach ($choices as $choice): ?>
+                <span class="buy-price-entry" hidden data-key="<?= e((string) $choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"></span>
+            <?php endforeach; ?>
             <div class="buy-options" role="radiogroup" aria-label="<?= tr((string) ($item['choice'] ?? 'Sortiment')) ?>">
                 <?php foreach ($flavors as $index => $flavor): ?>
                     <?php if (!is_array($flavor)) {
