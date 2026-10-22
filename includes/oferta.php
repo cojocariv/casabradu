@@ -168,50 +168,73 @@ function oferta_pdf(array $meta, array $table): string
         $pageNo++;
         $ops = [];
 
-        $ops[] = pdf_fill_rect(0, $pageH - 88, $pageW, 88, $forest[0], $forest[1], $forest[2]);
-        $ops[] = pdf_fill_rect(0, $pageH - 92, $pageW, 4, 0.82, 0.74, 0.58);
+        $headerH = 88.0;
+        $ops[] = pdf_fill_rect(0, $pageH - $headerH, $pageW, $headerH, $forest[0], $forest[1], $forest[2]);
+        $ops[] = pdf_fill_rect(0, $pageH - $headerH - 4, $pageW, 4, 0.82, 0.74, 0.58);
+
+        $title = 'OFERTA COMERCIALA';
+        $brand = SITE_NAME;
+        $tagline = 'Cafea artizanala import Italia, aromata si fina';
+        $titleSize = 15.0;
+        $brandSize = 11.0;
+        $tagSize = 8.0;
+        $lineGap = 6.0;
+        $textBlockH = $titleSize + $lineGap + $brandSize + $lineGap + $tagSize;
 
         $logoW = 0.0;
         $logoH = 0.0;
         if ($logoName !== null && $logo !== null) {
-            $logoH = 48.0;
+            $logoH = 52.0;
             $logoW = $logoH * ($logo['width'] / max(1, $logo['height']));
-            if ($logoW > 130) {
-                $logoW = 130.0;
+            if ($logoW > 120) {
+                $logoW = 120.0;
                 $logoH = $logoW * ($logo['height'] / max(1, $logo['width']));
             }
+        }
+
+        $gap = 16.0;
+        $textW = max(
+            pdf_text_width($title, $titleSize),
+            pdf_text_width($brand, $brandSize),
+            pdf_text_width($tagline, $tagSize)
+        );
+        $groupW = ($logoW > 0 ? $logoW + $gap : 0) + $textW;
+        $groupLeft = max($margin, ($pageW - $groupW) / 2);
+        $groupH = max($logoH, $textBlockH);
+        $groupBottom = $pageH - $headerH + (($headerH - $groupH) / 2);
+
+        if ($logoName !== null && $logo !== null) {
             $ops[] = sprintf(
                 'q %.2F 0 0 %.2F %.2F %.2F cm /%s Do Q',
                 $logoW,
                 $logoH,
-                $margin,
-                $pageH - 20 - $logoH,
+                $groupLeft,
+                $groupBottom + (($groupH - $logoH) / 2),
                 $logoName
             );
         }
 
-        // Text block centered in the free space to the right of the logo
-        $textLeft = $margin + ($logoW > 0 ? $logoW + 18 : 0);
-        $textRight = $pageW - $margin;
-        $textCenter = ($textLeft + $textRight) / 2;
-        $title = 'OFERTA COMERCIALA';
-        $tagline = 'Cafea artizanala import Italia, aromata si fina';
+        $textX = $groupLeft + ($logoW > 0 ? $logoW + $gap : 0);
+        $textTop = $groupBottom + $groupH - 2;
         $ops[] = sprintf(
-            'q 1 1 1 rg BT /F2 16 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $textCenter - (pdf_text_width($title, 16) / 2),
-            $pageH - 32,
+            'q 1 1 1 rg BT /F2 %.2F Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
+            $titleSize,
+            $textX,
+            $textTop - $titleSize,
             pdf_escape($title)
         );
         $ops[] = sprintf(
-            'q 0.93 0.89 0.82 rg BT /F1 11 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $textCenter - (pdf_text_width(SITE_NAME, 11) / 2),
-            $pageH - 50,
-            pdf_escape(SITE_NAME)
+            'q 0.93 0.89 0.82 rg BT /F1 %.2F Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
+            $brandSize,
+            $textX,
+            $textTop - $titleSize - $lineGap - $brandSize,
+            pdf_escape($brand)
         );
         $ops[] = sprintf(
-            'q 0.85 0.80 0.70 rg BT /F1 8 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $textCenter - (pdf_text_width($tagline, 8) / 2),
-            $pageH - 66,
+            'q 0.85 0.80 0.70 rg BT /F1 %.2F Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
+            $tagSize,
+            $textX,
+            $textTop - $titleSize - $lineGap - $brandSize - $lineGap - $tagSize,
             pdf_escape($tagline)
         );
 
