@@ -220,7 +220,7 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
 
     $colMid = $margin + ($contentW / 2) + 10;
     $leftY = $y;
-    $ops[] = pdf_text($margin, $leftY, 'Predator (Furnizor)', 9, 'F2');
+    $ops[] = pdf_text($margin, $leftY, 'Furnizor', 9, 'F2');
     $leftY -= 12;
     $ops[] = pdf_text($margin, $leftY, pdf_clip((string) $supplier['nume'], 42), 9, 'F1');
     $leftY -= 11;
@@ -235,7 +235,7 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
     $ops[] = pdf_text($margin, $leftY, 'Banca: ' . pdf_clip((string) $supplier['banca'], 36), 9, 'F1');
 
     $rightY = $y;
-    $ops[] = pdf_text($colMid, $rightY, 'Primitor (Cumparator)', 9, 'F2');
+    $ops[] = pdf_text($colMid, $rightY, 'Cumparator', 9, 'F2');
     $rightY -= 12;
     $ops[] = pdf_text($colMid, $rightY, pdf_clip(act_fill((string) $receiver['nume'], 34), 42), 9, 'F1');
     $rightY -= 11;
@@ -258,9 +258,9 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
     $ops[] = pdf_line($margin, $y, $pageW - $margin, $y, 0.7);
     $y -= 14;
 
-    $ops[] = pdf_text($margin, $y, 'In temeiul comenzii / contului nr. ' . ($order['id'] ?? '') . ' din ' . $date . ',', 9, 'F1');
+    $ops[] = pdf_text($margin, $y, 'Partile au intocmit prezentul act, prin care se confirma ca Furnizorul a predat,', 9, 'F1');
     $y -= 11;
-    $ops[] = pdf_text($margin, $y, 'Predatorul a predat, iar Primitorul a primit marfurile enumerate mai jos.', 9, 'F1');
+    $ops[] = pdf_text($margin, $y, 'iar Cumparatorul a primit marfurile enumerate mai jos.', 9, 'F1');
     $y -= 11;
     $ops[] = pdf_text($margin, $y, 'Locul predarii: ' . pdf_clip(act_fill((string) ($receiver['livrare'] ?? ''), 48), 70), 9, 'F1');
     $y -= 11;
@@ -373,9 +373,9 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
         $y -= 12;
     }
 
-    $ops[] = pdf_text($margin, $y, 'Marfurile au fost predate in stare corespunzatoare. Primitorul confirma receptia', 8, 'F1');
+    $ops[] = pdf_text($margin, $y, 'Marfurile au fost predate in stare corespunzatoare. Cumparatorul confirma receptia', 8, 'F1');
     $y -= 10;
-    $ops[] = pdf_text($margin, $y, 'si declara ca nu are pretentii, in afara rezervelor de mai jos.', 8, 'F1');
+    $ops[] = pdf_text($margin, $y, 'si declara ca nu are pretentii fata de Furnizor, in afara rezervelor de mai jos.', 8, 'F1');
     $y -= 13;
     $note = trim((string) ($order['nota'] ?? ''));
     if ($note !== '' && stripos($note, 'Act de predare') === false) {

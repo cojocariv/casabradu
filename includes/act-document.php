@@ -197,7 +197,7 @@ function act_html_fill(string $value): string
 
         <div class="parties">
             <div>
-                <p><strong>Predător (Furnizor):</strong></p>
+                <p><strong>Furnizor:</strong></p>
                 <p><?= e($supplier['nume']) ?></p>
                 <p>IDNO: <?= e($supplier['idno']) ?></p>
                 <p>TVA: <?= e($supplier['tva']) ?></p>
@@ -207,7 +207,7 @@ function act_html_fill(string $value): string
                 <p>Email: <?= e($supplier['email']) ?></p>
             </div>
             <div>
-                <p><strong>Primitor (Cumpărător):</strong></p>
+                <p><strong>Cumpărător:</strong></p>
                 <p><?= act_html_fill((string) $receiver['nume']) ?></p>
                 <p>IDNO: <?= act_html_fill((string) $receiver['idno']) ?></p>
                 <p>Cod TVA: <?= act_html_fill((string) $receiver['tva']) ?></p>
@@ -231,9 +231,8 @@ function act_html_fill(string $value): string
         </div>
 
         <p class="intro">
-            În temeiul comenzii / contului de plată nr. <strong><?= e((string) ($order['id'] ?? '')) ?></strong>
-            din <strong><?= e($actDate) ?></strong>, părțile au întocmit prezentul act, prin care se confirmă că
-            Predătorul a predat, iar Primitorul a primit mărfurile enumerate mai jos.
+            Părțile au întocmit prezentul act, prin care se confirmă că Furnizorul a predat, iar Cumpărătorul a primit
+            mărfurile enumerate mai jos.
         </p>
         <p class="intro">
             Data predării efective: <span class="blank" style="min-width:8em"></span>
@@ -303,7 +302,7 @@ function act_html_fill(string $value): string
 
         <p class="clause">
             Mărfurile au fost predate în stare corespunzătoare, în cantitatea și sortimentul indicate în prezentul act.
-            Primitorul confirmă recepția și declară că nu are pretenții față de Predător privind cantitatea, calitatea
+            Cumpărătorul confirmă recepția și declară că nu are pretenții față de Furnizor privind cantitatea, calitatea
             și aspectul mărfurilor la momentul predării, în afara rezervelor menționate eventual mai jos.
         </p>
         <p class="clause"><strong>Rezerve / mențiuni<?= $showNote ? '' : ' (completați cu pixul, dacă e cazul)' ?>:</strong>
