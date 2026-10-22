@@ -18,6 +18,19 @@ $flash = flash_get();
 $clients = crm_clients();
 $clientRows = is_array($clients['rows'] ?? null) ? $clients['rows'] : [];
 
+function admin_product_image(?array $item): string
+{
+    if (!is_array($item)) {
+        return '';
+    }
+    $offer = trim((string) ($item['offer_image'] ?? ''));
+    if ($offer !== '') {
+        return $offer;
+    }
+
+    return (string) ($item['image'] ?? '');
+}
+
 function admin_invoice_default_lines(): array
 {
     $lines = [];
@@ -30,6 +43,7 @@ function admin_invoice_default_lines(): array
             'titlu' => $row['produs'] . ($row['varianta'] !== '' ? ', ' . $row['varianta'] : ''),
             'grup' => $row['produs'],
             'varianta' => $row['varianta'],
+            'image' => admin_product_image(is_array($item) ? $item : null),
             'cantitate' => '',
             'pret' => is_numeric($pret) && (float) $pret > 0 ? product_price_input($pret) : '',
         ];
@@ -39,6 +53,7 @@ function admin_invoice_default_lines(): array
         'titlu' => '',
         'grup' => 'Alte linii',
         'varianta' => '',
+        'image' => '',
         'cantitate' => '',
         'pret' => '',
     ];
@@ -176,9 +191,16 @@ function admin_invoice_form_state(?array $client, array $post = []): array
 
     if (isset($post['titlu']) && is_array($post['titlu'])) {
         foreach ($post['titlu'] as $index => $title) {
+            $slug = (string) ($post['slug'][$index] ?? 'manual');
+            $image = (string) ($post['image'][$index] ?? '');
+            if ($image === '' && $slug !== '' && $slug !== 'manual') {
+                $base = explode(':', $slug, 2)[0];
+                $image = admin_product_image(product_by_slug($base));
+            }
             $state['lines'][] = [
-                'slug' => (string) ($post['slug'][$index] ?? 'manual'),
+                'slug' => $slug,
                 'titlu' => (string) $title,
+                'image' => $image,
                 'cantitate' => (string) ($post['cantitate'][$index] ?? ''),
                 'pret' => (string) ($post['pret'][$index] ?? ''),
             ];
@@ -415,10 +437,25 @@ require __DIR__ . '/includes/header.php';
                                         ? number_format($qtyShow * (float) $priceParsed, 2, ',', '')
                                         : '';
                                     $variant = trim((string) ($line['varianta'] ?? ''));
+                                    $image = (string) ($line['image'] ?? '');
+                                    if ($image === '') {
+                                        $slugBase = explode(':', (string) ($line['slug'] ?? ''), 2)[0];
+                                        if ($slugBase !== '' && $slugBase !== 'manual') {
+                                            $image = admin_product_image(product_by_slug($slugBase));
+                                        }
+                                    }
                                     ?>
-                                    <div class="invoice-line">
+                                    <div class="invoice-line offer-line">
+                                        <div class="offer-line-visual">
+                                            <?php if ($image !== ''): ?>
+                                                <img src="<?= e(str_replace(' ', '%20', asset($image))) ?>" alt="" width="56" height="56" loading="lazy">
+                                            <?php else: ?>
+                                                <span class="offer-line-placeholder" aria-hidden="true"></span>
+                                            <?php endif; ?>
+                                        </div>
                                         <div class="invoice-line-head">
                                             <input type="hidden" name="slug[]" value="<?= e((string) $line['slug']) ?>">
+                                            <input type="hidden" name="image[]" value="<?= e($image) ?>">
                                             <label class="sr-only" for="titlu-<?= $index ?>">Produs</label>
                                             <?php if ($variant !== ''): ?>
                                                 <input type="hidden" name="titlu[]" value="<?= e((string) $line['titlu']) ?>">
@@ -465,9 +502,13 @@ require __DIR__ . '/includes/header.php';
 </section>
 
 <template id="invoice-line-template">
-    <div class="invoice-line">
+    <div class="invoice-line offer-line">
+        <div class="offer-line-visual">
+            <span class="offer-line-placeholder" aria-hidden="true"></span>
+        </div>
         <div class="invoice-line-head">
             <input type="hidden" name="slug[]" value="manual">
+            <input type="hidden" name="image[]" value="">
             <label class="sr-only">Produs</label>
             <input name="titlu[]" type="text" maxlength="120" value="" placeholder="Denumirea mărfii">
         </div>

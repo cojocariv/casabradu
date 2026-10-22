@@ -180,6 +180,13 @@ function act_fill(string $value, int $width = 32): string
     return $value;
 }
 
+function act_has_value(string $value): bool
+{
+    $value = trim($value);
+
+    return $value !== '' && $value !== '-';
+}
+
 function act_pdf(array $order, string $date, string $place, array $supplier, array $receiver, array $table): string
 {
     require_once __DIR__ . '/pdf.php';
@@ -222,37 +229,55 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
     $leftY = $y;
     $ops[] = pdf_text($margin, $leftY, 'Furnizor', 9, 'F2');
     $leftY -= 12;
-    $ops[] = pdf_text($margin, $leftY, pdf_clip((string) $supplier['nume'], 42), 9, 'F1');
-    $leftY -= 11;
-    $ops[] = pdf_text($margin, $leftY, 'IDNO: ' . $supplier['idno'], 9, 'F1');
-    $leftY -= 11;
-    $ops[] = pdf_text($margin, $leftY, 'TVA: ' . $supplier['tva'], 9, 'F1');
-    $leftY -= 11;
-    $ops[] = pdf_text($margin, $leftY, 'Adresa: ' . pdf_clip(act_fill((string) $supplier['adresa'], 28), 40), 9, 'F1');
-    $leftY -= 11;
-    $ops[] = pdf_text($margin, $leftY, 'IBAN: ' . $supplier['iban'], 8, 'F1');
-    $leftY -= 11;
-    $ops[] = pdf_text($margin, $leftY, 'Banca: ' . pdf_clip((string) $supplier['banca'], 36), 9, 'F1');
+    $supplierLines = [
+        [pdf_clip((string) ($supplier['nume'] ?? ''), 42), 9],
+        [act_has_value((string) ($supplier['idno'] ?? '')) ? 'IDNO: ' . $supplier['idno'] : '', 9],
+        [act_has_value((string) ($supplier['tva'] ?? '')) ? 'TVA: ' . $supplier['tva'] : '', 9],
+        [act_has_value((string) ($supplier['adresa'] ?? '')) ? 'Adresa: ' . pdf_clip((string) $supplier['adresa'], 40) : '', 9],
+        [act_has_value((string) ($supplier['iban'] ?? '')) ? 'IBAN: ' . $supplier['iban'] : '', 8],
+        [act_has_value((string) ($supplier['banca'] ?? '')) ? 'Banca: ' . pdf_clip((string) $supplier['banca'], 36) : '', 9],
+    ];
+    foreach ($supplierLines as $line) {
+        [$text, $size] = $line;
+        if ($text === '') {
+            continue;
+        }
+        $ops[] = pdf_text($margin, $leftY, $text, (float) $size, 'F1');
+        $leftY -= 11;
+    }
 
     $rightY = $y;
     $ops[] = pdf_text($colMid, $rightY, 'Cumparator', 9, 'F2');
     $rightY -= 12;
-    $ops[] = pdf_text($colMid, $rightY, pdf_clip(act_fill((string) $receiver['nume'], 34), 42), 9, 'F1');
-    $rightY -= 11;
-    $ops[] = pdf_text($colMid, $rightY, 'IDNO: ' . act_fill((string) $receiver['idno'], 22), 9, 'F1');
-    $rightY -= 11;
-    $ops[] = pdf_text($colMid, $rightY, 'Cod TVA: ' . act_fill((string) ($receiver['tva'] ?? ''), 20), 9, 'F1');
-    $rightY -= 11;
-    $ops[] = pdf_text($colMid, $rightY, 'Adresa: ' . pdf_clip(act_fill((string) $receiver['adresa'], 28), 40), 9, 'F1');
-    $rightY -= 11;
-    $ops[] = pdf_text($colMid, $rightY, 'IBAN: ' . pdf_clip(act_fill((string) ($receiver['iban'] ?? ''), 28), 40), 8, 'F1');
-    $rightY -= 11;
-    $ops[] = pdf_text($colMid, $rightY, 'Contact: ' . pdf_clip(act_fill((string) ($receiver['contact'] ?? ''), 26), 40), 9, 'F1');
-    $rightY -= 11;
-    $ops[] = pdf_text($colMid, $rightY, 'Telefon: ' . act_fill(
-        (($receiver['telefon'] ?? '') === '-' ? '' : (string) ($receiver['telefon'] ?? '')),
-        18
-    ), 9, 'F1');
+    $receiverName = (string) ($receiver['nume'] ?? '');
+    $receiverPhone = (string) ($receiver['telefon'] ?? '');
+    if ($receiverPhone === '-') {
+        $receiverPhone = '';
+    }
+    $receiverLines = [
+        [act_has_value($receiverName) ? pdf_clip($receiverName, 42) : '', 9],
+        [act_has_value((string) ($receiver['idno'] ?? '')) ? 'IDNO: ' . $receiver['idno'] : '', 9],
+        [act_has_value((string) ($receiver['tva'] ?? '')) ? 'Cod TVA: ' . $receiver['tva'] : '', 9],
+        [act_has_value((string) ($receiver['adresa'] ?? '')) ? 'Adresa: ' . pdf_clip((string) $receiver['adresa'], 40) : '', 9],
+        [act_has_value((string) ($receiver['iban'] ?? '')) ? 'IBAN: ' . pdf_clip((string) $receiver['iban'], 40) : '', 8],
+        [act_has_value((string) ($receiver['contact'] ?? '')) ? 'Contact: ' . pdf_clip((string) $receiver['contact'], 40) : '', 9],
+        [act_has_value($receiverPhone) ? 'Telefon: ' . $receiverPhone : '', 9],
+        [act_has_value((string) ($receiver['email'] ?? '')) ? 'Email: ' . pdf_clip((string) $receiver['email'], 40) : '', 9],
+    ];
+    $receiverShown = 0;
+    foreach ($receiverLines as $line) {
+        [$text, $size] = $line;
+        if ($text === '') {
+            continue;
+        }
+        $ops[] = pdf_text($colMid, $rightY, $text, (float) $size, 'F1');
+        $rightY -= 11;
+        $receiverShown++;
+    }
+    if ($receiverShown === 0) {
+        $ops[] = pdf_text($colMid, $rightY, '(datele se completeaza la predare)', 8, 'F1');
+        $rightY -= 11;
+    }
 
     $y = min($leftY, $rightY) - 14;
     $ops[] = pdf_line($margin, $y, $pageW - $margin, $y, 0.7);
@@ -262,8 +287,10 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
     $y -= 11;
     $ops[] = pdf_text($margin, $y, 'iar Cumparatorul a primit marfurile enumerate mai jos.', 9, 'F1');
     $y -= 11;
-    $ops[] = pdf_text($margin, $y, 'Locul predarii: ' . pdf_clip(act_fill((string) ($receiver['livrare'] ?? ''), 48), 70), 9, 'F1');
-    $y -= 11;
+    if (act_has_value((string) ($receiver['livrare'] ?? ''))) {
+        $ops[] = pdf_text($margin, $y, 'Locul predarii: ' . pdf_clip((string) $receiver['livrare'], 70), 9, 'F1');
+        $y -= 11;
+    }
     $ops[] = pdf_text($margin, $y, 'Data predarii efective: ____________________  Ora: ________', 9, 'F1');
     $y -= 16;
 
@@ -400,8 +427,12 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
     $ops[] = pdf_text($leftX, $y, 'Predat marfuri', 9, 'F2');
     $ops[] = pdf_text($rightX, $y, 'Primit marfuri', 9, 'F2');
     $y -= 12;
-    $ops[] = pdf_text($leftX, $y, pdf_clip((string) $supplier['nume'], 34), 8, 'F1');
-    $ops[] = pdf_text($rightX, $y, pdf_clip(act_fill((string) $receiver['nume'], 30), 34), 8, 'F1');
+    if (act_has_value((string) ($supplier['nume'] ?? ''))) {
+        $ops[] = pdf_text($leftX, $y, pdf_clip((string) $supplier['nume'], 34), 8, 'F1');
+    }
+    if (act_has_value((string) ($receiver['nume'] ?? ''))) {
+        $ops[] = pdf_text($rightX, $y, pdf_clip((string) $receiver['nume'], 34), 8, 'F1');
+    }
     $y -= 14;
     $ops[] = pdf_text($leftX, $y, 'Nume, prenume: ____________________', 8, 'F1');
     $ops[] = pdf_text($rightX, $y, 'Nume, prenume: ____________________', 8, 'F1');
