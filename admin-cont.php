@@ -415,7 +415,6 @@ require __DIR__ . '/includes/header.php';
                                     ?>
                                     <div class="invoice-line">
                                         <div class="invoice-line-head">
-                                            <span class="invoice-nr"><?= $index + 1 ?></span>
                                             <input type="hidden" name="slug[]" value="<?= e((string) $line['slug']) ?>">
                                             <label class="sr-only" for="titlu-<?= $index ?>">Produs</label>
                                             <?php if ($variant !== ''): ?>
@@ -465,7 +464,6 @@ require __DIR__ . '/includes/header.php';
 <template id="invoice-line-template">
     <div class="invoice-line">
         <div class="invoice-line-head">
-            <span class="invoice-nr"></span>
             <input type="hidden" name="slug[]" value="manual">
             <label class="sr-only">Produs</label>
             <input name="titlu[]" type="text" maxlength="120" value="" placeholder="Denumirea mărfii">
@@ -543,18 +541,8 @@ require __DIR__ . '/includes/header.php';
         sumNode.textContent = formatSum(qty * price);
     }
 
-    function renumber() {
-        root.querySelectorAll('.invoice-line').forEach(function (row, index) {
-            var nr = row.querySelector('.invoice-nr');
-            if (nr) {
-                nr.textContent = String(index + 1);
-            }
-        });
-    }
-
     function updateAll() {
         root.querySelectorAll('.invoice-line').forEach(updateRow);
-        renumber();
         if (extraGroup && extraLines) {
             extraGroup.hidden = extraLines.children.length === 0;
         }

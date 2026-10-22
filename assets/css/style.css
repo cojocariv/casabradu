@@ -1689,8 +1689,9 @@ html[lang="ru"] .script {
 
 .invoice-group-title {
     margin: 0 0 12px;
-    font-size: 1.05rem;
+    font-size: 1.45rem;
     font-weight: 700;
+    letter-spacing: -0.01em;
 }
 
 .invoice-lines-grid {
@@ -1725,14 +1726,7 @@ html[lang="ru"] .script {
     flex: 1 1 auto;
     min-width: 0;
     font-weight: 600;
-    font-size: 0.98rem;
-}
-
-.invoice-line .invoice-nr {
-    flex: 0 0 1.6rem;
-    text-align: center;
-    color: rgba(26, 26, 26, 0.5);
-    font-weight: 600;
+    font-size: 1.05rem;
 }
 
 .invoice-line-metrics {
