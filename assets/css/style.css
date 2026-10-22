@@ -1600,8 +1600,6 @@ html[lang="ru"] .script {
 
 .crm-form input[type="text"] { width: min(280px, 100%); }
 
-.stock-low { color: #7a3328; font-weight: 600; }
-
 .admin-bar {
     display: flex;
     flex-wrap: wrap;
