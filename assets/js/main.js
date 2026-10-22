@@ -108,8 +108,40 @@
 
     document.querySelectorAll('.buy-form').forEach(function (form) {
         var price = form.querySelector('.buy-price');
+        if (!price) {
+            return;
+        }
+
+        if (form.classList.contains('buy-form-split')) {
+            var hidden = form.querySelector('[data-optiune]');
+            var mapRaw = form.getAttribute('data-price-map') || '{}';
+            var map = {};
+            try {
+                map = JSON.parse(mapRaw);
+            } catch (err) {
+                map = {};
+            }
+            function syncSplit() {
+                var flavor = form.querySelector('input[name="sortiment"]:checked');
+                var pack = form.querySelector('input[name="ambalare"]:checked');
+                if (!flavor || !pack || !hidden) {
+                    return;
+                }
+                var key = flavor.value + pack.value;
+                hidden.value = key;
+                if (Object.prototype.hasOwnProperty.call(map, key)) {
+                    price.textContent = map[key];
+                }
+            }
+            form.querySelectorAll('input[name="sortiment"], input[name="ambalare"]').forEach(function (option) {
+                option.addEventListener('change', syncSplit);
+            });
+            syncSplit();
+            return;
+        }
+
         var options = form.querySelectorAll('input[name="optiune"]');
-        if (!price || options.length < 2) {
+        if (options.length < 2) {
             return;
         }
         function showPrice() {

@@ -7,21 +7,81 @@ function product_catalog(): array
     return product_apply_prices(product_catalog_items());
 }
 
+function product_variant_defs(array $item): array
+{
+    $options = $item['options'] ?? [];
+    if (!is_array($options) || $options === []) {
+        return [];
+    }
+    $packs = $item['packs'] ?? [];
+    if (!is_array($packs) || $packs === []) {
+        $defs = [];
+        foreach ($options as $option) {
+            if (!is_array($option)) {
+                continue;
+            }
+            $key = (string) ($option['key'] ?? '');
+            if (preg_match('/^[a-z0-9]{1,20}$/', $key) !== 1) {
+                continue;
+            }
+            $defs[] = [
+                'key' => $key,
+                'label' => (string) ($option['label'] ?? ''),
+                'flavor' => $key,
+                'pack' => '',
+            ];
+        }
+
+        return $defs;
+    }
+
+    $defs = [];
+    foreach ($options as $option) {
+        if (!is_array($option)) {
+            continue;
+        }
+        $flavor = (string) ($option['key'] ?? '');
+        $flavorLabel = (string) ($option['label'] ?? '');
+        if (preg_match('/^[a-z0-9]{1,12}$/', $flavor) !== 1) {
+            continue;
+        }
+        foreach ($packs as $pack) {
+            if (!is_array($pack)) {
+                continue;
+            }
+            $packKey = (string) ($pack['key'] ?? '');
+            $packLabel = (string) ($pack['label'] ?? '');
+            if (preg_match('/^[a-z0-9]{1,8}$/', $packKey) !== 1) {
+                continue;
+            }
+            $key = $flavor . $packKey;
+            if (preg_match('/^[a-z0-9]{1,20}$/', $key) !== 1) {
+                continue;
+            }
+            $defs[] = [
+                'key' => $key,
+                'label' => trim($flavorLabel . ', ' . $packLabel, ', '),
+                'flavor' => $flavor,
+                'pack' => $packKey,
+            ];
+        }
+    }
+
+    return $defs;
+}
+
 function product_price_rows(): array
 {
     $rows = [];
     foreach (product_catalog_items() as $item) {
-        $options = $item['options'] ?? [];
-        if (is_array($options) && $options !== []) {
-            foreach ($options as $option) {
-                if (!is_array($option)) {
-                    continue;
-                }
+        $defs = product_variant_defs($item);
+        if ($defs !== []) {
+            foreach ($defs as $def) {
                 $rows[] = [
                     'slug' => (string) $item['slug'],
-                    'optiune' => (string) ($option['key'] ?? ''),
+                    'optiune' => (string) $def['key'],
                     'produs' => (string) $item['title'],
-                    'varianta' => (string) ($option['label'] ?? ''),
+                    'varianta' => (string) $def['label'],
                 ];
             }
             continue;
@@ -99,17 +159,15 @@ function product_apply_prices(array $items): array
         if (!is_array($item)) {
             continue;
         }
-        $options = $item['options'] ?? [];
-        if (is_array($options) && $options !== []) {
-            foreach ($options as $optionIndex => $option) {
-                if (!is_array($option)) {
-                    continue;
-                }
-                $key = (string) $item['slug'] . ':' . (string) ($option['key'] ?? '');
-                if (array_key_exists($key, $saved)) {
-                    $items[$index]['options'][$optionIndex]['pret'] = $saved[$key];
-                }
+        $defs = product_variant_defs($item);
+        if ($defs !== []) {
+            $variants = [];
+            foreach ($defs as $def) {
+                $key = (string) $item['slug'] . ':' . (string) $def['key'];
+                $def['pret'] = array_key_exists($key, $saved) ? $saved[$key] : null;
+                $variants[] = $def;
             }
+            $items[$index]['variants'] = $variants;
             continue;
         }
         $key = (string) ($item['slug'] ?? '');
@@ -168,7 +226,7 @@ function product_catalog_items(): array
         'image' => 'assets/img/Marfa/cialda.png',
         'alt' => 'Cialde Casa Bradu Caffè',
         'short' => 'Cialde în monodoze: Deka și Intenso.',
-        'long' => 'Cialdele Casa Bradu păstrează aroma amestecului nostru, fără râșniță și fără cântar. Alegi sortimentul — Deka sau Intenso — și ai o porție gata de preparat, acasă sau la birou.',
+        'long' => 'Cialdele Casa Bradu păstrează aroma amestecului nostru, fără râșniță și fără cântar. Alegi sortimentul — Deka sau Intenso — și ambalarea (bucăți sau cutii).',
         'points' => [
             'Monodoze practice, fără râșniță',
             'Două sortimente: Deka și Intenso',
@@ -176,8 +234,13 @@ function product_catalog_items(): array
         ],
         'choice' => 'Sortiment',
         'options' => [
-            ['key' => 'deka', 'label' => 'Deka', 'pret' => null],
-            ['key' => 'intenso', 'label' => 'Intenso', 'pret' => null],
+            ['key' => 'deka', 'label' => 'Deka'],
+            ['key' => 'intenso', 'label' => 'Intenso'],
+        ],
+        'pack_choice' => 'Ambalare',
+        'packs' => [
+            ['key' => 'bucata', 'label' => 'Bucăți'],
+            ['key' => 'cutie', 'label' => 'Cutii'],
         ],
     ],
     [
@@ -188,7 +251,7 @@ function product_catalog_items(): array
         'image' => 'assets/img/Marfa/niciola.png',
         'alt' => 'Capsule Niciola Casa Bradu Caffè',
         'short' => 'Capsule compatibile Nespresso: Niciola, Ginseng, Tramonto și Intenso.',
-        'long' => 'Capsulele Casa Bradu sunt compatibile cu aparatele Nespresso. Alegi sortimentul — Niciola, Ginseng, Tramonto sau Intenso — și ai o ceașcă aromată, rapid, fără râșniță.',
+        'long' => 'Capsulele Casa Bradu sunt compatibile cu aparatele Nespresso. Alegi sortimentul — Niciola, Ginseng, Tramonto sau Intenso — și ambalarea (bucăți sau cutii).',
         'points' => [
             'Compatibile Nespresso',
             'Patru sortimente: Niciola, Ginseng, Tramonto, Intenso',
@@ -196,10 +259,15 @@ function product_catalog_items(): array
         ],
         'choice' => 'Sortiment',
         'options' => [
-            ['key' => 'niciola', 'label' => 'Niciola', 'pret' => null],
-            ['key' => 'ginseng', 'label' => 'Ginseng', 'pret' => null],
-            ['key' => 'tramonto', 'label' => 'Tramonto', 'pret' => null],
-            ['key' => 'intenso', 'label' => 'Intenso', 'pret' => null],
+            ['key' => 'niciola', 'label' => 'Niciola'],
+            ['key' => 'ginseng', 'label' => 'Ginseng'],
+            ['key' => 'tramonto', 'label' => 'Tramonto'],
+            ['key' => 'intenso', 'label' => 'Intenso'],
+        ],
+        'pack_choice' => 'Ambalare',
+        'packs' => [
+            ['key' => 'bucata', 'label' => 'Bucăți'],
+            ['key' => 'cutie', 'label' => 'Cutii'],
         ],
     ],
     [

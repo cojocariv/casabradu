@@ -29,6 +29,30 @@ function product_by_slug(string $slug): ?array
 
 function product_choices(array $item): array
 {
+    $variants = $item['variants'] ?? null;
+    if (is_array($variants) && $variants !== []) {
+        $choices = [];
+        foreach ($variants as $variant) {
+            if (!is_array($variant)) {
+                continue;
+            }
+            $key = (string) ($variant['key'] ?? '');
+            if (preg_match('/^[a-z0-9]{1,20}$/', $key) !== 1) {
+                continue;
+            }
+            $choices[] = [
+                'key' => $key,
+                'label' => (string) ($variant['label'] ?? ''),
+                'pret' => $variant['pret'] ?? null,
+                'flavor' => (string) ($variant['flavor'] ?? ''),
+                'pack' => (string) ($variant['pack'] ?? ''),
+            ];
+        }
+        if ($choices !== []) {
+            return $choices;
+        }
+    }
+
     $options = $item['options'] ?? [];
     $choices = [];
     if (is_array($options)) {
@@ -56,6 +80,13 @@ function product_choices(array $item): array
     }
 
     return $choices;
+}
+
+function product_price_label($pret): string
+{
+    $money = product_money($pret);
+
+    return t('Preț') . ': ' . ($money === 'la confirmare' ? t('la confirmare') : str_replace(' lei', ' ' . t('lei'), $money));
 }
 
 function product_choice(array $item, string $key): ?array
@@ -228,17 +259,48 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
     $choices = product_choices($item);
     $field = str_replace(['.', '#', ':'], '-', $slug . '-' . $back);
     $first = $choices[0];
+    $flavors = $item['options'] ?? [];
+    $packs = $item['packs'] ?? [];
+    $hasPacks = is_array($packs) && $packs !== [] && is_array($flavors) && $flavors !== [];
+    $priceMap = [];
+    foreach ($choices as $choice) {
+        $priceMap[(string) $choice['key']] = product_price_label($choice['pret'] ?? null);
+    }
     ?>
-    <form class="buy-form" method="post" action="<?= e(url('cos.php')) ?>">
+    <form class="buy-form<?= $hasPacks ? ' buy-form-split' : '' ?>" method="post" action="<?= e(url('cos.php')) ?>"<?= $hasPacks ? ' data-price-map="' . e(json_encode($priceMap, JSON_UNESCAPED_UNICODE)) . '"' : '' ?>>
         <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
         <input type="hidden" name="actiune" value="adauga">
         <input type="hidden" name="slug" value="<?= e($slug) ?>">
         <input type="hidden" name="inapoi" value="<?= e($back) ?>">
-        <?php if (count($choices) > 1): ?>
+        <?php if ($hasPacks): ?>
+            <input type="hidden" name="optiune" value="<?= e((string) $first['key']) ?>" data-optiune>
+            <div class="buy-options" role="radiogroup" aria-label="<?= tr((string) ($item['choice'] ?? 'Sortiment')) ?>">
+                <?php foreach ($flavors as $index => $flavor): ?>
+                    <?php if (!is_array($flavor)) {
+                        continue;
+                    } ?>
+                    <label class="buy-option">
+                        <input type="radio" name="sortiment" value="<?= e((string) ($flavor['key'] ?? '')) ?>" data-part="flavor"<?= $index === 0 ? ' checked' : '' ?>>
+                        <span><?= tr((string) ($flavor['label'] ?? '')) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+            <div class="buy-options" role="radiogroup" aria-label="<?= tr((string) ($item['pack_choice'] ?? 'Ambalare')) ?>">
+                <?php foreach ($packs as $index => $pack): ?>
+                    <?php if (!is_array($pack)) {
+                        continue;
+                    } ?>
+                    <label class="buy-option">
+                        <input type="radio" name="ambalare" value="<?= e((string) ($pack['key'] ?? '')) ?>" data-part="pack"<?= $index === 0 ? ' checked' : '' ?>>
+                        <span><?= tr((string) ($pack['label'] ?? '')) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        <?php elseif (count($choices) > 1): ?>
             <div class="buy-options" role="radiogroup" aria-label="<?= tr((string) ($item['choice'] ?? 'Opțiune')) ?>">
                 <?php foreach ($choices as $index => $choice): ?>
                     <label class="buy-option">
-                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(t('Preț') . ': ' . (product_money($choice['pret']) === 'la confirmare' ? t('la confirmare') : str_replace(' lei', ' ' . t('lei'), product_money($choice['pret'])))) ?>"<?= $index === 0 ? ' checked' : '' ?>>
+                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"<?= $index === 0 ? ' checked' : '' ?>>
                         <span><?= tr($choice['label']) ?></span>
                     </label>
                 <?php endforeach; ?>
@@ -246,7 +308,7 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
         <?php elseif ($first['key'] !== ''): ?>
             <input type="hidden" name="optiune" value="<?= e($first['key']) ?>">
         <?php endif; ?>
-        <p class="buy-price"><?= e(t('Preț') . ': ' . (product_money($first['pret']) === 'la confirmare' ? t('la confirmare') : str_replace(' lei', ' ' . t('lei'), product_money($first['pret'])))) ?></p>
+        <p class="buy-price"><?= e(product_price_label($first['pret'] ?? null)) ?></p>
         <label class="sr-only" for="cant-<?= e($field) ?>"><?= tr('Cantitate') ?></label>
         <input id="cant-<?= e($field) ?>" name="cantitate" type="number" min="1" max="999" step="1" value="1" inputmode="numeric">
         <button class="<?= e($buttonClass) ?>" type="submit"><?= tr('Adaugă în coș') ?></button>
