@@ -18,6 +18,37 @@ $flash = flash_get();
 $clients = crm_clients();
 $clientRows = is_array($clients['rows'] ?? null) ? $clients['rows'] : [];
 
+function admin_clients_autofill_map(): array
+{
+    $map = [];
+    try {
+        $rows = db()->query('SELECT id, nume, email, telefon, adresa, rechizite FROM clienti');
+        if ($rows === false) {
+            return $map;
+        }
+        foreach ($rows as $row) {
+            $req = (string) ($row['rechizite'] ?? '');
+            $map[(string) $row['id']] = [
+                'email' => (string) ($row['email'] ?? ''),
+                'nume' => (string) ($row['nume'] ?? ''),
+                'telefon' => (string) ($row['telefon'] ?? ''),
+                'adresa' => (string) ($row['adresa'] ?? ''),
+                'companie' => requisite_value($req, 'Denumirea companiei'),
+                'idno' => requisite_value($req, 'IDNO'),
+                'tva' => requisite_value($req, 'Cod TVA'),
+                'adresa_juridica' => requisite_value($req, 'Adresa juridică'),
+                'iban' => requisite_value($req, 'IBAN și banca'),
+            ];
+        }
+    } catch (Throwable $e) {
+        return [];
+    }
+
+    return $map;
+}
+
+$clientsAutofill = admin_clients_autofill_map();
+
 function admin_product_image(?array $item): string
 {
     if (!is_array($item)) {
@@ -356,22 +387,20 @@ require __DIR__ . '/includes/header.php';
             <div class="price-board">
                 <p class="kicker">Client</p>
                 <h2>Date și rechizite</h2>
-                <p class="form-note">Alege un client salvat sau completează manual. Numele, emailul și rechizitele sunt opționale.</p>
+                <p class="form-note">Alege un client salvat — câmpurile se completează automat, fără reîncărcare. Poți modifica orice valoare înainte de generare.</p>
                 <div class="invoice-meta-grid">
                     <div class="invoice-meta-field invoice-meta-full">
                         <label for="client_id">Client salvat</label>
-                        <div class="invoice-client-row">
-                            <select id="client_id" name="client_id">
-                                <option value="">Client nou / manual</option>
-                                <?php foreach ($clientRows as $row): ?>
-                                    <option value="<?= e((string) $row['id']) ?>" <?= $form['client_id'] === (string) $row['id'] ? 'selected' : '' ?>>
-                                        <?= e((string) $row['nume'] . ' · ' . (string) $row['email']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <button class="btn btn-line btn-sm" type="submit" name="actiune" value="incarca" formnovalidate>Încarcă</button>
-                        </div>
+                        <select id="client_id" name="client_id">
+                            <option value="">Client nou / manual</option>
+                            <?php foreach ($clientRows as $row): ?>
+                                <option value="<?= e((string) $row['id']) ?>" <?= $form['client_id'] === (string) $row['id'] ? 'selected' : '' ?>>
+                                    <?= e((string) $row['nume'] . ' · ' . (string) $row['email']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
+                    <script type="application/json" id="clients-autofill"><?= json_encode($clientsAutofill, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS) ?></script>
                     <div class="invoice-meta-field">
                         <label for="email">Email</label>
                         <input id="email" name="email" type="email" maxlength="120" value="<?= e($form['email']) ?>" placeholder="opțional" <?= isset($errors['email']) ? 'aria-invalid="true"' : '' ?>>
@@ -531,6 +560,41 @@ require __DIR__ . '/includes/header.php';
 
 <script>
 (function () {
+    var clientSelect = document.getElementById('client_id');
+    var clientsData = {};
+    var clientsNode = document.getElementById('clients-autofill');
+    if (clientsNode) {
+        try {
+            clientsData = JSON.parse(clientsNode.textContent || '{}') || {};
+        } catch (err) {
+            clientsData = {};
+        }
+    }
+    function fillField(id, value) {
+        var el = document.getElementById(id);
+        if (el) {
+            el.value = value == null ? '' : String(value);
+        }
+    }
+    if (clientSelect) {
+        clientSelect.addEventListener('change', function () {
+            var id = clientSelect.value || '';
+            if (!id || !clientsData[id]) {
+                return;
+            }
+            var c = clientsData[id];
+            fillField('email', c.email);
+            fillField('nume', c.nume);
+            fillField('telefon', c.telefon);
+            fillField('adresa', c.adresa);
+            fillField('companie', c.companie);
+            fillField('idno', c.idno);
+            fillField('tva', c.tva);
+            fillField('adresa_juridica', c.adresa_juridica);
+            fillField('iban', c.iban);
+        });
+    }
+
     var button = document.getElementById('add-invoice-line');
     var root = document.getElementById('invoice-lines');
     var extraGroup = document.getElementById('invoice-extra-group');
