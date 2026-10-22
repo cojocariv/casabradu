@@ -181,22 +181,24 @@ function oferta_pdf(array $meta, array $table): string
             );
         }
 
+        $centerX = $pageW / 2;
+        $title = 'OFERTA COMERCIALA';
         $ops[] = sprintf(
             'q 1 1 1 rg BT /F2 14 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $pageW - $margin - pdf_text_width('OFERTA COMERCIALA', 14),
+            $centerX - (pdf_text_width($title, 14) / 2),
             $pageH - 34,
-            pdf_escape('OFERTA COMERCIALA')
+            pdf_escape($title)
         );
         $ops[] = sprintf(
             'q 0.93 0.89 0.82 rg BT /F1 10 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $pageW - $margin - pdf_text_width(SITE_NAME, 10),
+            $centerX - (pdf_text_width(SITE_NAME, 10) / 2),
             $pageH - 50,
             pdf_escape(SITE_NAME)
         );
         $tagline = 'Cafea artizanala import Italia, aromata si fina';
         $ops[] = sprintf(
             'q 0.85 0.80 0.70 rg BT /F1 8 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $pageW - $margin - pdf_text_width($tagline, 8),
+            $centerX - (pdf_text_width($tagline, 8) / 2),
             $pageH - 64,
             pdf_escape($tagline)
         );
