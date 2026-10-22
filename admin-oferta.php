@@ -186,7 +186,7 @@ require __DIR__ . '/includes/header.php';
                                     <div class="invoice-line offer-line">
                                         <div class="offer-line-visual">
                                             <?php if ($image !== ''): ?>
-                                                <img src="<?= e(asset($image)) ?>" alt="" width="56" height="56" loading="lazy">
+                                                <img src="<?= e(str_replace(' ', '%20', asset($image))) ?>" alt="" width="56" height="56" loading="lazy">
                                             <?php else: ?>
                                                 <span class="offer-line-placeholder" aria-hidden="true"></span>
                                             <?php endif; ?>

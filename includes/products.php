@@ -276,6 +276,7 @@ function product_catalog_items(): array
         'kicker' => 'Pentru râșniță',
         'meta' => '500 g',
         'image' => 'assets/img/Marfa/boabe.png',
+        'offer_image' => 'assets/img/Marfa/boabe 500 gr.png',
         'alt' => 'Cafea boabe Casa Bradu Caffè, 500 g',
         'short' => 'Boabe întregi, pachet de 500 g: Arabica și Robusta în raport ideal.',
         'long' => 'Cafeaua boabe Casa Bradu este amestecul nostru în forma lui întreagă, în pachet de 500 g. O macini când o prepari, ca aroma să rămână deschisă. Raportul dintre Arabica și Robusta este ideal: finețe, corp și cremă.',

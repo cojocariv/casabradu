@@ -9,7 +9,11 @@ function oferta_default_lines(): array
         $item = product_by_slug($row['slug']);
         $choice = is_array($item) ? product_choice($item, $row['optiune']) : null;
         $pret = is_array($choice) ? ($choice['pret'] ?? null) : null;
-        $image = is_array($item) ? (string) ($item['image'] ?? '') : '';
+        $image = '';
+        if (is_array($item)) {
+            $offerImage = trim((string) ($item['offer_image'] ?? ''));
+            $image = $offerImage !== '' ? $offerImage : (string) ($item['image'] ?? '');
+        }
         $lines[] = [
             'slug' => product_price_field($row),
             'titlu' => $row['produs'] . ($row['varianta'] !== '' ? ', ' . $row['varianta'] : ''),
@@ -57,7 +61,10 @@ function oferta_parse_lines(array $posted): array
         if ($image === '' && $slug !== '') {
             $base = explode(':', $slug, 2)[0];
             $item = product_by_slug($base);
-            $image = is_array($item) ? (string) ($item['image'] ?? '') : '';
+            if (is_array($item)) {
+                $offerImage = trim((string) ($item['offer_image'] ?? ''));
+                $image = $offerImage !== '' ? $offerImage : (string) ($item['image'] ?? '');
+            }
         }
         $lines[] = [
             'slug' => $slug !== '' ? $slug : 'manual',
@@ -164,11 +171,13 @@ function oferta_pdf(array $meta, array $table): string
         $ops[] = pdf_fill_rect(0, $pageH - 88, $pageW, 88, $forest[0], $forest[1], $forest[2]);
         $ops[] = pdf_fill_rect(0, $pageH - 92, $pageW, 4, 0.82, 0.74, 0.58);
 
+        $logoW = 0.0;
+        $logoH = 0.0;
         if ($logoName !== null && $logo !== null) {
-            $logoH = 42.0;
+            $logoH = 48.0;
             $logoW = $logoH * ($logo['width'] / max(1, $logo['height']));
-            if ($logoW > 120) {
-                $logoW = 120.0;
+            if ($logoW > 130) {
+                $logoW = 130.0;
                 $logoH = $logoW * ($logo['height'] / max(1, $logo['width']));
             }
             $ops[] = sprintf(
@@ -176,30 +185,33 @@ function oferta_pdf(array $meta, array $table): string
                 $logoW,
                 $logoH,
                 $margin,
-                $pageH - 28 - $logoH,
+                $pageH - 20 - $logoH,
                 $logoName
             );
         }
 
-        $centerX = $pageW / 2;
+        // Text block centered in the free space to the right of the logo
+        $textLeft = $margin + ($logoW > 0 ? $logoW + 18 : 0);
+        $textRight = $pageW - $margin;
+        $textCenter = ($textLeft + $textRight) / 2;
         $title = 'OFERTA COMERCIALA';
+        $tagline = 'Cafea artizanala import Italia, aromata si fina';
         $ops[] = sprintf(
-            'q 1 1 1 rg BT /F2 14 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $centerX - (pdf_text_width($title, 14) / 2),
-            $pageH - 34,
+            'q 1 1 1 rg BT /F2 16 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
+            $textCenter - (pdf_text_width($title, 16) / 2),
+            $pageH - 32,
             pdf_escape($title)
         );
         $ops[] = sprintf(
-            'q 0.93 0.89 0.82 rg BT /F1 10 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $centerX - (pdf_text_width(SITE_NAME, 10) / 2),
+            'q 0.93 0.89 0.82 rg BT /F1 11 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
+            $textCenter - (pdf_text_width(SITE_NAME, 11) / 2),
             $pageH - 50,
             pdf_escape(SITE_NAME)
         );
-        $tagline = 'Cafea artizanala import Italia, aromata si fina';
         $ops[] = sprintf(
             'q 0.85 0.80 0.70 rg BT /F1 8 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $centerX - (pdf_text_width($tagline, 8) / 2),
-            $pageH - 64,
+            $textCenter - (pdf_text_width($tagline, 8) / 2),
+            $pageH - 66,
             pdf_escape($tagline)
         );
 
