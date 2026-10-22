@@ -318,7 +318,7 @@ require __DIR__ . '/includes/header.php';
             <div class="price-board" id="clienti">
                 <p class="kicker">Clienți</p>
                 <h2>Evidența clienților</h2>
-                <p class="form-note">Clienții înregistrați, compania și comenzile lor. Deschide un rând pentru istoric.</p>
+                <p class="form-note">Clienții înregistrați, compania și comenzile lor. Folosește „Editează” pentru rechizite. Deschide un rând pentru istoric.</p>
                 <?php if ($clientSheet['rows'] === []): ?>
                     <p>Nu există clienți înregistrați.</p>
                 <?php else: ?>
@@ -332,6 +332,7 @@ require __DIR__ . '/includes/header.php';
                                     <th>Comenzi</th>
                                     <th>Ultima</th>
                                     <th>Total</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <?php foreach ($clientSheet['rows'] as $client): ?>
@@ -347,6 +348,7 @@ require __DIR__ . '/includes/header.php';
                                     $totalLabel = product_money($client['total']);
                                 }
                                 $lastLabel = $client['ultima'] === '' ? '—' : date('d.m.Y', strtotime($client['ultima']) ?: time());
+                                $editUrl = url('admin-cont.php?client=' . rawurlencode($clientId));
                                 ?>
                                 <tbody>
                                     <tr class="order-summary">
@@ -365,9 +367,11 @@ require __DIR__ . '/includes/header.php';
                                         <td><?= (int) $client['comenzi'] ?></td>
                                         <td><?= e($lastLabel) ?></td>
                                         <td><?= e($totalLabel) ?></td>
+                                        <td><a class="invoice-link" href="<?= e($editUrl) ?>">Editează</a></td>
                                     </tr>
                                     <tr class="order-detail" id="<?= e($detailId) ?>" hidden>
-                                        <td colspan="6">
+                                        <td colspan="7">
+                                            <p><a class="invoice-link" href="<?= e($editUrl) ?>">Editează datele și rechizitele</a></p>
                                             <?php if ($clientOrders === []): ?>
                                                 <p>Acest client nu are comenzi.</p>
                                             <?php else: ?>
