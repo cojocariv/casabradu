@@ -1674,6 +1674,25 @@ html[lang="ru"] .script {
     }
 }
 
+.invoice-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.invoice-group {
+    border: 1px solid rgba(28, 52, 43, 0.1);
+    border-radius: 18px;
+    padding: 14px;
+    background: rgba(246, 241, 230, 0.35);
+}
+
+.invoice-group-title {
+    margin: 0 0 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
 .invoice-lines-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1700,6 +1719,13 @@ html[lang="ru"] .script {
     min-width: 0;
     width: 100%;
     margin: 0;
+}
+
+.invoice-variant {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: 600;
+    font-size: 0.98rem;
 }
 
 .invoice-line .invoice-nr {
