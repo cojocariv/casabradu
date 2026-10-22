@@ -22,7 +22,7 @@ function oferta_form_state(array $post = []): array
         'client' => '',
         'contact' => '',
         'valabilitate' => date('d.m.Y', strtotime('+14 days')),
-        'intro' => 'Vă propunem următoarele produse Casa Bradu Caffè, import Italia.',
+        'intro' => 'Vă propunem cafea artizanală Casa Bradu Caffè, import Italia, aromată și fină.',
         'lines' => [],
     ];
     if ($post !== []) {

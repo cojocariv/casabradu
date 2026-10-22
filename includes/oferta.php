@@ -193,11 +193,12 @@ function oferta_pdf(array $meta, array $table): string
             $pageH - 50,
             pdf_escape(SITE_NAME)
         );
+        $tagline = 'Cafea artizanala import Italia, aromata si fina';
         $ops[] = sprintf(
             'q 0.85 0.80 0.70 rg BT /F1 8 Tf 1 0 0 1 %.2F %.2F Tm (%s) Tj ET Q',
-            $pageW - $margin - pdf_text_width('Cafea din Italia · Republica Moldova', 8),
+            $pageW - $margin - pdf_text_width($tagline, 8),
             $pageH - 64,
-            pdf_escape('Cafea din Italia · Republica Moldova')
+            pdf_escape($tagline)
         );
 
         $y = $pageH - 112;
@@ -226,7 +227,7 @@ function oferta_pdf(array $meta, array $table): string
             $ops[] = pdf_text(
                 $margin,
                 $y,
-                pdf_clip($intro !== '' ? $intro : 'Va propunem urmatoarele produse Casa Bradu Caffe, import Italia.', 92),
+                pdf_clip($intro !== '' ? $intro : 'Va propunem cafea artizanala Casa Bradu Caffe, import Italia, aromata si fina.', 92),
                 9,
                 'F1'
             );
