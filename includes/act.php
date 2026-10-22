@@ -260,22 +260,22 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
         [act_has_value((string) ($receiver['tva'] ?? '')) ? 'Cod TVA: ' . $receiver['tva'] : '', 9],
         [act_has_value((string) ($receiver['adresa'] ?? '')) ? 'Adresa: ' . pdf_clip((string) $receiver['adresa'], 40) : '', 9],
         [act_has_value((string) ($receiver['iban'] ?? '')) ? 'IBAN: ' . pdf_clip((string) $receiver['iban'], 40) : '', 8],
-        [act_has_value((string) ($receiver['contact'] ?? '')) ? 'Contact: ' . pdf_clip((string) $receiver['contact'], 40) : '', 9],
+        [
+            act_has_value((string) ($receiver['contact'] ?? ''))
+            && trim((string) $receiver['contact']) !== trim($receiverName)
+                ? 'Contact: ' . pdf_clip((string) $receiver['contact'], 40)
+                : '',
+            9,
+        ],
         [act_has_value($receiverPhone) ? 'Telefon: ' . $receiverPhone : '', 9],
         [act_has_value((string) ($receiver['email'] ?? '')) ? 'Email: ' . pdf_clip((string) $receiver['email'], 40) : '', 9],
     ];
-    $receiverShown = 0;
     foreach ($receiverLines as $line) {
         [$text, $size] = $line;
         if ($text === '') {
             continue;
         }
         $ops[] = pdf_text($colMid, $rightY, $text, (float) $size, 'F1');
-        $rightY -= 11;
-        $receiverShown++;
-    }
-    if ($receiverShown === 0) {
-        $ops[] = pdf_text($colMid, $rightY, '(datele se completeaza la predare)', 8, 'F1');
         $rightY -= 11;
     }
 
@@ -291,8 +291,7 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
         $ops[] = pdf_text($margin, $y, 'Locul predarii: ' . pdf_clip((string) $receiver['livrare'], 70), 9, 'F1');
         $y -= 11;
     }
-    $ops[] = pdf_text($margin, $y, 'Data predarii efective: ____________________  Ora: ________', 9, 'F1');
-    $y -= 16;
+    $y -= 5;
 
     $cols = [
         'nr' => 24.0,
@@ -351,72 +350,48 @@ function act_pdf(array $order, string $date, string $place, array $supplier, arr
             'titlu' => pdf_clip((string) ($row['titlu'] ?? ''), 38),
             'um' => act_unit_for_line($line),
             'cant' => (string) (int) ($row['cantitate'] ?? 0),
-            'pret' => $pret === 'la confirmare' ? '______' : $pret,
-            'suma' => $suma === 'la confirmare' ? '______' : $suma,
+            'pret' => $pret === 'la confirmare' ? '' : $pret,
+            'suma' => $suma === 'la confirmare' ? '' : $suma,
         ];
         foreach ($cols as $key => $w) {
             $ops[] = pdf_line($x, $y, $x, $y + $rowH, 0.5);
-            if ($key === 'cant' || $key === 'pret' || $key === 'suma') {
-                $ops[] = pdf_text_right($x + $w - 3, $y + 5, $cells[$key], 8, 'F1');
-            } elseif ($key === 'nr' || $key === 'um') {
-                $ops[] = pdf_text_centered($x + ($w / 2), $y + 5, $cells[$key], 8, 'F1');
-            } else {
-                $ops[] = pdf_text($x + 3, $y + 5, $cells[$key], 8, 'F1');
+            if ($cells[$key] !== '') {
+                if ($key === 'cant' || $key === 'pret' || $key === 'suma') {
+                    $ops[] = pdf_text_right($x + $w - 3, $y + 5, $cells[$key], 8, 'F1');
+                } elseif ($key === 'nr' || $key === 'um') {
+                    $ops[] = pdf_text_centered($x + ($w / 2), $y + 5, $cells[$key], 8, 'F1');
+                } else {
+                    $ops[] = pdf_text($x + 3, $y + 5, $cells[$key], 8, 'F1');
+                }
             }
             $x += $w;
         }
         $ops[] = pdf_line($tableX + $tableW, $y, $tableX + $tableW, $y + $rowH, 0.5);
     }
 
-    // blank rows for handwritten extra lines
-    for ($blank = 0; $blank < 2; $blank++) {
-        $y -= $rowH;
-        if ($y < 190) {
-            break;
-        }
-        $ops[] = pdf_rect($tableX, $y, $tableW, $rowH, false, 0.5);
-        $x = $tableX;
-        foreach ($cols as $w) {
-            $ops[] = pdf_line($x, $y, $x, $y + $rowH, 0.4);
-            $x += $w;
-        }
-        $ops[] = pdf_line($tableX + $tableW, $y, $tableX + $tableW, $y + $rowH, 0.4);
-    }
-
     $y -= 16;
     $totalBani = $table['total'] ?? null;
-    $total = $totalBani === null ? '____________________ lei' : lei($totalBani) . ' lei';
-    $ops[] = pdf_text($margin, $y, 'Valoarea totala: ' . $total, 10, 'F2');
-    $y -= 12;
     if (is_int($totalBani)) {
+        $ops[] = pdf_text($margin, $y, 'Valoarea totala: ' . lei($totalBani) . ' lei', 10, 'F2');
+        $y -= 12;
         $ops[] = pdf_text($margin, $y, 'In litere: ' . pdf_clip(act_lei_words($totalBani), 78), 9, 'F1');
         $y -= 11;
-    } else {
-        $ops[] = pdf_text($margin, $y, 'In litere: ________________________________________________', 9, 'F1');
-        $y -= 11;
-    }
-    if (($table['tva'] ?? null) !== null) {
-        $ops[] = pdf_text($margin, $y, 'Inclusiv TVA: ' . lei($table['tva']) . ' lei', 9, 'F1');
-        $y -= 12;
+        if (($table['tva'] ?? null) !== null) {
+            $ops[] = pdf_text($margin, $y, 'Inclusiv TVA: ' . lei($table['tva']) . ' lei', 9, 'F1');
+            $y -= 12;
+        }
     }
 
     $ops[] = pdf_text($margin, $y, 'Marfurile au fost predate in stare corespunzatoare. Cumparatorul confirma receptia', 8, 'F1');
     $y -= 10;
-    $ops[] = pdf_text($margin, $y, 'si declara ca nu are pretentii fata de Furnizor, in afara rezervelor de mai jos.', 8, 'F1');
+    $ops[] = pdf_text($margin, $y, 'si declara ca nu are pretentii fata de Furnizor, in afara rezervelor mentionate.', 8, 'F1');
     $y -= 13;
     $note = trim((string) ($order['nota'] ?? ''));
     if ($note !== '' && stripos($note, 'Act de predare') === false) {
         $ops[] = pdf_text($margin, $y, 'Rezerve / mentiuni: ' . pdf_clip($note, 62), 9, 'F1');
-        $y -= 11;
-        $ops[] = pdf_text($margin, $y, '________________________________________________________________', 9, 'F1');
-    } else {
-        $ops[] = pdf_text($margin, $y, 'Rezerve / mentiuni (completați cu pixul, dacă e cazul):', 9, 'F1');
         $y -= 12;
-        $ops[] = pdf_text($margin, $y, '________________________________________________________________', 9, 'F1');
-        $y -= 12;
-        $ops[] = pdf_text($margin, $y, '________________________________________________________________', 9, 'F1');
     }
-    $y -= 12;
+    $y -= 4;
     $ops[] = pdf_text($margin, $y, 'Actul este intocmit in doua exemplare, cate unul pentru fiecare parte.', 8, 'F1');
     $y -= 22;
 

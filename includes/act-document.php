@@ -16,14 +16,11 @@ $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
 $note = trim((string) ($order['nota'] ?? ''));
 $showNote = $note !== '' && stripos($note, 'Act de predare') === false;
 
-function act_html_fill(string $value): string
+function act_html_has(string $value): bool
 {
     $value = trim($value);
-    if ($value === '' || $value === '-') {
-        return '<span class="blank"></span>';
-    }
 
-    return e($value);
+    return $value !== '' && $value !== '-';
 }
 ?>
 <!DOCTYPE html>
@@ -198,45 +195,33 @@ function act_html_fill(string $value): string
         <div class="parties">
             <div>
                 <p><strong>Furnizor:</strong></p>
-                <p><?= e($supplier['nume']) ?></p>
-                <p>IDNO: <?= e($supplier['idno']) ?></p>
-                <p>TVA: <?= e($supplier['tva']) ?></p>
-                <p>Adresa: <?= e($supplier['adresa']) ?></p>
-                <p>IBAN: <?= e($supplier['iban']) ?></p>
-                <p>Banca: <?= e($supplier['banca']) ?></p>
-                <p>Email: <?= e($supplier['email']) ?></p>
+                <?php if (act_html_has((string) $supplier['nume'])): ?><p><?= e($supplier['nume']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $supplier['idno'])): ?><p>IDNO: <?= e($supplier['idno']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $supplier['tva'])): ?><p>TVA: <?= e($supplier['tva']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $supplier['adresa'])): ?><p>Adresa: <?= e($supplier['adresa']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $supplier['iban'])): ?><p>IBAN: <?= e($supplier['iban']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $supplier['banca'])): ?><p>Banca: <?= e($supplier['banca']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $supplier['email'])): ?><p>Email: <?= e($supplier['email']) ?></p><?php endif; ?>
             </div>
             <div>
                 <p><strong>Cumpărător:</strong></p>
-                <p><?= act_html_fill((string) $receiver['nume']) ?></p>
-                <p>IDNO: <?= act_html_fill((string) $receiver['idno']) ?></p>
-                <p>Cod TVA: <?= act_html_fill((string) $receiver['tva']) ?></p>
-                <p>Adresa juridică: <?= act_html_fill((string) $receiver['adresa']) ?></p>
-                <p>IBAN / banca: <?= act_html_fill((string) $receiver['iban']) ?></p>
-                <p>Persoană de contact: <?= act_html_fill(
-                    ($receiver['contact'] !== '' && $receiver['contact'] !== $receiver['nume'])
-                        ? (string) $receiver['contact']
-                        : ''
-                ) ?></p>
-                <p>Telefon: <?= act_html_fill(
-                    ($receiver['telefon'] !== '' && $receiver['telefon'] !== '-')
-                        ? (string) $receiver['telefon']
-                        : ''
-                ) ?></p>
-                <?php if ($receiver['email'] !== ''): ?>
-                    <p>Email: <?= e($receiver['email']) ?></p>
+                <?php if (act_html_has((string) $receiver['nume'])): ?><p><?= e($receiver['nume']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $receiver['idno'])): ?><p>IDNO: <?= e($receiver['idno']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $receiver['tva'])): ?><p>Cod TVA: <?= e($receiver['tva']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $receiver['adresa'])): ?><p>Adresa juridică: <?= e($receiver['adresa']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $receiver['iban'])): ?><p>IBAN / banca: <?= e($receiver['iban']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $receiver['contact']) && (string) $receiver['contact'] !== (string) $receiver['nume']): ?>
+                    <p>Persoană de contact: <?= e($receiver['contact']) ?></p>
                 <?php endif; ?>
-                <p>Locul predării: <?= act_html_fill((string) $receiver['livrare']) ?></p>
+                <?php if (act_html_has((string) $receiver['telefon'])): ?><p>Telefon: <?= e($receiver['telefon']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $receiver['email'])): ?><p>Email: <?= e($receiver['email']) ?></p><?php endif; ?>
+                <?php if (act_html_has((string) $receiver['livrare'])): ?><p>Locul predării: <?= e($receiver['livrare']) ?></p><?php endif; ?>
             </div>
         </div>
 
         <p class="intro">
             Părțile au întocmit prezentul act, prin care se confirmă că Furnizorul a predat, iar Cumpărătorul a primit
             mărfurile enumerate mai jos.
-        </p>
-        <p class="intro">
-            Data predării efective: <span class="blank" style="min-width:8em"></span>
-            &nbsp; Ora: <span class="blank" style="min-width:5em"></span>
         </p>
 
         <table class="goods">
@@ -263,60 +248,32 @@ function act_html_fill(string $value): string
                         <td><?= e((string) ($row['titlu'] ?? '')) ?></td>
                         <td class="center"><?= e($um) ?></td>
                         <td class="qty"><?= (int) ($row['cantitate'] ?? 0) ?></td>
-                        <td class="money"><?= $pretLabel !== '' ? e($pretLabel) : '<span class="blank" style="min-width:4em"></span>' ?></td>
-                        <td class="money"><?= $sumaLabel !== '' ? e($sumaLabel) : '<span class="blank" style="min-width:4em"></span>' ?></td>
+                        <td class="money"><?= $pretLabel !== '' ? e($pretLabel) : '' ?></td>
+                        <td class="money"><?= $sumaLabel !== '' ? e($sumaLabel) : '' ?></td>
                     </tr>
                 <?php endforeach; ?>
-                <tr>
-                    <td class="center">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td class="center">&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
             </tbody>
         </table>
 
-        <div class="totals">
-            <p><strong>Valoarea totală:</strong>
-                <?= $totalBani === null
-                    ? '<span class="blank" style="min-width:8em"></span> lei'
-                    : e(lei($totalBani) . ' lei') ?>
-            </p>
-            <p><strong>În litere:</strong>
-                <?= $totalWords !== '' ? e($totalWords) : '<span class="blank" style="min-width:18em"></span>' ?>
-            </p>
-            <?php if (($table['tva'] ?? null) !== null): ?>
-                <p>Inclusiv TVA: <?= e(lei($table['tva'])) ?> lei</p>
-            <?php endif; ?>
-        </div>
+        <?php if ($totalBani !== null): ?>
+            <div class="totals">
+                <p><strong>Valoarea totală:</strong> <?= e(lei($totalBani) . ' lei') ?></p>
+                <?php if ($totalWords !== ''): ?>
+                    <p><strong>În litere:</strong> <?= e($totalWords) ?></p>
+                <?php endif; ?>
+                <?php if (($table['tva'] ?? null) !== null): ?>
+                    <p>Inclusiv TVA: <?= e(lei($table['tva'])) ?> lei</p>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
 
         <p class="clause">
             Mărfurile au fost predate în stare corespunzătoare, în cantitatea și sortimentul indicate în prezentul act.
             Cumpărătorul confirmă recepția și declară că nu are pretenții față de Furnizor privind cantitatea, calitatea
-            și aspectul mărfurilor la momentul predării, în afara rezervelor menționate eventual mai jos.
+            și aspectul mărfurilor la momentul predării, în afara rezervelor menționate.
         </p>
-        <p class="clause"><strong>Rezerve / mențiuni<?= $showNote ? '' : ' (completați cu pixul, dacă e cazul)' ?>:</strong>
-            <?php if ($showNote): ?>
-                <?= e($note) ?>
-            <?php endif; ?>
-        </p>
-        <?php if (!$showNote): ?>
-            <div class="hand-lines">
-                <div class="line"></div>
-                <div class="line"></div>
-            </div>
-        <?php else: ?>
-            <div class="hand-lines"><div class="line"></div></div>
+        <?php if ($showNote): ?>
+            <p class="clause"><strong>Rezerve / mențiuni:</strong> <?= e($note) ?></p>
         <?php endif; ?>
         <p class="copies">
             Prezentul act este întocmit în două exemplare, cu aceeași putere juridică, câte unul pentru fiecare parte.
