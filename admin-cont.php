@@ -361,7 +361,7 @@ require __DIR__ . '/includes/header.php';
                     <div class="invoice-meta-field invoice-meta-full">
                         <label for="client_id">Client salvat</label>
                         <div class="invoice-client-row">
-                            <select id="client_id" name="client_id" data-load-url="<?= e(url('admin-cont.php')) ?>">
+                            <select id="client_id" name="client_id">
                                 <option value="">Client nou / manual</option>
                                 <?php foreach ($clientRows as $row): ?>
                                     <option value="<?= e((string) $row['id']) ?>" <?= $form['client_id'] === (string) $row['id'] ? 'selected' : '' ?>>
@@ -531,15 +531,6 @@ require __DIR__ . '/includes/header.php';
 
 <script>
 (function () {
-    var clientSelect = document.getElementById('client_id');
-    if (clientSelect) {
-        clientSelect.addEventListener('change', function () {
-            var base = clientSelect.getAttribute('data-load-url') || 'admin-cont.php';
-            var id = clientSelect.value || '';
-            window.location.href = id ? (base + (base.indexOf('?') >= 0 ? '&' : '?') + 'client=' + encodeURIComponent(id)) : base;
-        });
-    }
-
     var button = document.getElementById('add-invoice-line');
     var root = document.getElementById('invoice-lines');
     var extraGroup = document.getElementById('invoice-extra-group');
