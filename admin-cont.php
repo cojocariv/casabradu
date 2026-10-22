@@ -339,53 +339,43 @@ require __DIR__ . '/includes/header.php';
 
             <div class="price-board" id="produse-cont">
                 <p class="kicker">Produse</p>
-                <h2>Linii document</h2>
+                <h2>Comanda</h2>
                 <p class="form-note">Produsele din catalog sunt precompletate. Scrie cantitatea și prețul. Poți modifica denumirea sau adăuga o linie liberă.</p>
                 <?php if (isset($errors['linii'])): ?>
                     <p class="notice notice-error" role="alert"><?= e($errors['linii']) ?></p>
                 <?php endif; ?>
-                <div class="table-wrap orders-sheet">
-                    <table class="sheet-table invoice-lines">
-                        <thead>
-                            <tr>
-                                <th>Nr.</th>
-                                <th>Produs</th>
-                                <th>Cantitate</th>
-                                <th>Preț, lei</th>
-                                <th>Suma, lei</th>
-                            </tr>
-                        </thead>
-                        <tbody id="invoice-lines">
-                            <?php foreach ($form['lines'] as $index => $line): ?>
-                                <?php
-                                $qtyShow = (int) ($line['cantitate'] ?? 0);
-                                $priceParsed = product_parse_price((string) ($line['pret'] ?? ''));
-                                $sumShow = ($qtyShow > 0 && is_string($priceParsed) && $priceParsed !== 'invalid')
-                                    ? number_format($qtyShow * (float) $priceParsed, 2, ',', '')
-                                    : '';
-                                ?>
-                                <tr>
-                                    <td class="invoice-nr"><?= (int) $index + 1 ?></td>
-                                    <td>
-                                        <input type="hidden" name="slug[]" value="<?= e((string) $line['slug']) ?>">
-                                        <label class="sr-only" for="titlu-<?= (int) $index ?>">Produs</label>
-                                        <input id="titlu-<?= (int) $index ?>" name="titlu[]" type="text" maxlength="120" value="<?= e((string) $line['titlu']) ?>" placeholder="Denumirea mărfii">
-                                    </td>
-                                    <td>
-                                        <label class="sr-only" for="cant-<?= (int) $index ?>">Cantitate</label>
-                                        <input id="cant-<?= (int) $index ?>" class="invoice-qty" name="cantitate[]" type="number" min="0" max="99999" step="1" value="<?= e((string) $line['cantitate']) ?>" inputmode="numeric">
-                                    </td>
-                                    <td>
-                                        <label class="sr-only" for="pret-<?= (int) $index ?>">Preț</label>
-                                        <input id="pret-<?= (int) $index ?>" class="invoice-price" name="pret[]" type="text" inputmode="decimal" maxlength="12" value="<?= e((string) $line['pret']) ?>" placeholder="12,50">
-                                    </td>
-                                    <td>
-                                        <span class="invoice-sum" aria-live="polite"><?= e($sumShow) ?></span>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                <div class="invoice-lines-grid" id="invoice-lines">
+                    <?php foreach ($form['lines'] as $index => $line): ?>
+                        <?php
+                        $qtyShow = (int) ($line['cantitate'] ?? 0);
+                        $priceParsed = product_parse_price((string) ($line['pret'] ?? ''));
+                        $sumShow = ($qtyShow > 0 && is_string($priceParsed) && $priceParsed !== 'invalid')
+                            ? number_format($qtyShow * (float) $priceParsed, 2, ',', '')
+                            : '';
+                        ?>
+                        <div class="invoice-line">
+                            <div class="invoice-line-head">
+                                <span class="invoice-nr"><?= (int) $index + 1 ?></span>
+                                <input type="hidden" name="slug[]" value="<?= e((string) $line['slug']) ?>">
+                                <label class="sr-only" for="titlu-<?= (int) $index ?>">Produs</label>
+                                <input id="titlu-<?= (int) $index ?>" name="titlu[]" type="text" maxlength="120" value="<?= e((string) $line['titlu']) ?>" placeholder="Denumirea mărfii">
+                            </div>
+                            <div class="invoice-line-metrics">
+                                <div>
+                                    <label for="cant-<?= (int) $index ?>">Cant.</label>
+                                    <input id="cant-<?= (int) $index ?>" class="invoice-qty" name="cantitate[]" type="number" min="0" max="99999" step="1" value="<?= e((string) $line['cantitate']) ?>" inputmode="numeric">
+                                </div>
+                                <div>
+                                    <label for="pret-<?= (int) $index ?>">Preț, lei</label>
+                                    <input id="pret-<?= (int) $index ?>" class="invoice-price" name="pret[]" type="text" inputmode="decimal" maxlength="12" value="<?= e((string) $line['pret']) ?>" placeholder="12,50">
+                                </div>
+                                <div>
+                                    <span class="invoice-sum-label">Suma</span>
+                                    <span class="invoice-sum" aria-live="polite"><?= e($sumShow) ?></span>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
                 <button class="btn btn-line btn-sm" type="button" id="add-invoice-line">Adaugă linie</button>
             </div>
@@ -401,25 +391,28 @@ require __DIR__ . '/includes/header.php';
 </section>
 
 <template id="invoice-line-template">
-    <tr>
-        <td class="invoice-nr"></td>
-        <td>
+    <div class="invoice-line">
+        <div class="invoice-line-head">
+            <span class="invoice-nr"></span>
             <input type="hidden" name="slug[]" value="manual">
             <label class="sr-only">Produs</label>
             <input name="titlu[]" type="text" maxlength="120" value="" placeholder="Denumirea mărfii">
-        </td>
-        <td>
-            <label class="sr-only">Cantitate</label>
-            <input class="invoice-qty" name="cantitate[]" type="number" min="0" max="99999" step="1" value="" inputmode="numeric">
-        </td>
-        <td>
-            <label class="sr-only">Preț</label>
-            <input class="invoice-price" name="pret[]" type="text" inputmode="decimal" maxlength="12" value="" placeholder="12,50">
-        </td>
-        <td>
-            <span class="invoice-sum" aria-live="polite"></span>
-        </td>
-    </tr>
+        </div>
+        <div class="invoice-line-metrics">
+            <div>
+                <label>Cant.</label>
+                <input class="invoice-qty" name="cantitate[]" type="number" min="0" max="99999" step="1" value="" inputmode="numeric">
+            </div>
+            <div>
+                <label>Preț, lei</label>
+                <input class="invoice-price" name="pret[]" type="text" inputmode="decimal" maxlength="12" value="" placeholder="12,50">
+            </div>
+            <div>
+                <span class="invoice-sum-label">Suma</span>
+                <span class="invoice-sum" aria-live="polite"></span>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -477,7 +470,7 @@ require __DIR__ . '/includes/header.php';
     }
 
     function renumber() {
-        body.querySelectorAll('tr').forEach(function (row, index) {
+        body.querySelectorAll('.invoice-line').forEach(function (row, index) {
             var nr = row.querySelector('.invoice-nr');
             if (nr) {
                 nr.textContent = String(index + 1);
@@ -486,7 +479,7 @@ require __DIR__ . '/includes/header.php';
     }
 
     function updateAll() {
-        body.querySelectorAll('tr').forEach(updateRow);
+        body.querySelectorAll('.invoice-line').forEach(updateRow);
         renumber();
     }
 
@@ -496,7 +489,7 @@ require __DIR__ . '/includes/header.php';
             return;
         }
         if (target.classList.contains('invoice-qty') || target.classList.contains('invoice-price')) {
-            updateRow(target.closest('tr'));
+            updateRow(target.closest('.invoice-line'));
         }
     });
 
