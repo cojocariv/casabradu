@@ -1633,32 +1633,45 @@ html[lang="ru"] .script {
     min-width: 0;
 }
 
-.invoice-meta {
-    width: 100%;
+.invoice-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 18px;
 }
 
-.invoice-meta th {
-    width: 11.5rem;
-    white-space: nowrap;
-    vertical-align: middle;
+.invoice-meta-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.invoice-meta-field.invoice-meta-full {
+    grid-column: 1 / -1;
+}
+
+.invoice-meta-field label {
+    margin: 0;
     font-weight: 600;
+    font-size: 0.92rem;
 }
 
-.invoice-meta td,
-.invoice-meta th {
-    padding: 8px 10px;
-}
-
-.invoice-meta input,
-.invoice-meta textarea,
-.invoice-meta select {
+.invoice-meta-field input,
+.invoice-meta-field textarea,
+.invoice-meta-field select {
     width: 100%;
     max-width: none;
     margin: 0;
 }
 
-.invoice-meta textarea {
+.invoice-meta-field textarea {
     min-height: 64px;
+}
+
+@media (max-width: 720px) {
+    .invoice-meta-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .invoice-lines input[type="text"] {
