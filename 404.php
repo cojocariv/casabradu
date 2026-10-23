@@ -18,7 +18,7 @@ require __DIR__ . '/includes/header.php';
     <div class="wrap">
         <p class="eyebrow">404</p>
         <h1><?= tr('Pagina nu există.') ?></h1>
-        <p class="lede"><?= tr('Linkul nu duce nicăieri. Cafeaua și aparatele în comodat sunt pe paginile lor.') ?></p>
+        <p class="lede"><?= tr('Linkul nu duce nicăieri. Cafeaua și aparatele sunt pe paginile lor.') ?></p>
         <div class="btn-row">
             <a class="btn btn-dark" href="<?= e(url()) ?>"><?= tr('Acasă') ?></a>
             <a class="btn btn-line" href="<?= e(url('produse.php')) ?>"><?= tr('Cafea') ?></a>

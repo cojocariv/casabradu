@@ -6,7 +6,7 @@ require_once __DIR__ . '/includes/bootstrap.php';
 
 $page = 'despre';
 $pageTitle = 'Import de cafea din Italia';
-$pageDescription = 'Cafea din Italia, cu aromă și un raport ideal între Arabica și Robusta. Livrăm în toată Moldova și oferim aparate în comodat.';
+$pageDescription = 'Cafea din Italia, cu aromă și un raport ideal între Arabica și Robusta. Livrăm în toată Moldova, oferim aparate în comodat și vindem aparate noi.';
 $pageImage = 'assets/img/poveste-cafea.jpg';
 $pageImageAlt = 'Cafea cu lapte Casa Bradu Caffè';
 require __DIR__ . '/includes/header.php';
@@ -17,7 +17,7 @@ require __DIR__ . '/includes/header.php';
         <?= breadcrumb_nav($page) ?>
         <p class="eyebrow"><?= tr('Povestea noastră') ?></p>
         <h1><?= tr('Cafea artizanală, adusă din Italia.') ?></h1>
-        <p class="lede"><?= tr('Casa Bradu Caffè importă din Italia cafea artizanală și o livrează în toată țara, în Republica Moldova. Cialde, capsule și boabe, cu aromă și un raport ideal între Arabica și Robusta. Aparatele le oferim în comodat.') ?></p>
+        <p class="lede"><?= tr('Casa Bradu Caffè importă din Italia cafea artizanală și o livrează în toată țara, în Republica Moldova. Cialde, capsule și boabe, cu aromă și un raport ideal între Arabica și Robusta. Oferim aparate în comodat și vindem aparate noi.') ?></p>
     </div>
 </section>
 
@@ -55,8 +55,8 @@ require __DIR__ . '/includes/header.php';
                 <p><?= tr('Formatul se schimbă. Aroma rămâne, cu Arabica și Robusta într-un raport ideal.') ?></p>
             </article>
             <article class="card plain-card">
-                <h3><?= tr('Aparatul, în comodat') ?></h3>
-                <p><?= tr('Oferim în comodat aparate pentru cialde, capsule și boabe, ca prepararea să fie pe măsura aromei.') ?></p>
+                <h3><?= tr('Aparate: comodat și noi') ?></h3>
+                <p><?= tr('Oferim aparate în comodat și vindem aparate noi, pentru cialde, capsule și boabe, ca prepararea să fie pe măsura aromei.') ?></p>
             </article>
         </div>
     </div>

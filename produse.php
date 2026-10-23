@@ -25,7 +25,7 @@ require __DIR__ . '/includes/header.php';
         <p class="eyebrow"><?= tr('Cafea') ?></p>
         <h1><?= tr('Cialde, capsule și boabe.') ?></h1>
         <p class="lede"><?= tr('Același gust, în trei forme. Aromă deschisă și un raport ideal între Arabica și Robusta. Cafeaua vine din Italia și o livrăm în toată țara, în Republica Moldova.') ?></p>
-        <p><a class="invoice-link" href="<?= e(url('aparate.php')) ?>"><?= tr('Aparatele pentru cialde, capsule și boabe le oferim în comodat.') ?></a></p>
+        <p><a class="invoice-link" href="<?= e(url('aparate.php')) ?>"><?= tr('Aparatele pentru cialde, capsule și boabe le oferim în comodat și le vindem noi.') ?></a></p>
     </div>
 </section>
 

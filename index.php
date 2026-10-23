@@ -105,7 +105,7 @@ require __DIR__ . '/includes/header.php';
             <p class="kicker"><?= tr('Aparate de cafea') ?></p>
             <h2><?= tr('Pentru cialde, capsule și boabe') ?></h2>
             <p class="script">espresso a casa</p>
-            <p><?= tr('Oferim în comodat aparate de cafea pentru cialde, capsule și boabe, ca prepararea să țină pasul cu aroma. Pentru acasă, pentru birou sau pentru cine servește cafea în fiecare zi.') ?></p>
+            <p><?= tr('Oferim aparate de cafea în comodat și vindem aparate noi — pentru cialde, capsule și boabe, ca prepararea să țină pasul cu aroma. Pentru acasă, pentru birou sau pentru cine servește cafea în fiecare zi.') ?></p>
             <ul class="chips">
                 <li><?= tr('Cialde') ?></li>
                 <li><?= tr('Capsule') ?></li>

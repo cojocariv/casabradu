@@ -175,7 +175,7 @@ require __DIR__ . '/includes/header.php';
             <div class="contact-card" id="comanda">
                 <p class="kicker"><?= tr('Magazin') ?></p>
                 <h2><?= tr('Comenzile pleacă din coș.') ?></h2>
-                <p><?= tr('Alegi cafeaua sau un aparat în comodat, le adaugi în coș și trimiți comanda. Livrăm în toată Republica Moldova. Aici rămân datele firmei și istoricul.') ?></p>
+                <p><?= tr('Alegi cafeaua sau un aparat (în comodat sau nou), le adaugi în coș și trimiți comanda. Livrăm în toată Republica Moldova. Aici rămân datele firmei și istoricul.') ?></p>
                 <div class="btn-row">
                     <a class="btn btn-dark" href="<?= e(url('produse.php')) ?>"><?= tr('Vezi cafeaua') ?></a>
                     <a class="btn btn-line" href="<?= e(url('aparate.php')) ?>"><?= tr('Vezi aparatele') ?></a>

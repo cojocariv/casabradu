@@ -120,7 +120,7 @@ require __DIR__ . '/includes/header.php';
     <div class="wrap">
         <p class="eyebrow"><?= tr('Magazin') ?></p>
         <h1><?= tr('Coșul tău.') ?></h1>
-        <p class="lede"><?= $lines === [] ? tr('Nu ai produse în coș. Alege cafeaua sau un aparat în comodat.') : tr('Verifică cantitățile, apoi trimite comanda. Livrăm în toată Republica Moldova și te contactăm ca să o confirmăm.') ?></p>
+        <p class="lede"><?= $lines === [] ? tr('Nu ai produse în coș. Alege cafeaua sau un aparat.') : tr('Verifică cantitățile, apoi trimite comanda. Livrăm în toată Republica Moldova și te contactăm ca să o confirmăm.') ?></p>
     </div>
 </section>
 

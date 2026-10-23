@@ -75,7 +75,7 @@ require __DIR__ . '/includes/header.php';
     <div class="wrap">
         <p class="eyebrow"><?= tr('Cont nou') ?></p>
         <h1><?= tr('Înregistrează-te.') ?></h1>
-        <p class="lede"><?= tr('Poți intra cu Google sau îți creezi contul cu email. Apoi comanzi cialde, capsule și boabe, sau un aparat în comodat.') ?></p>
+        <p class="lede"><?= tr('Poți intra cu Google sau îți creezi contul cu email. Apoi comanzi cialde, capsule și boabe, sau un aparat — în comodat sau nou.') ?></p>
     </div>
 </section>
 
