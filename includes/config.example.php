@@ -17,6 +17,9 @@ const GOOGLE_SHEETS_WEBHOOK_SECRET = '';
 const ADMIN_USER = '';
 const ADMIN_PASS = '';
 
+/** WhatsApp number in international digits, without + (ex: 373XXXXXXXX). */
+const SITE_WHATSAPP = '';
+
 const SMTP_HOST = 'mail.casabradu.md';
 const SMTP_PORT = 587;
 const SMTP_USER = 'comenzi@casabradu.md';

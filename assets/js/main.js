@@ -274,4 +274,49 @@
         document.addEventListener('copy', blockCopy);
         document.addEventListener('cut', blockCopy);
     }
+
+    (function initWhatsAppChat() {
+        var root = document.getElementById('wa-chat');
+        if (!root) {
+            return;
+        }
+        var panel = document.getElementById('wa-chat-panel');
+        var toggle = document.getElementById('wa-chat-toggle');
+        var closeBtn = document.getElementById('wa-chat-close');
+        var message = document.getElementById('wa-chat-message');
+        var send = document.getElementById('wa-chat-send');
+        var base = root.getAttribute('data-wa-base') || '';
+        if (!panel || !toggle || !send || !base) {
+            return;
+        }
+
+        function syncLink() {
+            var text = message ? String(message.value || '').trim() : '';
+            if (!text) {
+                text = root.getAttribute('data-wa-default') || '';
+            }
+            send.href = base + (text ? ('?text=' + encodeURIComponent(text)) : '');
+        }
+
+        function setOpen(open) {
+            panel.hidden = !open;
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (open && message) {
+                message.focus();
+            }
+        }
+
+        toggle.addEventListener('click', function () {
+            setOpen(panel.hidden);
+        });
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                setOpen(false);
+            });
+        }
+        if (message) {
+            message.addEventListener('input', syncLink);
+        }
+        syncLink();
+    })();
 })();

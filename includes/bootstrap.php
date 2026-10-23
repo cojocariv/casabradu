@@ -323,6 +323,34 @@ if (is_file($config)) {
     require_once $config;
 }
 
+function site_whatsapp_digits(): string
+{
+    $raw = '';
+    if (defined('SITE_WHATSAPP')) {
+        $raw = (string) constant('SITE_WHATSAPP');
+    } elseif (SITE_PHONE !== '') {
+        $raw = SITE_PHONE;
+    }
+    $digits = preg_replace('/\D+/', '', $raw);
+
+    return is_string($digits) ? $digits : '';
+}
+
+function site_whatsapp_url(string $message = ''): string
+{
+    $digits = site_whatsapp_digits();
+    if ($digits === '') {
+        return '';
+    }
+    $url = 'https://wa.me/' . $digits;
+    $message = trim($message);
+    if ($message !== '') {
+        $url .= '?text=' . rawurlencode($message);
+    }
+
+    return $url;
+}
+
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/mail.php';
 require_once __DIR__ . '/cont.php';
