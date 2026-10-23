@@ -2136,6 +2136,29 @@ html[lang="ru"] .script {
     color: #f6f1e6;
 }
 
+.order-choice {
+    margin: 0 0 14px;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.order-choice legend {
+    margin: 0 0 8px;
+    padding: 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.order-choice .buy-options {
+    flex: 1 1 auto;
+}
+
+.order-choice .field-error {
+    display: block;
+    margin-top: 6px;
+}
+
 .wa-chat {
     position: fixed;
     right: 18px;

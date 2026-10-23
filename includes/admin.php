@@ -92,7 +92,7 @@ function admin_orders(): ?array
     try {
         $pdo = db();
         $orders = $pdo->query(
-            'SELECT c.id, c.user_id, c.la, c.status, c.adresa, c.nota, c.rechizite,
+            'SELECT c.id, c.user_id, c.la, c.status, c.adresa, c.nota, c.rechizite, c.plata, c.tip_persoana,
                     k.nume, k.email, k.telefon
              FROM comenzi c
              LEFT JOIN clienti k ON k.id = c.user_id
@@ -117,7 +117,7 @@ function admin_order(string $orderId): ?array
     try {
         $pdo = db();
         $stmt = $pdo->prepare(
-            'SELECT c.id, c.user_id, c.la, c.status, c.adresa, c.nota, c.rechizite,
+            'SELECT c.id, c.user_id, c.la, c.status, c.adresa, c.nota, c.rechizite, c.plata, c.tip_persoana,
                     k.nume, k.email, k.telefon
              FROM comenzi c
              LEFT JOIN clienti k ON k.id = c.user_id
@@ -316,6 +316,8 @@ function admin_create_invoice(array $client, array $lines, string $requisites, s
         'adresa' => $address,
         'nota' => $note,
         'rechizite' => $requisites,
+        'plata' => '',
+        'tip_persoana' => '',
         'email' => (string) ($client['email'] ?? ''),
         'nume' => (string) ($client['nume'] ?? ''),
         'telefon' => (string) ($client['telefon'] ?? ''),
@@ -325,7 +327,8 @@ function admin_create_invoice(array $client, array $lines, string $requisites, s
         $pdo = db();
         $pdo->beginTransaction();
         $insert = $pdo->prepare(
-            'INSERT INTO comenzi (id, user_id, la, status, adresa, nota, rechizite) VALUES (?, ?, ?, ?, ?, ?, ?)'
+            'INSERT INTO comenzi (id, user_id, la, status, adresa, nota, rechizite, plata, tip_persoana)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
         $insert->execute([
             $order['id'],
@@ -335,6 +338,8 @@ function admin_create_invoice(array $client, array $lines, string $requisites, s
             $address,
             $note,
             $requisites,
+            '',
+            '',
         ]);
         $lineInsert = $pdo->prepare(
             'INSERT INTO comenzi_linii (comanda_id, slug, titlu, cantitate, pret) VALUES (?, ?, ?, ?, ?)'

@@ -291,6 +291,22 @@ require __DIR__ . '/includes/header.php';
                                                     <th scope="row">Adresă</th>
                                                     <td><?= e((string) ($order['adresa'] ?? '')) ?></td>
                                                 </tr>
+                                                <?php
+                                                $personLabel = order_person_label((string) ($order['tip_persoana'] ?? ''));
+                                                $paymentLabel = order_payment_label((string) ($order['plata'] ?? ''));
+                                                ?>
+                                                <?php if ($personLabel !== ''): ?>
+                                                    <tr>
+                                                        <th scope="row">Tip persoană</th>
+                                                        <td><?= e($personLabel) ?></td>
+                                                    </tr>
+                                                <?php endif; ?>
+                                                <?php if ($paymentLabel !== ''): ?>
+                                                    <tr>
+                                                        <th scope="row">Achitare</th>
+                                                        <td><?= e($paymentLabel) ?></td>
+                                                    </tr>
+                                                <?php endif; ?>
                                                 <tr>
                                                     <th scope="row">Rechizite</th>
                                                     <td class="requisites"><?= e((string) ($order['rechizite'] ?? '')) ?></td>

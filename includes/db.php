@@ -121,6 +121,8 @@ function db_install(PDO $pdo): void
     db_add_column($pdo, 'comenzi_linii', 'pret', 'DECIMAL(10,2) NULL DEFAULT NULL');
     db_add_column($pdo, 'clienti', 'rechizite', "VARCHAR(2000) NOT NULL DEFAULT ''");
     db_add_column($pdo, 'comenzi', 'rechizite', "VARCHAR(2000) NOT NULL DEFAULT ''");
+    db_add_column($pdo, 'comenzi', 'plata', "VARCHAR(20) NOT NULL DEFAULT ''");
+    db_add_column($pdo, 'comenzi', 'tip_persoana', "VARCHAR(20) NOT NULL DEFAULT ''");
 
     $columns = $pdo->query("SHOW COLUMNS FROM clienti LIKE 'google_sub'");
     if ($columns === false || $columns->fetch() === false) {

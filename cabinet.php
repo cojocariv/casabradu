@@ -116,14 +116,22 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         }
         $oldAddress = text_block((string) ($_POST['adresa'] ?? ''), 300);
         $oldNote = text_block((string) ($_POST['nota'] ?? ''), 1000);
+        $oldPayment = text_line((string) ($_POST['plata'] ?? ''), 20);
+        $oldPersonType = text_line((string) ($_POST['tip_persoana'] ?? ''), 20);
         if ($lines === []) {
             $orderErrors['qty'] = 'Alege cel puțin un produs și o cantitate.';
         }
         if (strlen($oldAddress) < 5) {
             $orderErrors['adresa'] = 'Scrie adresa de livrare sau localitatea.';
         }
+        if (!isset(order_payment_methods()[$oldPayment])) {
+            $orderErrors['plata'] = 'Alege metoda de achitare.';
+        }
+        if (!isset(order_person_types()[$oldPersonType])) {
+            $orderErrors['tip_persoana'] = 'Alege tipul de persoană.';
+        }
         if ($orderErrors === []) {
-            $order = place_order($user, $lines, $oldAddress, $oldNote);
+            $order = place_order($user, $lines, $oldAddress, $oldNote, $oldPayment, $oldPersonType);
             if ($order === null) {
                 $orderErrors['form'] = db_failed()
                     ? 'Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.'
@@ -261,6 +269,8 @@ require __DIR__ . '/includes/header.php';
                                 <th><?= tr('Comandă') ?></th>
                                 <th><?= tr('Data') ?></th>
                                 <th><?= tr('Produse') ?></th>
+                                <th><?= tr('Persoană') ?></th>
+                                <th><?= tr('Achitare') ?></th>
                                 <th><?= tr('Adresă') ?></th>
                                 <th><?= tr('Stare') ?></th>
                                 <th><?= tr('Document') ?></th>
@@ -268,6 +278,10 @@ require __DIR__ . '/includes/header.php';
                         </thead>
                         <tbody>
                             <?php foreach ($orders as $order): ?>
+                                <?php
+                                $personLabel = order_person_label((string) ($order['tip_persoana'] ?? ''));
+                                $paymentLabel = order_payment_label((string) ($order['plata'] ?? ''));
+                                ?>
                                 <tr>
                                     <td><?= e((string) ($order['id'] ?? '')) ?></td>
                                     <td><?= e(date('d.m.Y H:i', strtotime((string) ($order['la'] ?? 'now')) ?: time())) ?></td>
@@ -280,6 +294,8 @@ require __DIR__ . '/includes/header.php';
                                             <span class="line-note"><?= e((string) $order['nota']) ?></span>
                                         <?php endif; ?>
                                     </td>
+                                    <td><?= $personLabel !== '' ? e(t($personLabel)) : '—' ?></td>
+                                    <td><?= $paymentLabel !== '' ? e(t($paymentLabel)) : '—' ?></td>
                                     <td><?= e((string) ($order['adresa'] ?? '')) ?></td>
                                     <td><span class="status status-<?= e((string) ($order['status'] ?? '')) ?>"><?= e(order_status_label((string) ($order['status'] ?? ''))) ?></span></td>
                                     <td><a class="invoice-link" href="<?= e(url('cont-de-plata.php?id=' . rawurlencode((string) ($order['id'] ?? '')))) ?>"><?= tr('Cont de plată') ?></a></td>

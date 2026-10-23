@@ -58,14 +58,22 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $lines = cart_lines();
         $address = text_block((string) ($_POST['adresa'] ?? ''), 300);
         $note = text_block((string) ($_POST['nota'] ?? ''), 1000);
+        $payment = text_line((string) ($_POST['plata'] ?? ''), 20);
+        $personType = text_line((string) ($_POST['tip_persoana'] ?? ''), 20);
         if ($lines === []) {
             $errors['form'] = 'Coșul este gol.';
         }
         if (strlen($address) < 5) {
             $errors['adresa'] = 'Scrie adresa de livrare sau localitatea.';
         }
+        if (!isset(order_payment_methods()[$payment])) {
+            $errors['plata'] = 'Alege metoda de achitare.';
+        }
+        if (!isset(order_person_types()[$personType])) {
+            $errors['tip_persoana'] = 'Alege tipul de persoană.';
+        }
         if ($errors === []) {
-            $order = place_order($user, $lines, $address, $note);
+            $order = place_order($user, $lines, $address, $note, $payment, $personType);
             if ($order === null) {
                 $errors['form'] = db_failed()
                     ? 'Nu ne putem conecta la baza de date. Încearcă din nou peste câteva minute.'
@@ -91,6 +99,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $address = text_block((string) ($_POST['adresa'] ?? $address), 300);
 }
 $note = (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') ? text_block((string) ($_POST['nota'] ?? ''), 1000) : '';
+$payment = (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')
+    ? text_line((string) ($_POST['plata'] ?? ''), 20)
+    : '';
+$personType = (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')
+    ? text_line((string) ($_POST['tip_persoana'] ?? ''), 20)
+    : '';
 $table = invoice_table($lines);
 $page = 'cos';
 $noindex = true;
@@ -188,6 +202,33 @@ require __DIR__ . '/includes/header.php';
                         <label for="adresa"><?= tr('Adresă de livrare') ?></label>
                         <textarea id="adresa" name="adresa" required minlength="5" maxlength="300" rows="3"><?= e($address) ?></textarea>
                         <?php if (isset($errors['adresa'])): ?><small class="field-error"><?= e(t($errors['adresa'])) ?></small><?php endif; ?>
+
+                        <fieldset class="order-choice">
+                            <legend><?= tr('Tipul persoanei') ?></legend>
+                            <div class="buy-options" role="radiogroup" aria-label="<?= e(t('Tipul persoanei')) ?>">
+                                <?php foreach (order_person_types() as $key => $label): ?>
+                                    <label class="buy-option">
+                                        <input type="radio" name="tip_persoana" value="<?= e($key) ?>"<?= $personType === $key ? ' checked' : '' ?> required>
+                                        <span><?= tr($label) ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php if (isset($errors['tip_persoana'])): ?><small class="field-error"><?= e(t($errors['tip_persoana'])) ?></small><?php endif; ?>
+                        </fieldset>
+
+                        <fieldset class="order-choice">
+                            <legend><?= tr('Metoda de achitare') ?></legend>
+                            <div class="buy-options" role="radiogroup" aria-label="<?= e(t('Metoda de achitare')) ?>">
+                                <?php foreach (order_payment_methods() as $key => $label): ?>
+                                    <label class="buy-option">
+                                        <input type="radio" name="plata" value="<?= e($key) ?>"<?= $payment === $key ? ' checked' : '' ?> required>
+                                        <span><?= tr($label) ?></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php if (isset($errors['plata'])): ?><small class="field-error"><?= e(t($errors['plata'])) ?></small><?php endif; ?>
+                        </fieldset>
+
                         <label for="nota"><?= tr('Mențiune') ?> <span><?= tr('(opțional)') ?></span></label>
                         <textarea id="nota" name="nota" maxlength="1000" rows="3"><?= e($note) ?></textarea>
                         <div class="btn-row">

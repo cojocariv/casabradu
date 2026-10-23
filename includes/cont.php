@@ -280,12 +280,43 @@ function change_client_password(string $userId, string $current, string $next): 
     }
 }
 
+function order_payment_methods(): array
+{
+    return [
+        'numerar' => 'Numerar',
+        'card' => 'Card bancar',
+    ];
+}
+
+function order_person_types(): array
+{
+    return [
+        'fizica' => 'Persoană fizică',
+        'juridica' => 'Persoană juridică',
+    ];
+}
+
+function order_payment_label(string $key): string
+{
+    $labels = order_payment_methods();
+
+    return $labels[$key] ?? '';
+}
+
+function order_person_label(string $key): string
+{
+    $labels = order_person_types();
+
+    return $labels[$key] ?? '';
+}
+
 function client_orders(string $userId): array
 {
     try {
         $pdo = db();
         $orders = $pdo->prepare(
-            'SELECT id, user_id, la, status, adresa, nota, rechizite FROM comenzi WHERE user_id = ? ORDER BY la DESC, id DESC'
+            'SELECT id, user_id, la, status, adresa, nota, rechizite, plata, tip_persoana
+             FROM comenzi WHERE user_id = ? ORDER BY la DESC, id DESC'
         );
         $orders->execute([$userId]);
         $rows = $orders->fetchAll();
@@ -331,8 +362,21 @@ function orders_with_lines(PDO $pdo, array $rows): array
     return $rows;
 }
 
-function place_order(array $user, array $lines, string $address, string $note): ?array
-{
+function place_order(
+    array $user,
+    array $lines,
+    string $address,
+    string $note,
+    string $payment = '',
+    string $personType = ''
+): ?array {
+    if (!isset(order_payment_methods()[$payment])) {
+        $payment = '';
+    }
+    if (!isset(order_person_types()[$personType])) {
+        $personType = '';
+    }
+
     $order = [
         'id' => 'CB' . date('ymd') . '-' . strtoupper(bin2hex(random_bytes(2))),
         'user_id' => (string) $user['id'],
@@ -342,13 +386,16 @@ function place_order(array $user, array $lines, string $address, string $note): 
         'adresa' => $address,
         'nota' => $note,
         'rechizite' => (string) ($user['rechizite'] ?? ''),
+        'plata' => $payment,
+        'tip_persoana' => $personType,
     ];
 
     try {
         $pdo = db();
         $pdo->beginTransaction();
         $insert = $pdo->prepare(
-            'INSERT INTO comenzi (id, user_id, la, status, adresa, nota, rechizite) VALUES (?, ?, ?, ?, ?, ?, ?)'
+            'INSERT INTO comenzi (id, user_id, la, status, adresa, nota, rechizite, plata, tip_persoana)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
         );
         $insert->execute([
             $order['id'],
@@ -358,6 +405,8 @@ function place_order(array $user, array $lines, string $address, string $note): 
             $address,
             $note,
             $order['rechizite'],
+            $payment,
+            $personType,
         ]);
         $lineInsert = $pdo->prepare(
             'INSERT INTO comenzi_linii (comanda_id, slug, titlu, cantitate, pret) VALUES (?, ?, ?, ?, ?)'
@@ -402,10 +451,15 @@ function notify_order(array $order, array $user): void
     }
     $total = $table['total'] === null ? 'la confirmare' : lei($table['total']) . ' lei';
 
+    $paymentLabel = order_payment_label((string) ($order['plata'] ?? ''));
+    $personLabel = order_person_label((string) ($order['tip_persoana'] ?? ''));
     $body = "Comandă nouă " . $order['id'] . "\n\n"
         . "Client: " . $user['nume'] . "\n"
         . "Email: " . $user['email'] . "\n"
-        . "Telefon: " . $user['telefon'] . "\n\n"
+        . "Telefon: " . $user['telefon'] . "\n"
+        . ($personLabel !== '' ? "Tip persoană: " . $personLabel . "\n" : '')
+        . ($paymentLabel !== '' ? "Metodă de achitare: " . $paymentLabel . "\n" : '')
+        . "\n"
         . $lines . "\n"
         . "Total de plată: " . $total . "\n"
         . ($table['tva'] !== null ? "Inclusiv TVA: " . lei($table['tva']) . " lei\n" : '')
