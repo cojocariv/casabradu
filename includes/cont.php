@@ -280,14 +280,6 @@ function change_client_password(string $userId, string $current, string $next): 
     }
 }
 
-function order_payment_methods(): array
-{
-    return [
-        'numerar' => 'Numerar',
-        'card' => 'Card bancar',
-    ];
-}
-
 function order_person_types(): array
 {
     return [
@@ -296,9 +288,37 @@ function order_person_types(): array
     ];
 }
 
+function order_payment_methods_all(): array
+{
+    return [
+        'numerar' => 'Numerar',
+        'card' => 'Card bancar',
+        'transfer' => 'Transfer bancar',
+    ];
+}
+
+function order_payment_methods(string $personType = ''): array
+{
+    $all = order_payment_methods_all();
+    if ($personType === 'juridica') {
+        return [
+            'numerar' => $all['numerar'],
+            'transfer' => $all['transfer'],
+        ];
+    }
+    if ($personType === 'fizica') {
+        return [
+            'numerar' => $all['numerar'],
+            'card' => $all['card'],
+        ];
+    }
+
+    return $all;
+}
+
 function order_payment_label(string $key): string
 {
-    $labels = order_payment_methods();
+    $labels = order_payment_methods_all();
 
     return $labels[$key] ?? '';
 }
@@ -370,11 +390,11 @@ function place_order(
     string $payment = '',
     string $personType = ''
 ): ?array {
-    if (!isset(order_payment_methods()[$payment])) {
-        $payment = '';
-    }
     if (!isset(order_person_types()[$personType])) {
         $personType = '';
+    }
+    if (!isset(order_payment_methods($personType)[$payment])) {
+        $payment = '';
     }
 
     $order = [

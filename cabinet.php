@@ -124,11 +124,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         if (strlen($oldAddress) < 5) {
             $orderErrors['adresa'] = 'Scrie adresa de livrare sau localitatea.';
         }
-        if (!isset(order_payment_methods()[$oldPayment])) {
-            $orderErrors['plata'] = 'Alege metoda de achitare.';
-        }
         if (!isset(order_person_types()[$oldPersonType])) {
             $orderErrors['tip_persoana'] = 'Alege tipul de persoană.';
+        }
+        if (!isset(order_payment_methods($oldPersonType)[$oldPayment])) {
+            $orderErrors['plata'] = 'Alege metoda de achitare.';
         }
         if ($orderErrors === []) {
             $order = place_order($user, $lines, $oldAddress, $oldNote, $oldPayment, $oldPersonType);

@@ -281,6 +281,7 @@ return [
     'Persoană juridică' => 'Юридическое лицо',
     'Numerar' => 'Наличные',
     'Card bancar' => 'Банковская карта',
+    'Transfer bancar' => 'Банковский перевод',
     'Persoană' => 'Лицо',
     'Achitare' => 'Оплата',
     'Alege metoda de achitare.' => 'Выберите способ оплаты.',
