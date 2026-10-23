@@ -296,14 +296,18 @@ function product_catalog_items(): array
         'meta' => 'Consumabile',
         'image' => 'assets/img/produs-pahare.jpg',
         'alt' => 'Pahare de unică folosință pentru cafea',
-        'short' => 'Pahare de unică folosință, potrivite pentru cafea la birou sau la evenimente.',
-        'long' => 'Pahare de unică folosință pentru cafea Casa Bradu: practice pentru birou, pentru meeting-uri și pentru cine servește cafea în fiecare zi. Le comandă împreună cu cialdele, capsulele sau boabele.',
+        'short' => 'Pahare de unică folosință: 100 ml și 166 ml.',
+        'long' => 'Pahare de unică folosință pentru cafea Casa Bradu: practice pentru birou, pentru meeting-uri și pentru cine servește cafea în fiecare zi. Alegi volumul — 100 ml sau 166 ml — și le comanzi împreună cu cialdele, capsulele sau boabele.',
         'points' => [
+            'Două volume: 100 ml și 166 ml',
             'Pentru cafea la birou și evenimente',
             'Comandă împreună cu cafeaua',
-            'Livrare în toată Republica Moldova',
         ],
-        'pret' => null,
+        'choice' => 'Asortiment',
+        'options' => [
+            ['key' => 'ml100', 'label' => '100 ml'],
+            ['key' => 'ml166', 'label' => '166 ml'],
+        ],
     ],
     [
         'slug' => 'betisoare',
