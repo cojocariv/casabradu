@@ -46,6 +46,8 @@ function product_choices(array $item): array
                 'pret' => $variant['pret'] ?? null,
                 'flavor' => (string) ($variant['flavor'] ?? ''),
                 'pack' => (string) ($variant['pack'] ?? ''),
+                'image' => (string) ($variant['image'] ?? ''),
+                'offer_image' => (string) ($variant['offer_image'] ?? ''),
             ];
         }
         if ($choices !== []) {
@@ -68,6 +70,8 @@ function product_choices(array $item): array
                 'key' => $key,
                 'label' => (string) ($option['label'] ?? ''),
                 'pret' => $option['pret'] ?? null,
+                'image' => (string) ($option['image'] ?? ''),
+                'offer_image' => (string) ($option['offer_image'] ?? ''),
             ];
         }
     }
@@ -76,10 +80,40 @@ function product_choices(array $item): array
             'key' => '',
             'label' => '',
             'pret' => $item['pret'] ?? null,
+            'image' => (string) ($item['image'] ?? ''),
+            'offer_image' => (string) ($item['offer_image'] ?? ''),
         ];
     }
 
     return $choices;
+}
+
+function product_choice_image(array $item, array $choice): string
+{
+    $image = trim((string) ($choice['image'] ?? ''));
+    if ($image !== '') {
+        return $image;
+    }
+
+    return (string) ($item['image'] ?? '');
+}
+
+function product_choice_offer_image(array $item, array $choice): string
+{
+    $offer = trim((string) ($choice['offer_image'] ?? ''));
+    if ($offer !== '') {
+        return $offer;
+    }
+    $image = trim((string) ($choice['image'] ?? ''));
+    if ($image !== '') {
+        return $image;
+    }
+    $itemOffer = trim((string) ($item['offer_image'] ?? ''));
+    if ($itemOffer !== '') {
+        return $itemOffer;
+    }
+
+    return (string) ($item['image'] ?? '');
 }
 
 function product_price_label($pret): string
@@ -189,7 +223,7 @@ function cart_lines(): array
             'titlu' => product_line_title($item, $choice),
             'cantitate' => $qty,
             'pret' => (is_numeric($pret) && (float) $pret > 0) ? round((float) $pret, 2) : null,
-            'image' => (string) ($item['image'] ?? ''),
+            'image' => product_choice_image($item, $choice),
         ];
     }
 
@@ -298,8 +332,11 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
         <?php elseif (count($choices) > 1): ?>
             <div class="buy-options" role="radiogroup" aria-label="<?= tr((string) ($item['choice'] ?? 'Opțiune')) ?>">
                 <?php foreach ($choices as $index => $choice): ?>
+                    <?php
+                    $choiceImage = product_choice_image($item, $choice);
+                    ?>
                     <label class="buy-option">
-                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"<?= $index === 0 ? ' checked' : '' ?>>
+                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"<?= $choiceImage !== '' ? ' data-image="' . e(asset($choiceImage)) . '"' : '' ?><?= $index === 0 ? ' checked' : '' ?>>
                         <span><?= tr($choice['label']) ?></span>
                     </label>
                 <?php endforeach; ?>

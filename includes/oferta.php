@@ -10,7 +10,9 @@ function oferta_default_lines(): array
         $choice = is_array($item) ? product_choice($item, $row['optiune']) : null;
         $pret = is_array($choice) ? ($choice['pret'] ?? null) : null;
         $image = '';
-        if (is_array($item)) {
+        if (is_array($item) && is_array($choice)) {
+            $image = product_choice_offer_image($item, $choice);
+        } elseif (is_array($item)) {
             $offerImage = trim((string) ($item['offer_image'] ?? ''));
             $image = $offerImage !== '' ? $offerImage : (string) ($item['image'] ?? '');
         }
@@ -59,11 +61,15 @@ function oferta_parse_lines(array $posted): array
         $slug = (string) ($slugs[$index] ?? '');
         $image = (string) ($images[$index] ?? '');
         if ($image === '' && $slug !== '') {
-            $base = explode(':', $slug, 2)[0];
-            $item = product_by_slug($base);
+            $parts = explode(':', $slug, 2);
+            $item = product_by_slug($parts[0]);
             if (is_array($item)) {
-                $offerImage = trim((string) ($item['offer_image'] ?? ''));
-                $image = $offerImage !== '' ? $offerImage : (string) ($item['image'] ?? '');
+                $choice = product_choice($item, $parts[1] ?? '');
+                $image = is_array($choice)
+                    ? product_choice_offer_image($item, $choice)
+                    : ((trim((string) ($item['offer_image'] ?? '')) !== '')
+                        ? (string) $item['offer_image']
+                        : (string) ($item['image'] ?? ''));
             }
         }
         $lines[] = [

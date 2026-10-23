@@ -149,15 +149,29 @@
         if (options.length < 2) {
             return;
         }
-        function showPrice() {
+        function syncChoice() {
             var selected = form.querySelector('input[name="optiune"]:checked');
-            if (selected) {
-                price.textContent = selected.getAttribute('data-price') || '';
+            if (!selected) {
+                return;
+            }
+            price.textContent = selected.getAttribute('data-price') || '';
+            var imgPath = selected.getAttribute('data-image');
+            if (!imgPath) {
+                return;
+            }
+            var card = form.closest('.shop-item, .product-card, .catalog-row');
+            if (!card) {
+                return;
+            }
+            var photo = card.querySelector('.shop-item-photo img, .product-card-photo img, .catalog-photo img');
+            if (photo) {
+                photo.src = imgPath;
             }
         }
         options.forEach(function (option) {
-            option.addEventListener('change', showPrice);
+            option.addEventListener('change', syncChoice);
         });
+        syncChoice();
     });
 
     (function initCartLive() {

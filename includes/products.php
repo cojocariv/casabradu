@@ -29,6 +29,8 @@ function product_variant_defs(array $item): array
                 'label' => (string) ($option['label'] ?? ''),
                 'flavor' => $key,
                 'pack' => '',
+                'image' => (string) ($option['image'] ?? ''),
+                'offer_image' => (string) ($option['offer_image'] ?? ''),
             ];
         }
 
@@ -280,14 +282,28 @@ function product_catalog_items(): array
         'image' => 'assets/img/Marfa/boabe.png',
         'offer_image' => 'assets/img/Marfa/boabe 500 gr.png',
         'alt' => 'Cafea boabe Casa Bradu Caffè, 500 g',
-        'short' => 'Boabe întregi, pachet de 500 g: Arabica și Robusta în raport ideal.',
-        'long' => 'Cafeaua boabe Casa Bradu este amestecul nostru în forma lui întreagă, în pachet de 500 g. O macini când o prepari, ca aroma să rămână deschisă. Raportul dintre Arabica și Robusta este ideal: finețe, corp și cremă.',
+        'short' => 'Boabe întregi, pachet de 500 g: Intenso și Delicato.',
+        'long' => 'Cafeaua boabe Casa Bradu este amestecul nostru în forma lui întreagă, în pachet de 500 g. Alegi sortimentul — Intenso sau Delicato — și o macini când o prepari, ca aroma să rămână deschisă. Raportul dintre Arabica și Robusta este ideal: finețe, corp și cremă.',
         'points' => [
+            'Două sortimente: Intenso și Delicato',
             'Pachet de 500 g',
-            'Aromă proaspătă, măcinată înainte de ceașcă',
             'Pentru espresso, moka sau filtru',
         ],
-        'pret' => null,
+        'choice' => 'Sortiment',
+        'options' => [
+            [
+                'key' => 'intenso',
+                'label' => 'Intenso',
+                'image' => 'assets/img/Marfa/boabe.png',
+                'offer_image' => 'assets/img/Marfa/boabe 500 gr.png',
+            ],
+            [
+                'key' => 'delicato',
+                'label' => 'Delicato',
+                'image' => 'assets/img/Marfa/delicato.png',
+                'offer_image' => 'assets/img/Marfa/delicato.png',
+            ],
+        ],
     ],
     [
         'slug' => 'pahare',
