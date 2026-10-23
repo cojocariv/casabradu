@@ -348,17 +348,17 @@ function product_catalog_items(): array
         'meta' => 'Comodat și vânzare',
         'image' => 'assets/img/aparat-cafea.jpg',
         'alt' => 'Aparat compact de cafea, cu o ceașcă de espresso',
-        'short' => 'Oferim aparate în comodat și vindem aparate noi, pentru cialde, capsule și boabe.',
-        'long' => 'Oferim aparate de cafea în comodat și vindem aparate noi — pentru cialde, pentru capsule și pentru boabe. Le potrivim cu aroma cafelei Casa Bradu, acasă sau la birou, și livrăm în toată Republica Moldova.',
+        'short' => 'Oferim aparate în comodat și aparate la vânzare, pentru cialde, capsule și boabe.',
+        'long' => 'Oferim aparate de cafea în comodat și aparate la vânzare — pentru cialde, pentru capsule și pentru boabe. Le potrivim cu aroma cafelei Casa Bradu, acasă sau la birou, și livrăm în toată Republica Moldova.',
         'points' => [
             'Aparate în comodat',
-            'Aparate noi la vânzare',
+            'Aparate la vânzare',
             'Pentru cialde, capsule și boabe',
         ],
         'choice' => 'Tip',
         'options' => [
             ['key' => 'comodat', 'label' => 'În comodat'],
-            ['key' => 'noi', 'label' => 'Aparate noi'],
+            ['key' => 'noi', 'label' => 'Aparate la vânzare'],
         ],
     ],
     ];

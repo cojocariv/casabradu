@@ -11,8 +11,8 @@ $products = array_values(array_filter(
     }
 ));
 $page = 'aparate';
-$pageTitle = 'Aparate în comodat și aparate noi';
-$pageDescription = 'Oferim aparate de cafea în comodat și vindem aparate noi, pentru cialde, capsule și boabe. Livrare în toată Republica Moldova.';
+$pageTitle = 'Aparate în comodat și aparate la vânzare';
+$pageDescription = 'Oferim aparate de cafea în comodat și aparate la vânzare, pentru cialde, capsule și boabe. Livrare în toată Republica Moldova.';
 $pageImage = 'assets/img/aparat-cafea.jpg';
 $pageImageAlt = 'Aparat de cafea pentru capsule, cu o ceașcă de espresso';
 $seoItems = seo_product_items($products);
@@ -24,8 +24,8 @@ $item = $products[0];
     <div class="wrap">
         <?= breadcrumb_nav($page) ?>
         <p class="eyebrow"><?= tr('Aparate') ?></p>
-        <h1><?= tr('Comodat și aparate noi.') ?></h1>
-        <p class="lede"><?= tr('Oferim aparate de cafea în comodat și vindem aparate noi — pentru cialde, pentru capsule și pentru boabe. Prepararea ține pasul cu aroma, acasă sau la birou, oriunde livrăm în Republica Moldova.') ?></p>
+        <h1><?= tr('Comodat și aparate la vânzare.') ?></h1>
+        <p class="lede"><?= tr('Oferim aparate de cafea în comodat și aparate la vânzare — pentru cialde, pentru capsule și pentru boabe. Prepararea ține pasul cu aroma, acasă sau la birou, oriunde livrăm în Republica Moldova.') ?></p>
     </div>
 </section>
 

@@ -8,7 +8,7 @@ require __DIR__ . '/includes/mesaj.php';
 $sent = isset($_GET['trimis']) && ($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST';
 $page = 'contact';
 $pageTitle = 'Contact pentru cafea și aparate';
-$pageDescription = 'Scrie la info@casabradu.md pentru cafea, aparate în comodat sau aparate noi. Livrăm cialde, capsule și boabe în toată Republica Moldova.';
+$pageDescription = 'Scrie la info@casabradu.md pentru cafea, aparate în comodat sau aparate la vânzare. Livrăm cialde, capsule și boabe în toată Republica Moldova.';
 if ($sent) {
     $noindex = true;
 }
@@ -20,7 +20,7 @@ require __DIR__ . '/includes/header.php';
         <?= breadcrumb_nav($page) ?>
         <p class="eyebrow"><?= tr('Contact') ?></p>
         <h1><?= tr('Spune-ne ce cafea cauți.') ?></h1>
-        <p class="lede"><?= tr('Răspundem pentru cialde, capsule, boabe, aparate în comodat și aparate noi. Livrăm în toată țara, în Republica Moldova.') ?></p>
+        <p class="lede"><?= tr('Răspundem pentru cialde, capsule, boabe, aparate în comodat și aparate la vânzare. Livrăm în toată țara, în Republica Moldova.') ?></p>
     </div>
 </section>
 
@@ -44,7 +44,7 @@ require __DIR__ . '/includes/header.php';
                 <li><?= tr('Cialde, capsule și boabe') ?></li>
                 <li><?= tr('Arabica și Robusta, în raport ideal') ?></li>
                 <li><?= tr('Livrare în toată Republica Moldova') ?></li>
-                <li><?= tr('Aparate în comodat și aparate noi, pentru cialde, capsule și boabe') ?></li>
+                <li><?= tr('Aparate în comodat și aparate la vânzare, pentru cialde, capsule și boabe') ?></li>
             </ul>
             <p><a href="mailto:<?= e(SITE_EMAIL) ?>"><?= e(SITE_EMAIL) ?></a></p>
             <?php if (SITE_PHONE !== ''): ?>
