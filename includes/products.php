@@ -301,7 +301,7 @@ function product_catalog_items(): array
                 'key' => 'delicato',
                 'label' => 'Delicato',
                 'image' => 'assets/img/Marfa/delicato.png',
-                'offer_image' => 'assets/img/Marfa/delicato.png',
+                'offer_image' => 'assets/img/Marfa/delicato2.png',
             ],
         ],
     ],

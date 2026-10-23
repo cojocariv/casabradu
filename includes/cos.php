@@ -223,7 +223,7 @@ function cart_lines(): array
             'titlu' => product_line_title($item, $choice),
             'cantitate' => $qty,
             'pret' => (is_numeric($pret) && (float) $pret > 0) ? round((float) $pret, 2) : null,
-            'image' => product_choice_image($item, $choice),
+            'image' => product_choice_offer_image($item, $choice),
         ];
     }
 
