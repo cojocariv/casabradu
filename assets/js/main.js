@@ -73,21 +73,25 @@
         filters.forEach(function (button) {
             var active = button.getAttribute('data-filter') === name;
             button.classList.toggle('is-active', active);
-            button.setAttribute('aria-selected', active ? 'true' : 'false');
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
 
         cards.forEach(function (card) {
             var show = name === 'toate' || card.getAttribute('data-cat') === name;
             card.hidden = !show;
+            card.classList.toggle('is-filtered-out', !show);
         });
     }
 
     if (filters.length && cards.length) {
         filters.forEach(function (button) {
+            button.setAttribute('aria-pressed', button.classList.contains('is-active') ? 'true' : 'false');
             button.addEventListener('click', function () {
                 var name = button.getAttribute('data-filter') || 'toate';
                 applyFilter(name);
-                var next = name === 'toate' ? window.location.pathname : '#' + name;
+                var next = name === 'toate'
+                    ? (window.location.pathname + window.location.search)
+                    : ('#' + name);
                 if (window.history && window.history.replaceState) {
                     window.history.replaceState(null, '', next);
                 }
@@ -101,7 +105,7 @@
                 known = true;
             }
         });
-        if (known && initial !== 'toate') {
+        if (known && initial !== '' && initial !== 'toate') {
             applyFilter(initial);
         }
     }

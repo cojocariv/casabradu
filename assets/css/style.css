@@ -774,6 +774,11 @@ html[lang="ru"] .script {
     transition: transform 0.25s ease;
 }
 
+.shop-item[hidden],
+.shop-item.is-filtered-out {
+    display: none !important;
+}
+
 .shop-item:hover {
     transform: translateY(-2px);
 }
