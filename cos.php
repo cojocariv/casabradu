@@ -104,7 +104,10 @@ $payment = (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')
     : '';
 $personType = (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')
     ? text_line((string) ($_POST['tip_persoana'] ?? ''), 20)
-    : '';
+    : 'fizica';
+if ($personType !== 'juridica' && $personType !== 'fizica') {
+    $personType = 'fizica';
+}
 $table = invoice_table($lines);
 $page = 'cos';
 $noindex = true;
@@ -219,16 +222,17 @@ require __DIR__ . '/includes/header.php';
                         <fieldset class="order-choice" id="order-payment">
                             <legend><?= tr('Metoda de achitare') ?></legend>
                             <div class="buy-options" role="radiogroup" aria-label="<?= e(t('Metoda de achitare')) ?>">
-                                <?php foreach (order_payment_methods_all() as $key => $label): ?>
-                                    <?php
-                                    $forFizica = in_array($key, ['numerar', 'card'], true);
-                                    $forJuridica = in_array($key, ['numerar', 'transfer'], true);
-                                    $visible = ($personType === 'juridica' && $forJuridica)
-                                        || ($personType === 'fizica' && $forFizica)
-                                        || ($personType === '' && $forFizica);
-                                    ?>
-                                    <label class="buy-option" data-for-fizica="<?= $forFizica ? '1' : '0' ?>" data-for-juridica="<?= $forJuridica ? '1' : '0' ?>"<?= $visible ? '' : ' hidden' ?>>
-                                        <input type="radio" name="plata" value="<?= e($key) ?>"<?= $payment === $key && $visible ? ' checked' : '' ?><?= $visible ? ' required' : '' ?>>
+                                <?php
+                                $payFizica = order_payment_methods('fizica');
+                                $payJuridica = order_payment_methods('juridica');
+                                $payShown = $personType === 'juridica' ? $payJuridica : $payFizica;
+                                if ($payment === '' || !isset($payShown[$payment])) {
+                                    $payment = (string) array_key_first($payShown);
+                                }
+                                foreach ($payShown as $key => $label):
+                                ?>
+                                    <label class="buy-option">
+                                        <input type="radio" name="plata" value="<?= e($key) ?>"<?= $payment === $key ? ' checked' : '' ?> required>
                                         <span><?= tr($label) ?></span>
                                     </label>
                                 <?php endforeach; ?>
@@ -253,38 +257,45 @@ require __DIR__ . '/includes/header.php';
                         if (!paymentRoot) {
                             return;
                         }
+                        var methods = {
+                            fizica: <?= json_encode($payFizica, JSON_UNESCAPED_UNICODE) ?>,
+                            juridica: <?= json_encode($payJuridica, JSON_UNESCAPED_UNICODE) ?>
+                        };
+                        var labels = <?= json_encode([
+                            'Numerar' => t('Numerar'),
+                            'Card bancar' => t('Card bancar'),
+                            'Transfer bancar' => t('Transfer bancar'),
+                        ], JSON_UNESCAPED_UNICODE) ?>;
+                        var group = paymentRoot.querySelector('.buy-options');
                         function syncPayment() {
                             var person = form.querySelector('input[name="tip_persoana"]:checked');
-                            var type = person ? person.value : 'fizica';
-                            var options = paymentRoot.querySelectorAll('.buy-option');
-                            var checked = null;
-                            options.forEach(function (option) {
-                                var allow = type === 'juridica'
-                                    ? option.getAttribute('data-for-juridica') === '1'
-                                    : option.getAttribute('data-for-fizica') === '1';
-                                var input = option.querySelector('input[name="plata"]');
-                                option.hidden = !allow;
-                                if (!input) {
-                                    return;
+                            var type = person && person.value === 'juridica' ? 'juridica' : 'fizica';
+                            var list = methods[type] || methods.fizica;
+                            var prev = form.querySelector('input[name="plata"]:checked');
+                            var prevVal = prev ? prev.value : '';
+                            group.innerHTML = '';
+                            var keys = Object.keys(list);
+                            keys.forEach(function (key, index) {
+                                var label = document.createElement('label');
+                                label.className = 'buy-option';
+                                var input = document.createElement('input');
+                                input.type = 'radio';
+                                input.name = 'plata';
+                                input.value = key;
+                                input.required = true;
+                                if (prevVal === key || (!list[prevVal] && index === 0)) {
+                                    input.checked = true;
                                 }
-                                input.required = allow;
-                                if (!allow) {
-                                    input.checked = false;
-                                } else if (input.checked) {
-                                    checked = input;
-                                }
+                                var span = document.createElement('span');
+                                span.textContent = labels[list[key]] || list[key];
+                                label.appendChild(input);
+                                label.appendChild(span);
+                                group.appendChild(label);
                             });
-                            if (!checked) {
-                                var first = paymentRoot.querySelector('.buy-option:not([hidden]) input[name="plata"]');
-                                if (first) {
-                                    first.checked = true;
-                                }
-                            }
                         }
                         form.querySelectorAll('input[name="tip_persoana"]').forEach(function (input) {
                             input.addEventListener('change', syncPayment);
                         });
-                        syncPayment();
                     })();
                     </script>
                 <?php endif; ?>

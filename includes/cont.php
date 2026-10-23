@@ -306,14 +306,12 @@ function order_payment_methods(string $personType = ''): array
             'transfer' => $all['transfer'],
         ];
     }
-    if ($personType === 'fizica') {
-        return [
-            'numerar' => $all['numerar'],
-            'card' => $all['card'],
-        ];
-    }
 
-    return $all;
+    // Persoană fizică (și fallback): doar numerar + card
+    return [
+        'numerar' => $all['numerar'],
+        'card' => $all['card'],
+    ];
 }
 
 function order_payment_label(string $key): string
