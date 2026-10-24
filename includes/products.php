@@ -31,6 +31,7 @@ function product_variant_defs(array $item): array
                 'pack' => '',
                 'image' => (string) ($option['image'] ?? ''),
                 'offer_image' => (string) ($option['offer_image'] ?? ''),
+                'pret' => array_key_exists('pret', $option) ? $option['pret'] : null,
             ];
         }
 
@@ -166,7 +167,11 @@ function product_apply_prices(array $items): array
             $variants = [];
             foreach ($defs as $def) {
                 $key = (string) $item['slug'] . ':' . (string) $def['key'];
-                $def['pret'] = array_key_exists($key, $saved) ? $saved[$key] : null;
+                if (array_key_exists($key, $saved)) {
+                    $def['pret'] = $saved[$key];
+                } elseif (!array_key_exists('pret', $def)) {
+                    $def['pret'] = null;
+                }
                 $variants[] = $def;
             }
             $items[$index]['variants'] = $variants;
@@ -366,6 +371,32 @@ function product_catalog_items(): array
         'options' => [
             ['key' => 'comodat', 'label' => 'În comodat'],
             ['key' => 'noi', 'label' => 'Aparate la vânzare'],
+        ],
+    ],
+    [
+        'slug' => 'plus-mono',
+        'kind' => 'aparat',
+        'title' => 'Aroma Plus Mono',
+        'kicker' => 'Pentru cialde',
+        'meta' => 'Comodat și vânzare',
+        'image' => 'assets/img/Aparate/PLUSMono2.webp',
+        'offer_image' => 'assets/img/Aparate/PLUSMono2.webp',
+        'alt' => 'Aparat de cafea Aroma Plus Mono, pentru cialde',
+        'short' => 'Mașină pe cialde minimală, Black sau White, 26 cm, cu detalii din oțel.',
+        'long' => 'Plus Mono este mașina noastră minimală și elegantă, disponibilă în versiunile total Black sau White.',
+        'details' => [
+            'Plus Mono este mașina noastră minimală și elegantă, disponibilă în versiunile total Black sau White; ambele poartă detalii prețioase din oțel sau colorate, pentru un joc unic de lumini și volume. Plus Mono este echipată cu rezervor din sticlă, grup de extragere standard brevetat, presă pentru cialde din alamă reglabilă și portafiltru detașabil.',
+            'Tehnologie brevetată, performanțe profesionale și extragere superioară — acestea sunt caracteristicile Aroma Plus Mono. O adevărată mașină de cafea pe cialde de top, de doar 26 cm înălțime, robustă și durabilă datorită materialelor de înaltă calitate precum oțelul. Aroma Plus este eficientă și economisește spațiu, potrivită pentru orice casă și pentru toți iubitorii de espresso italian autentic.',
+        ],
+        'points' => [
+            'Versiuni Black sau White',
+            'Rezervor din sticlă, grup brevetat',
+            'Doar 26 cm înălțime',
+        ],
+        'choice' => 'Tip',
+        'options' => [
+            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
         ],
     ],
     ];
