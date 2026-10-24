@@ -883,24 +883,25 @@ html[lang="ru"] .script {
     opacity: 0;
 }
 
-.shop-item:hover .shop-item-photo img {
+.shop-item-photo:hover img {
     transform: scale(1.04);
 }
 
-.shop-item:hover .shop-item-photo.has-hover .shop-photo-main {
+.shop-item-photo.has-hover:hover .shop-photo-main {
     opacity: 0;
 }
 
-.shop-item:hover .shop-item-photo.has-hover .shop-photo-hover {
+.shop-item-photo.has-hover:hover .shop-photo-hover {
     opacity: 1;
 }
 
 @media (hover: none) {
-    .shop-item:hover .shop-item-photo.has-hover .shop-photo-main {
+    .shop-item-photo.has-hover:hover .shop-photo-main {
         opacity: 1;
+        transform: none;
     }
 
-    .shop-item:hover .shop-item-photo.has-hover .shop-photo-hover {
+    .shop-item-photo.has-hover:hover .shop-photo-hover {
         opacity: 0;
     }
 }
