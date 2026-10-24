@@ -81,6 +81,7 @@ return [
     'Oferim aparate de cafea în comodat și aparate la vânzare, pentru cialde, capsule și boabe. Livrare în toată Republica Moldova.' => 'Предоставляем кофемашины в пользование и аппараты в продаже — для чалд, капсул и зёрен. Доставка по всей Республике Молдова.',
     'Aparate în comodat.' => 'Аппараты в пользование.',
     'Comodat și aparate la vânzare.' => 'В пользование и аппараты в продаже.',
+    'La procurarea cafelei de la Casa Bradu Caffè, oferim un aparat gratuit în folosință.' => 'При покупке кофе у Casa Bradu Caffè мы предоставляем аппарат бесплатно в пользование.',
     'Oferim în comodat aparate de cafea pentru cialde, pentru capsule și pentru boabe. Prepararea ține pasul cu aroma, acasă sau la birou, oriunde livrăm în Republica Moldova.' => 'Мы предоставляем в безвозмездное пользование кофемашины для чалд, для капсул и для зёрен. Приготовление не отстаёт от аромата — дома или в офисе, всюду, куда мы доставляем в Республике Молдова.',
     'Oferim aparate de cafea în comodat și aparate la vânzare — pentru cialde, pentru capsule și pentru boabe. Prepararea ține pasul cu aroma, acasă sau la birou, oriunde livrăm în Republica Moldova.' => 'Предоставляем кофемашины в пользование и аппараты в продаже — для чалд, для капсул и для зёрен. Приготовление не отстаёт от аромата — дома или в офисе, всюду, куда мы доставляем в Республике Молдова.',
     'Cafeaua — cialde, capsule și boabe — este pe pagina ei.' => 'Кофе — чалды, капсулы и зёрна — на своей странице.',

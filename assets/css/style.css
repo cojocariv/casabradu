@@ -335,7 +335,22 @@ html[lang="ru"] .script {
 }
 
 .product-grid-machines {
-    grid-template-columns: minmax(0, 920px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    align-items: start;
+}
+
+.machines-perk {
+    margin: 16px 0 0;
+    max-width: 46ch;
+    padding: 14px 18px;
+    border-radius: 16px;
+    background: rgba(28, 52, 43, 0.08);
+    border: 1px solid rgba(28, 52, 43, 0.12);
+    color: var(--forest-2);
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.4;
 }
 
 .product-card {
@@ -350,7 +365,7 @@ html[lang="ru"] .script {
 }
 
 .product-card-machine {
-    grid-template-columns: minmax(220px, 300px) 1fr;
+    grid-template-columns: 1fr;
 }
 
 .product-card-media {
@@ -2081,7 +2096,8 @@ html[lang="ru"] .script {
     .hero-bleed h1 { max-width: none; }
     .hero-content { max-width: none; }
     .product-card { grid-template-columns: 112px 1fr; }
-    .product-card-machine { grid-template-columns: minmax(160px, 200px) 1fr; }
+    .product-grid-machines { grid-template-columns: 1fr; }
+    .product-card-machine { grid-template-columns: 1fr; }
     .story { padding: 0; gap: 28px; }
     .shop-item-body h2 { font-size: 1.7rem; margin: 0; }
     .catalog-row:nth-child(even) .catalog-photo { order: 0; }

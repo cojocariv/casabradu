@@ -12,7 +12,7 @@ $products = array_values(array_filter(
 ));
 $page = 'aparate';
 $pageTitle = 'Aparate în comodat și aparate la vânzare';
-$pageDescription = 'Oferim aparate de cafea în comodat și aparate la vânzare, pentru cialde, capsule și boabe. Livrare în toată Republica Moldova.';
+$pageDescription = 'La procurarea cafelei de la Casa Bradu Caffè, oferim un aparat gratuit în folosință. Aparate și la vânzare, pentru cialde, capsule și boabe.';
 $pageImage = (string) (($products[0]['image'] ?? '') !== '' ? $products[0]['image'] : 'assets/img/aparat-cafea.jpg');
 $pageImageAlt = (string) ($products[0]['alt'] ?? 'Aparat de cafea pentru cialde');
 $seoItems = seo_product_items($products);
@@ -25,6 +25,7 @@ require __DIR__ . '/includes/header.php';
         <p class="eyebrow"><?= tr('Aparate') ?></p>
         <h1><?= tr('Comodat și aparate la vânzare.') ?></h1>
         <p class="lede"><?= tr('Oferim aparate de cafea în comodat și aparate la vânzare — pentru cialde, pentru capsule și pentru boabe. Prepararea ține pasul cu aroma, acasă sau la birou, oriunde livrăm în Republica Moldova.') ?></p>
+        <p class="machines-perk"><?= tr('La procurarea cafelei de la Casa Bradu Caffè, oferim un aparat gratuit în folosință.') ?></p>
     </div>
 </section>
 
