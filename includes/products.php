@@ -399,6 +399,32 @@ function product_catalog_items(): array
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
         ],
     ],
+    [
+        'slug' => 'plus-plus',
+        'kind' => 'aparat',
+        'title' => 'Aroma Plus+',
+        'kicker' => 'Pentru cialde',
+        'meta' => 'Comodat și vânzare',
+        'image' => 'assets/img/Aparate/plus-tortora.webp',
+        'offer_image' => 'assets/img/Aparate/plus-tortora.webp',
+        'alt' => 'Aparat de cafea Aroma Plus+, pentru cialde',
+        'short' => 'Plus+ redesenată: față nouă, buton elegant și înălțime mărită cu 1 cm.',
+        'long' => 'Noua Plus+ reprezintă un salt calitativ în design și în funcționalități.',
+        'details' => [
+            'Noua Plus+ reprezintă un salt calitativ în design și în funcționalități. Noile caracteristici ale aparatului includ: față nouă, buton elegant nou și înălțime mărită cu 1 cm.',
+            'Datorită noii dimensiuni, puteți alege să folosiți atât ceștile clasice, cât și paharele din sticlă termică Aroma, ideale pentru ceaiuri și tisane în cialde. Tehnologie brevetată, performanțe profesionale și extragere superioară — acestea sunt caracteristicile Aroma Plus+. Aparatul este robust și durabil datorită materialelor de înaltă calitate precum oțelul. O adevărată mașină de cafea pe cialde de top. Aroma Plus este eficientă și economisește spațiu, potrivită pentru orice casă și pentru toți iubitorii de espresso italian autentic.',
+        ],
+        'points' => [
+            'Față nouă și buton elegant',
+            'Înălțime mărită cu 1 cm',
+            'Compatibilă cu pahare termice Aroma',
+        ],
+        'choice' => 'Tip',
+        'options' => [
+            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
+        ],
+    ],
     ];
 }
 
