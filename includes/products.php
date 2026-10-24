@@ -233,17 +233,30 @@ function product_catalog_items(): array
         'image' => 'assets/img/Marfa/cialda.png',
         'offer_image' => 'assets/img/Marfa/cialde.png',
         'alt' => 'Cialde Casa Bradu Caffè',
-        'short' => 'Cialde în monodoze: Deka și Intenso.',
-        'long' => 'Cialdele Casa Bradu păstrează aroma amestecului nostru, fără râșniță și fără cântar. Alegi sortimentul — Deka sau Intenso — și ambalarea (bucăți sau cutii).',
+        'short' => 'Monodoze ESE din Italia: Deka (decafeinizat) și Intenso — espresso fără râșniță, ceaşcă cu ceaşcă.',
+        'long' => 'Cialdele Casa Bradu sunt monodoze în hârtie filtrantă, importate din Italia. Păstrează aroma amestecului nostru, fără râșniță și fără cântar. Alegi sortimentul — Deka sau Intenso — și ambalarea (bucăți sau cutii).',
+        'details' => [
+            'Cialdele Casa Bradu sunt monodoze ESE din Italia: fiecare doză e gata de extragere, cu cremă și corp pe măsura amestecului. Fără râșniță, fără cântar — doar aroma, ceaşcă cu ceaşcă.',
+            'Deka (decafeinizat): espresso rotund și catifelat, cu note moi de cacao și fructe uscate, cremă fină și aciditate joasă. Gustul rămâne prezent, fără stimulent — ideal seara sau când vrei cafea fără cafeină.',
+            'Intenso: amestec puternic și corpos, cu aromă intensă, cremă densă și final persistent. Espresso italian clasic, pentru cine vrea caracter în ceașcă, dimineața sau după masă.',
+        ],
         'points' => [
-            'Monodoze practice, fără râșniță',
-            'Două sortimente: Deka și Intenso',
-            'Livrare în toată Republica Moldova',
+            'Monodoze ESE, fără râșniță',
+            'Deka — decafeinizat, aromă păstrată',
+            'Intenso — corpos, cremă densă',
         ],
         'choice' => 'Sortiment',
         'options' => [
-            ['key' => 'deka', 'label' => 'Deka'],
-            ['key' => 'intenso', 'label' => 'Intenso'],
+            [
+                'key' => 'deka',
+                'label' => 'Deka',
+                'blurb' => 'Decafeinizat (sub 0,1% cafeină), dar cu corp și aromă. Note moi de cacao și fructe uscate, cremă catifelată, final cald — espresso seral fără compromis la gust.',
+            ],
+            [
+                'key' => 'intenso',
+                'label' => 'Intenso',
+                'blurb' => 'Espresso puternic și corpos, cu aromă intensă și cremă densă. Gust decis, note prăjite, persistente în ceașcă — pentru cine vrea caracter italian clasic.',
+            ],
         ],
         'pack_choice' => 'Ambalare',
         'packs' => [

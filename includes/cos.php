@@ -326,13 +326,27 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
                 <?php foreach ($flavors as $index => $flavor): ?>
                     <?php if (!is_array($flavor)) {
                         continue;
-                    } ?>
+                    }
+                    $flavorBlurb = trim((string) ($flavor['blurb'] ?? ''));
+                    ?>
                     <label class="buy-option">
-                        <input type="radio" name="sortiment" value="<?= e((string) ($flavor['key'] ?? '')) ?>" data-part="flavor"<?= $index === 0 ? ' checked' : '' ?>>
+                        <input type="radio" name="sortiment" value="<?= e((string) ($flavor['key'] ?? '')) ?>" data-part="flavor"<?= $flavorBlurb !== '' ? ' data-blurb="' . e(t($flavorBlurb)) . '"' : '' ?><?= $index === 0 ? ' checked' : '' ?>>
                         <span><?= tr((string) ($flavor['label'] ?? '')) ?></span>
                     </label>
                 <?php endforeach; ?>
             </div>
+            <?php
+            $firstBlurb = '';
+            foreach ($flavors as $flavor) {
+                if (is_array($flavor) && trim((string) ($flavor['blurb'] ?? '')) !== '') {
+                    $firstBlurb = trim((string) $flavor['blurb']);
+                    break;
+                }
+            }
+            ?>
+            <?php if ($firstBlurb !== ''): ?>
+                <p class="buy-blurb" data-buy-blurb><?= e(t($firstBlurb)) ?></p>
+            <?php endif; ?>
             <div class="buy-options" role="radiogroup" aria-label="<?= tr((string) ($item['pack_choice'] ?? 'Ambalare')) ?>">
                 <?php foreach ($packs as $index => $pack): ?>
                     <?php if (!is_array($pack)) {
@@ -350,13 +364,43 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
                     <?php
                     $choiceImage = product_choice_image($item, $choice);
                     $isDefault = (string) ($choice['key'] ?? '') === (string) ($selected['key'] ?? '');
+                    $choiceBlurb = '';
+                    foreach ($flavors as $flavor) {
+                        if (is_array($flavor) && (string) ($flavor['key'] ?? '') === (string) ($choice['key'] ?? '')) {
+                            $choiceBlurb = trim((string) ($flavor['blurb'] ?? ''));
+                            break;
+                        }
+                    }
                     ?>
                     <label class="buy-option">
-                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"<?= $choiceImage !== '' ? ' data-image="' . e(asset($choiceImage)) . '"' : '' ?><?= $isDefault ? ' checked' : '' ?>>
+                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"<?= $choiceImage !== '' ? ' data-image="' . e(asset($choiceImage)) . '"' : '' ?><?= $choiceBlurb !== '' ? ' data-blurb="' . e(t($choiceBlurb)) . '"' : '' ?><?= $isDefault ? ' checked' : '' ?>>
                         <span><?= tr($choice['label']) ?></span>
                     </label>
                 <?php endforeach; ?>
             </div>
+            <?php
+            $simpleBlurb = '';
+            foreach ($flavors as $flavor) {
+                if (!is_array($flavor)) {
+                    continue;
+                }
+                if ((string) ($flavor['key'] ?? '') === (string) ($selected['key'] ?? '')) {
+                    $simpleBlurb = trim((string) ($flavor['blurb'] ?? ''));
+                    break;
+                }
+            }
+            if ($simpleBlurb === '') {
+                foreach ($flavors as $flavor) {
+                    if (is_array($flavor) && trim((string) ($flavor['blurb'] ?? '')) !== '') {
+                        $simpleBlurb = trim((string) $flavor['blurb']);
+                        break;
+                    }
+                }
+            }
+            ?>
+            <?php if ($simpleBlurb !== ''): ?>
+                <p class="buy-blurb" data-buy-blurb><?= e(t($simpleBlurb)) ?></p>
+            <?php endif; ?>
         <?php elseif ($selected['key'] !== ''): ?>
             <input type="hidden" name="optiune" value="<?= e($selected['key']) ?>">
         <?php endif; ?>

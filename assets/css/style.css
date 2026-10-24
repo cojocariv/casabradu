@@ -286,6 +286,14 @@ html[lang="ru"] .script {
 
 .buy-option { position: relative; }
 
+.buy-blurb {
+    flex: 1 0 100%;
+    margin: 2px 0 4px;
+    color: var(--muted);
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
 .buy-option input {
     position: absolute;
     opacity: 0;

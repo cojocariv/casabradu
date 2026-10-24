@@ -125,6 +125,7 @@
                     map[key] = entry.getAttribute('data-price') || '';
                 }
             });
+            var blurb = form.querySelector('[data-buy-blurb]');
             function syncSplit() {
                 var flavor = form.querySelector('input[name="sortiment"]:checked');
                 var pack = form.querySelector('input[name="ambalare"]:checked');
@@ -135,6 +136,11 @@
                 hidden.value = key;
                 if (map[key]) {
                     price.textContent = map[key];
+                }
+                if (blurb) {
+                    var text = flavor.getAttribute('data-blurb') || '';
+                    blurb.textContent = text;
+                    blurb.hidden = text === '';
                 }
             }
             form.querySelectorAll('input[name="sortiment"], input[name="ambalare"]').forEach(function (option) {
@@ -149,12 +155,18 @@
         if (options.length < 2) {
             return;
         }
+        var blurb = form.querySelector('[data-buy-blurb]');
         function syncChoice() {
             var selected = form.querySelector('input[name="optiune"]:checked');
             if (!selected) {
                 return;
             }
             price.textContent = selected.getAttribute('data-price') || '';
+            if (blurb) {
+                var text = selected.getAttribute('data-blurb') || '';
+                blurb.textContent = text;
+                blurb.hidden = text === '';
+            }
             var imgPath = selected.getAttribute('data-image');
             if (!imgPath) {
                 return;
