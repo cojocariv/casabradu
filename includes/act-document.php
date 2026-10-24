@@ -48,7 +48,7 @@ function act_html_has(string $value): bool
         }
         .toolbar form { margin: 0; }
         .toolbar a, .toolbar button {
-            font-family: "Source Sans 3", "Segoe UI", sans-serif;
+            font-family: Inter, "Segoe UI", sans-serif;
             border-radius: 999px;
             padding: 10px 18px;
             border: 1px solid #16352b;

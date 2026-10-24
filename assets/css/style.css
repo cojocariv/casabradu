@@ -14,8 +14,8 @@
     --header: 124px;
     --radius: 18px;
     --radius-sm: 12px;
-    --font-sans: "Source Sans 3", "Segoe UI", sans-serif;
-    --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --font-sans: Inter, "Segoe UI", sans-serif;
+    --font-serif: Lora, Georgia, "Times New Roman", serif;
 }
 
 * { box-sizing: border-box; }

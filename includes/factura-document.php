@@ -26,12 +26,12 @@
             width: min(820px, calc(100% - 24px));
             margin: 16px auto 0;
             text-align: center;
-            font-family: "Source Sans 3", "Segoe UI", sans-serif;
+            font-family: Inter, "Segoe UI", sans-serif;
         }
         .mail-note.ok { color: #1c3b30; }
         .mail-note.err { color: #7a3328; }
         .toolbar a, .toolbar button {
-            font-family: "Source Sans 3", "Segoe UI", sans-serif;
+            font-family: Inter, "Segoe UI", sans-serif;
             border-radius: 999px;
             padding: 10px 18px;
             border: 1px solid #16352b;
