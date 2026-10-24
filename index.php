@@ -6,7 +6,7 @@ require_once __DIR__ . '/includes/bootstrap.php';
 
 $products = require __DIR__ . '/includes/products.php';
 $coffee = array_values(array_filter($products, static function (array $item): bool {
-    return $item['slug'] !== 'aparate';
+    return ($item['kind'] ?? '') !== 'aparat' && ($item['slug'] ?? '') !== 'aparate';
 }));
 
 $page = 'acasa';
@@ -113,7 +113,7 @@ require __DIR__ . '/includes/header.php';
             </ul>
             <div class="btn-row">
                 <a class="btn btn-dark" href="<?= e(url('aparate.php')) ?>"><?= tr('Vezi aparatele') ?></a>
-                <?php buy_form('aparate', 'index.php', 'btn btn-line'); ?>
+                <?php buy_form('plus-silver', 'index.php', 'btn btn-line'); ?>
             </div>
         </div>
     </div>

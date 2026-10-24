@@ -326,6 +326,10 @@ html[lang="ru"] .script {
     grid-template-columns: minmax(0, 720px);
 }
 
+.product-grid-machines {
+    grid-template-columns: minmax(0, 920px);
+}
+
 .product-card {
     display: grid;
     grid-template-columns: 160px 1fr;
@@ -335,6 +339,31 @@ html[lang="ru"] .script {
     box-shadow: var(--shadow);
     border: 1px solid var(--line);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.product-card-machine {
+    grid-template-columns: minmax(220px, 300px) 1fr;
+}
+
+.product-card-machine .product-card-photo {
+    background: #fff;
+}
+
+.product-card-machine .product-card-photo img {
+    object-fit: contain;
+    padding: 16px;
+}
+
+.product-detail {
+    display: grid;
+    gap: 8px;
+    margin: 0 0 10px;
+}
+
+.product-detail p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
 }
 
 .product-card:hover {
@@ -1970,6 +1999,7 @@ html[lang="ru"] .script {
     .hero-bleed h1 { max-width: none; }
     .hero-content { max-width: none; }
     .product-card { grid-template-columns: 112px 1fr; }
+    .product-card-machine { grid-template-columns: minmax(160px, 200px) 1fr; }
     .story { padding: 0; gap: 28px; }
     .shop-item-body h2 { font-size: 1.7rem; margin: 0; }
     .catalog-row:nth-child(even) .catalog-photo { order: 0; }
@@ -1997,7 +2027,9 @@ html[lang="ru"] .script {
     .cards .card:last-child { max-width: none; }
     .page-hero h1 { max-width: none; }
     .product-card { grid-template-columns: 1fr; }
+    .product-card-machine { grid-template-columns: 1fr; }
     .product-card-photo img { aspect-ratio: 16 / 10; }
+    .product-card-machine .product-card-photo img { aspect-ratio: 1; }
     .hero-actions {
         flex-direction: column;
         align-items: stretch;

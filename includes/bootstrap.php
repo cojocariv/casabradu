@@ -181,8 +181,8 @@ function seo_product_items(array $products): array
         $prefix = lang() === 'ru' ? '/ru' : '';
         $items[] = [
             'name' => t((string) ($product['title'] ?? '')),
-            'url' => $slug === 'aparate'
-                ? 'https://' . SITE_DOMAIN . $prefix . '/aparate.php'
+            'url' => (($product['kind'] ?? '') === 'aparat' || $slug === 'aparate')
+                ? 'https://' . SITE_DOMAIN . $prefix . '/aparate.php#' . rawurlencode($slug)
                 : 'https://' . SITE_DOMAIN . $prefix . '/produse.php#' . $slug,
         ];
     }

@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/bootstrap.php';
 $products = array_values(array_filter(
     require __DIR__ . '/includes/products.php',
     static function (array $item): bool {
-        return $item['slug'] !== 'aparate';
+        return ($item['kind'] ?? '') !== 'aparat' && ($item['slug'] ?? '') !== 'aparate';
     }
 ));
 $page = 'cafea';
