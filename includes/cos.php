@@ -292,7 +292,22 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
     }
     $choices = product_choices($item);
     $field = str_replace(['.', '#', ':'], '-', $slug . '-' . $back);
-    $first = $choices[0];
+    $defaultKey = '';
+    if (($item['kind'] ?? '') === 'aparat') {
+        foreach ($choices as $choice) {
+            if ((string) ($choice['key'] ?? '') === 'noi') {
+                $defaultKey = 'noi';
+                break;
+            }
+        }
+    }
+    $selected = $choices[0];
+    foreach ($choices as $choice) {
+        if ((string) ($choice['key'] ?? '') === $defaultKey) {
+            $selected = $choice;
+            break;
+        }
+    }
     $flavors = $item['options'] ?? [];
     $packs = $item['packs'] ?? [];
     $hasPacks = is_array($packs) && $packs !== [] && is_array($flavors) && $flavors !== [];
@@ -303,7 +318,7 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
         <input type="hidden" name="slug" value="<?= e($slug) ?>">
         <input type="hidden" name="inapoi" value="<?= e($back) ?>">
         <?php if ($hasPacks): ?>
-            <input type="hidden" name="optiune" value="<?= e((string) $first['key']) ?>" data-optiune>
+            <input type="hidden" name="optiune" value="<?= e((string) $selected['key']) ?>" data-optiune>
             <?php foreach ($choices as $choice): ?>
                 <span class="buy-price-entry" hidden data-key="<?= e((string) $choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"></span>
             <?php endforeach; ?>
@@ -331,20 +346,21 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
             </div>
         <?php elseif (count($choices) > 1): ?>
             <div class="buy-options" role="radiogroup" aria-label="<?= tr((string) ($item['choice'] ?? 'Opțiune')) ?>">
-                <?php foreach ($choices as $index => $choice): ?>
+                <?php foreach ($choices as $choice): ?>
                     <?php
                     $choiceImage = product_choice_image($item, $choice);
+                    $isDefault = (string) ($choice['key'] ?? '') === (string) ($selected['key'] ?? '');
                     ?>
                     <label class="buy-option">
-                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"<?= $choiceImage !== '' ? ' data-image="' . e(asset($choiceImage)) . '"' : '' ?><?= $index === 0 ? ' checked' : '' ?>>
+                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"<?= $choiceImage !== '' ? ' data-image="' . e(asset($choiceImage)) . '"' : '' ?><?= $isDefault ? ' checked' : '' ?>>
                         <span><?= tr($choice['label']) ?></span>
                     </label>
                 <?php endforeach; ?>
             </div>
-        <?php elseif ($first['key'] !== ''): ?>
-            <input type="hidden" name="optiune" value="<?= e($first['key']) ?>">
+        <?php elseif ($selected['key'] !== ''): ?>
+            <input type="hidden" name="optiune" value="<?= e($selected['key']) ?>">
         <?php endif; ?>
-        <p class="buy-price"><?= e(product_price_label($first['pret'] ?? null)) ?></p>
+        <p class="buy-price"><?= e(product_price_label($selected['pret'] ?? null)) ?></p>
         <label class="sr-only" for="cant-<?= e($field) ?>"><?= tr('Cantitate') ?></label>
         <input id="cant-<?= e($field) ?>" name="cantitate" type="number" min="1" max="999" step="1" value="1" inputmode="numeric">
         <button class="<?= e($buttonClass) ?>" type="submit"><?= tr('Adaugă în coș') ?></button>
