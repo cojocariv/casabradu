@@ -8,6 +8,7 @@ $products = require __DIR__ . '/includes/products.php';
 $coffee = array_values(array_filter($products, static function (array $item): bool {
     return ($item['kind'] ?? '') !== 'aparat' && ($item['slug'] ?? '') !== 'aparate';
 }));
+$iconica = product_by_slug('iconica');
 
 $page = 'acasa';
 $pageTitle = 'Cafea artizanală din Italia';
@@ -50,6 +51,10 @@ require __DIR__ . '/includes/header.php';
             <li>
                 <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27s7-6.4 7-13a7 7 0 1 0-14 0c0 6.6 7 13 7 13z"/><path d="M16 11.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/></svg>
                 <span><?= tr('Livrare în țară') ?></span>
+            </li>
+            <li>
+                <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 22V10h16v12"/><path d="M11 22v3h10v-3"/><path d="M12 14h8M12 17h8"/></svg>
+                <span><?= tr('Aparat gratuit') ?></span>
             </li>
         </ul>
     </div>
@@ -96,24 +101,34 @@ require __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<section class="section">
+<section class="section" id="aparate-acasa">
     <div class="wrap split">
         <div class="split-photo reveal">
-            <img src="<?= e(asset('assets/img/aparat-cafea.jpg')) ?>" alt="<?= tr('Aparat de cafea pentru capsule, cu o ceașcă de espresso') ?>" width="1200" height="900">
+            <?php if ($iconica !== null): ?>
+                <img src="<?= e(asset((string) $iconica['image'])) ?>" alt="<?= tr((string) $iconica['alt']) ?>" width="1200" height="900">
+            <?php else: ?>
+                <img src="<?= e(asset('assets/img/aparat-cafea.jpg')) ?>" alt="<?= tr('Aparat de cafea pentru cialde') ?>" width="1200" height="900">
+            <?php endif; ?>
         </div>
         <div class="reveal">
             <p class="kicker"><?= tr('Aparate de cafea') ?></p>
-            <h2><?= tr('Pentru cialde, capsule și boabe') ?></h2>
-            <p class="script">espresso a casa</p>
-            <p><?= tr('Oferim aparate de cafea în comodat și aparate la vânzare — pentru cialde, capsule și boabe, ca prepararea să țină pasul cu aroma. Pentru acasă, pentru birou sau pentru cine servește cafea în fiecare zi.') ?></p>
+            <h2><?= $iconica !== null ? tr((string) $iconica['title']) : tr('Pentru cialde, capsule și boabe') ?></h2>
+            <p class="home-machine-perk"><?= tr('La procurarea cafelei de la noi, aparatul se oferă gratuit în folosință.') ?></p>
+            <p><?= $iconica !== null
+                ? tr((string) ($iconica['short'] ?? ''))
+                : tr('Oferim aparate de cafea în comodat și aparate la vânzare — pentru cialde, capsule și boabe, ca prepararea să țină pasul cu aroma. Pentru acasă, pentru birou sau pentru cine servește cafea în fiecare zi.') ?></p>
             <ul class="chips">
+                <li><?= tr('Gratuit în folosință') ?></li>
                 <li><?= tr('Cialde') ?></li>
-                <li><?= tr('Capsule') ?></li>
-                <li><?= tr('Boabe') ?></li>
+                <li><?= tr('Acasă și birou') ?></li>
             </ul>
             <div class="btn-row">
                 <a class="btn btn-dark" href="<?= e(url('aparate.php')) ?>"><?= tr('Vezi aparatele') ?></a>
-                <?php buy_form('plus-silver', 'index.php', 'btn btn-line'); ?>
+                <?php
+                if ($iconica !== null) {
+                    buy_form('iconica', 'index.php', 'btn btn-line', 'comodat');
+                }
+                ?>
             </div>
         </div>
     </div>

@@ -309,7 +309,7 @@ function cart_return(string $target): string
     return 'produse.php';
 }
 
-function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dark btn-sm'): void
+function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dark btn-sm', string $defaultOption = ''): void
 {
     $item = product_by_slug($slug);
     if ($item === null) {
@@ -317,8 +317,20 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
     }
     $choices = product_choices($item);
     $field = str_replace(['.', '#', ':'], '-', $slug . '-' . $back);
-    $defaultKey = '';
-    if (($item['kind'] ?? '') === 'aparat') {
+    $defaultKey = $defaultOption;
+    if ($defaultKey !== '') {
+        $found = false;
+        foreach ($choices as $choice) {
+            if ((string) ($choice['key'] ?? '') === $defaultKey) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $defaultKey = '';
+        }
+    }
+    if ($defaultKey === '' && ($item['kind'] ?? '') === 'aparat') {
         foreach ($choices as $choice) {
             if ((string) ($choice['key'] ?? '') === 'noi') {
                 $defaultKey = 'noi';

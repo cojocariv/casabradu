@@ -357,6 +357,23 @@ html[lang="ru"] .script {
     line-height: 1.4;
 }
 
+.home-machine-perk {
+    margin: 14px 0 16px;
+    max-width: 36ch;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: var(--forest-2);
+    color: #f6f1e6;
+    font-weight: 600;
+    font-size: 1.1rem;
+    line-height: 1.45;
+    box-shadow: 0 10px 28px rgba(18, 48, 40, 0.18);
+}
+
+.split .home-machine-perk {
+    color: #f6f1e6;
+}
+
 .product-card {
     display: grid;
     grid-template-columns: 160px 1fr;
