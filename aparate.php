@@ -32,9 +32,35 @@ require __DIR__ . '/includes/header.php';
     <div class="wrap">
         <div class="product-grid product-grid-machines">
             <?php foreach ($products as $item): ?>
+                <?php
+                $gallery = [];
+                $rawImages = $item['images'] ?? null;
+                if (is_array($rawImages)) {
+                    foreach ($rawImages as $path) {
+                        if (is_string($path) && trim($path) !== '') {
+                            $gallery[] = trim($path);
+                        }
+                    }
+                }
+                if ($gallery === [] && trim((string) ($item['image'] ?? '')) !== '') {
+                    $gallery[] = (string) $item['image'];
+                }
+                $mainImage = $gallery[0] ?? (string) ($item['image'] ?? '');
+                ?>
                 <article class="product-card product-card-machine reveal" id="<?= e((string) $item['slug']) ?>">
-                    <div class="product-card-photo">
-                        <img src="<?= e(asset((string) $item['image'])) ?>" alt="<?= tr((string) $item['alt']) ?>" width="640" height="640">
+                    <div class="product-card-media">
+                        <div class="product-card-photo">
+                            <img src="<?= e(asset($mainImage)) ?>" alt="<?= tr((string) $item['alt']) ?>" width="640" height="640" data-machine-main>
+                        </div>
+                        <?php if (count($gallery) > 1): ?>
+                            <div class="product-thumbs" role="group" aria-label="<?= e(t('Imagini produs')) ?>">
+                                <?php foreach ($gallery as $index => $path): ?>
+                                    <button class="product-thumb<?= $index === 0 ? ' is-active' : '' ?>" type="button" data-machine-thumb="<?= e(asset($path)) ?>" aria-label="<?= e(t('Imagine') . ' ' . ($index + 1)) ?>">
+                                        <img src="<?= e(asset($path)) ?>" alt="" width="120" height="120">
+                                    </button>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="product-card-body">
                         <p class="kicker"><?= tr((string) $item['kicker']) ?></p>

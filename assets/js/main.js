@@ -337,4 +337,24 @@
         }
         syncLink();
     })();
+
+    document.querySelectorAll('.product-card-machine').forEach(function (card) {
+        var main = card.querySelector('[data-machine-main]');
+        var thumbs = card.querySelectorAll('[data-machine-thumb]');
+        if (!main || thumbs.length < 2) {
+            return;
+        }
+        thumbs.forEach(function (thumb) {
+            thumb.addEventListener('click', function () {
+                var src = thumb.getAttribute('data-machine-thumb');
+                if (!src) {
+                    return;
+                }
+                main.src = src;
+                thumbs.forEach(function (item) {
+                    item.classList.toggle('is-active', item === thumb);
+                });
+            });
+        });
+    });
 })();

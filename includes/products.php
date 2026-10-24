@@ -451,6 +451,37 @@ function product_catalog_items(): array
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
         ],
     ],
+    [
+        'slug' => 'iconica',
+        'kind' => 'aparat',
+        'title' => 'Aroma Iconica',
+        'kicker' => 'Pentru cialde',
+        'meta' => 'Comodat și vânzare',
+        'image' => 'assets/img/Aparate/iconica.webp',
+        'offer_image' => 'assets/img/Aparate/iconica2.webp',
+        'images' => [
+            'assets/img/Aparate/iconica.webp',
+            'assets/img/Aparate/iconica2.webp',
+            'assets/img/Aparate/iconica3.webp',
+        ],
+        'alt' => 'Aparat de cafea Aroma Iconica, pentru cialde',
+        'short' => 'Design italian Iconica: tradiție napolitană și espresso pe cialde, cu rezervor din sticlă de 1 l.',
+        'long' => 'Iconica: tradiția napolitană a artei cafelei întâlnește viitorul espresso-ului pe cialde.',
+        'details' => [
+            'Un cuvânt care, mai mult decât oricare altul, reprezintă designul și meșteșugul italian care definesc acest aparat este Iconica. Cuvântul este emblema a ceea ce reprezintă aparatul: tradiția napolitană a artei cafelei care întâlnește viitorul espresso-ului pe cialde. Italia Dolce Vita a fost muza noastră, pe care o regăsim în liniile moi și sinuoase ale mașinii.',
+            'Noutate: descoperă noul spate al aparatului, acum fără ușă și cu un rezervor din sticlă de 1 litru, pentru curățare și scoatere ușoară.',
+        ],
+        'points' => [
+            'Design italian, linii moi',
+            'Rezervor din sticlă 1 l',
+            'Spate fără ușă, curățare ușoară',
+        ],
+        'choice' => 'Tip',
+        'options' => [
+            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 7999],
+        ],
+    ],
     ];
 }
 

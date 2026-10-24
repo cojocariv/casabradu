@@ -345,6 +345,12 @@ html[lang="ru"] .script {
     grid-template-columns: minmax(220px, 300px) 1fr;
 }
 
+.product-card-media {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
 .product-card-machine .product-card-photo {
     background: #fff;
 }
@@ -352,6 +358,36 @@ html[lang="ru"] .script {
 .product-card-machine .product-card-photo img {
     object-fit: contain;
     padding: 16px;
+}
+
+.product-thumbs {
+    display: flex;
+    gap: 8px;
+    padding: 0 12px 12px;
+}
+
+.product-thumb {
+    flex: 1 1 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.product-thumb img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+    padding: 4px;
+}
+
+.product-thumb.is-active,
+.product-thumb:hover {
+    border-color: var(--forest-2);
 }
 
 .product-detail {
