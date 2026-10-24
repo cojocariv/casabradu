@@ -425,6 +425,32 @@ function product_catalog_items(): array
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
         ],
     ],
+    [
+        'slug' => 'plus-inferno',
+        'kind' => 'aparat',
+        'title' => 'Aroma Plus Inferno',
+        'kicker' => 'Pentru cialde',
+        'meta' => 'Comodat și vânzare',
+        'image' => 'assets/img/Aparate/plus-inferno.webp',
+        'offer_image' => 'assets/img/Aparate/plus-inferno.webp',
+        'alt' => 'Aparat de cafea Aroma Plus Inferno, pentru cialde',
+        'short' => 'Ediție limitată roșie, best seller 2022, cu termostat special la 95°.',
+        'long' => 'Mașina pe cialde best seller în 2022, Plus Inferno se îmbracă în roșu și are un termostat special la 95°.',
+        'details' => [
+            'Mașina pe cialde best seller în 2022, Plus Inferno se îmbracă în roșu și are un termostat special la 95°. O ediție limitată dedicată Infernului dantesc.',
+            'Plus Inferno este echipată cu rezervor din sticlă. Tehnologie brevetată, performanțe profesionale și extragere superioară — acestea sunt caracteristicile Aroma Plus Inferno. O adevărată mașină de cafea pe cialde de top, de doar 26 cm înălțime, robustă și durabilă datorită materialelor de înaltă calitate precum oțelul. Aroma Plus este eficientă și economisește spațiu, potrivită pentru orice casă și pentru toți iubitorii de espresso italian autentic.',
+        ],
+        'points' => [
+            'Ediție limitată roșie',
+            'Termostat special 95°',
+            'Doar 26 cm înălțime',
+        ],
+        'choice' => 'Tip',
+        'options' => [
+            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
+        ],
+    ],
     ];
 }
 
