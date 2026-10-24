@@ -482,6 +482,38 @@ function product_catalog_items(): array
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 7999],
         ],
     ],
+    [
+        'slug' => 'kicco-mogano',
+        'kind' => 'aparat',
+        'title' => 'Aroma Kicco Industrial Mogano',
+        'kicker' => 'Pentru cialde',
+        'meta' => 'Comodat și vânzare',
+        'image' => 'assets/img/Aparate/KICCO-mogano_tre-quarti.webp',
+        'offer_image' => 'assets/img/Aparate/KICCO-mogano_tre-quarti2.webp',
+        'images' => [
+            'assets/img/Aparate/KICCO-mogano_tre-quarti.webp',
+            'assets/img/Aparate/KICCO-mogano_tre-quarti2.webp',
+            'assets/img/Aparate/KICCO-mogano_tre-quarti3.webp',
+        ],
+        'alt' => 'Aparat de cafea Aroma Kicco Industrial Mogano, pentru cialde',
+        'short' => 'Kicco Industrial Mogano: panouri din lemn lucrat manual și linii din oțel, design industrial.',
+        'long' => 'Pentru iubitorii de design mai agresiv și industrial, Kicco Industrial este colecția ideală.',
+        'details' => [
+            'Pentru iubitorii de design mai agresiv și industrial, Kicco Industrial este colecția ideală. Soliditatea aparatelor Aroma și stilul inovator fac din Kicco Industrial un obiect de neratat pentru trendsetteri.',
+            'Colecția Kicco Industrial este decorată cu panouri din lemn lucrat și șlefuit manual, ornamente cu linii sinuoase din oțel și șuruburi la vedere, și este disponibilă în cireș, mahon și arțar. Mașina pe cialde Kicco are un design original și iconic: nu este doar un aparat de cafea pe cialde, ci un adevărat element de mobilier.',
+            'Kicco garantează o extragere excelentă datorită grupului standard brevetat, portafiltrului detașabil și presei pentru cialde din alamă reglabilă.',
+        ],
+        'points' => [
+            'Panouri din lemn mahon, lucrate manual',
+            'Linii din oțel cu șuruburi la vedere',
+            'Grup brevetat, extragere profesională',
+        ],
+        'choice' => 'Tip',
+        'options' => [
+            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
+        ],
+    ],
     ];
 }
 
