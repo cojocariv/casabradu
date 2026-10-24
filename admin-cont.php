@@ -76,7 +76,7 @@ function admin_invoice_default_lines(): array
             'varianta' => $row['varianta'],
             'image' => admin_product_image(is_array($item) ? $item : null),
             'cantitate' => '',
-            'pret' => is_numeric($pret) && (float) $pret > 0 ? product_price_input($pret) : '',
+            'pret' => is_numeric($pret) && (float) $pret >= 0 ? product_price_input($pret) : '',
         ];
     }
     $lines[] = [

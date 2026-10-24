@@ -108,7 +108,7 @@ function product_price_field(array $row): string
 
 function product_price_input($pret): string
 {
-    if (!is_numeric($pret) || (float) $pret <= 0) {
+    if (!is_numeric($pret) || (float) $pret < 0) {
         return '';
     }
 
@@ -126,7 +126,7 @@ function product_parse_price(string $raw): ?string
         return 'invalid';
     }
     $value = round((float) $raw, 2);
-    if ($value <= 0 || $value > 999999.99) {
+    if ($value < 0 || $value > 999999.99) {
         return 'invalid';
     }
 
@@ -168,7 +168,7 @@ function product_apply_prices(array $items): array
             $variants = [];
             foreach ($defs as $def) {
                 $key = (string) $item['slug'] . ':' . (string) $def['key'];
-                if (array_key_exists($key, $saved)) {
+                if (array_key_exists($key, $saved) && $saved[$key] !== null) {
                     $def['pret'] = $saved[$key];
                 } elseif (!array_key_exists('pret', $def)) {
                     $def['pret'] = null;
@@ -418,7 +418,7 @@ function product_catalog_items(): array
         ],
         'choice' => 'Tip',
         'options' => [
-            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'comodat', 'label' => 'În comodat', 'pret' => 0],
             ['key' => 'noi', 'label' => 'Aparate la vânzare'],
         ],
     ],
@@ -444,7 +444,7 @@ function product_catalog_items(): array
         ],
         'choice' => 'Tip',
         'options' => [
-            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'comodat', 'label' => 'În comodat', 'pret' => 0],
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
         ],
     ],
@@ -470,7 +470,7 @@ function product_catalog_items(): array
         ],
         'choice' => 'Tip',
         'options' => [
-            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'comodat', 'label' => 'În comodat', 'pret' => 0],
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
         ],
     ],
@@ -496,7 +496,7 @@ function product_catalog_items(): array
         ],
         'choice' => 'Tip',
         'options' => [
-            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'comodat', 'label' => 'În comodat', 'pret' => 0],
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
         ],
     ],
@@ -527,7 +527,7 @@ function product_catalog_items(): array
         ],
         'choice' => 'Tip',
         'options' => [
-            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'comodat', 'label' => 'În comodat', 'pret' => 0],
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 7999],
         ],
     ],
@@ -559,7 +559,7 @@ function product_catalog_items(): array
         ],
         'choice' => 'Tip',
         'options' => [
-            ['key' => 'comodat', 'label' => 'În comodat'],
+            ['key' => 'comodat', 'label' => 'În comodat', 'pret' => 0],
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
         ],
     ],

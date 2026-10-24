@@ -23,7 +23,7 @@ function oferta_default_lines(): array
             'varianta' => $row['varianta'],
             'image' => $image,
             'cantitate' => '',
-            'pret' => is_numeric($pret) && (float) $pret > 0 ? product_price_input($pret) : '',
+            'pret' => is_numeric($pret) && (float) $pret >= 0 ? product_price_input($pret) : '',
         ];
     }
 
@@ -100,7 +100,7 @@ function oferta_table(array $lines): array
             continue;
         }
         $pret = $line['pret'] ?? null;
-        $pretBani = (is_numeric($pret) && (float) $pret > 0) ? (int) round(((float) $pret) * 100) : null;
+        $pretBani = (is_numeric($pret) && (float) $pret >= 0) ? (int) round(((float) $pret) * 100) : null;
         $sum = $pretBani === null ? null : $pretBani * $qty;
         if ($sum === null) {
             $complete = false;

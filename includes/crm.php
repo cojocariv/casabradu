@@ -58,7 +58,7 @@ function crm_clients(): array
             $rows[$userId]['are_comenzi'] = true;
             $pret = $order['pret'];
             $qty = (int) $order['cantitate'];
-            if (!is_numeric($pret) || (float) $pret <= 0 || $qty < 1) {
+            if (!is_numeric($pret) || (float) $pret < 0 || $qty < 1) {
                 $rows[$userId]['complet'] = false;
                 continue;
             }

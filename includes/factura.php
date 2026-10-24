@@ -29,7 +29,7 @@ function invoice_table(array $lines): array
             continue;
         }
         $pret = $line['pret'] ?? null;
-        $pretBani = (is_numeric($pret) && (float) $pret > 0) ? (int) round(((float) $pret) * 100) : null;
+        $pretBani = (is_numeric($pret) && (float) $pret >= 0) ? (int) round(((float) $pret) * 100) : null;
         $sum = $pretBani === null ? null : $pretBani * $qty;
         if ($sum === null) {
             $complete = false;
