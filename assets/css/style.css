@@ -11,7 +11,7 @@
     --line: rgba(18, 48, 40, 0.1);
     --card: #fffcf8;
     --shadow: 0 12px 40px rgba(18, 48, 40, 0.08);
-    --header: 108px;
+    --header: 124px;
     --radius: 18px;
     --radius-sm: 12px;
     --font-sans: "Source Sans 3", "Segoe UI", sans-serif;
@@ -149,7 +149,7 @@ button, input, select, textarea { font: inherit; }
 }
 
 .logo img {
-    height: 96px;
+    height: 118px;
     width: auto;
     display: block;
 }
@@ -2036,10 +2036,10 @@ html[lang="ru"] .script {
 }
 
 @media (max-width: 860px) {
-    :root { --header: 80px; }
+    :root { --header: 96px; }
 
-    .logo img { height: 80px; }
-    .page-acasa .logo img { height: 104px; }
+    .logo img { height: 96px; }
+    .page-acasa .logo img { height: 124px; }
 
     .nav-toggle { display: inline-flex; }
 
@@ -2207,11 +2207,11 @@ html[lang="ru"] .script {
 }
 
 .page-acasa .logo img {
-    height: 132px;
+    height: 160px;
 }
 
 .page-acasa .site-header .header-inner {
-    min-height: 96px;
+    min-height: 112px;
     align-items: center;
 }
 
