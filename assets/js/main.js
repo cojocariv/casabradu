@@ -168,6 +168,7 @@
                 blurb.hidden = text === '';
             }
             var imgPath = selected.getAttribute('data-image');
+            var hoverPath = selected.getAttribute('data-hover-image') || imgPath;
             if (!imgPath) {
                 return;
             }
@@ -175,9 +176,22 @@
             if (!card) {
                 return;
             }
-            var photo = card.querySelector('.shop-item-photo img, .product-card-photo img, .catalog-photo img');
-            if (photo) {
-                photo.src = imgPath;
+            var photoWrap = card.querySelector('.shop-item-photo');
+            var main = card.querySelector('[data-shop-main], .shop-photo-main, .product-card-photo img, .catalog-photo img');
+            var hover = card.querySelector('[data-shop-hover], .shop-photo-hover');
+            if (main) {
+                main.src = imgPath;
+            }
+            if (hover && hoverPath) {
+                hover.src = hoverPath;
+                if (photoWrap) {
+                    photoWrap.classList.toggle('has-hover', hoverPath !== imgPath);
+                }
+            } else if (!hover) {
+                var photo = card.querySelector('.shop-item-photo img, .product-card-photo img, .catalog-photo img');
+                if (photo) {
+                    photo.src = imgPath;
+                }
             }
         }
         options.forEach(function (option) {

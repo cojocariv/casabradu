@@ -70,6 +70,6 @@
         </button>
     </div>
 <?php endif; ?>
-<script src="<?= e(asset('assets/js/main.js')) ?>?v=8" defer></script>
+<script src="<?= e(asset('assets/js/main.js')) ?>?v=9" defer></script>
 </body>
 </html>

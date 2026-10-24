@@ -857,6 +857,7 @@ html[lang="ru"] .script {
 }
 
 .shop-item-photo {
+    position: relative;
     aspect-ratio: 1;
     background: #ece7df;
     overflow: hidden;
@@ -868,11 +869,40 @@ html[lang="ru"] .script {
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.45s ease;
+    transition: transform 0.45s ease, opacity 0.35s ease;
+}
+
+.shop-item-photo.has-hover .shop-photo-main,
+.shop-item-photo.has-hover .shop-photo-hover {
+    transition: opacity 0.35s ease, transform 0.45s ease;
+}
+
+.shop-item-photo.has-hover .shop-photo-hover {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
 }
 
 .shop-item:hover .shop-item-photo img {
     transform: scale(1.04);
+}
+
+.shop-item:hover .shop-item-photo.has-hover .shop-photo-main {
+    opacity: 0;
+}
+
+.shop-item:hover .shop-item-photo.has-hover .shop-photo-hover {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .shop-item:hover .shop-item-photo.has-hover .shop-photo-main {
+        opacity: 1;
+    }
+
+    .shop-item:hover .shop-item-photo.has-hover .shop-photo-hover {
+        opacity: 0;
+    }
 }
 
 .shop-item-body {

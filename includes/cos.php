@@ -47,6 +47,7 @@ function product_choices(array $item): array
                 'flavor' => (string) ($variant['flavor'] ?? ''),
                 'pack' => (string) ($variant['pack'] ?? ''),
                 'image' => (string) ($variant['image'] ?? ''),
+                'hover_image' => (string) ($variant['hover_image'] ?? ''),
                 'offer_image' => (string) ($variant['offer_image'] ?? ''),
             ];
         }
@@ -71,6 +72,7 @@ function product_choices(array $item): array
                 'label' => (string) ($option['label'] ?? ''),
                 'pret' => $option['pret'] ?? null,
                 'image' => (string) ($option['image'] ?? ''),
+                'hover_image' => (string) ($option['hover_image'] ?? ''),
                 'offer_image' => (string) ($option['offer_image'] ?? ''),
             ];
         }
@@ -81,6 +83,7 @@ function product_choices(array $item): array
             'label' => '',
             'pret' => $item['pret'] ?? null,
             'image' => (string) ($item['image'] ?? ''),
+            'hover_image' => (string) ($item['hover_image'] ?? ''),
             'offer_image' => (string) ($item['offer_image'] ?? ''),
         ];
     }
@@ -96,6 +99,28 @@ function product_choice_image(array $item, array $choice): string
     }
 
     return (string) ($item['image'] ?? '');
+}
+
+function product_choice_hover_image(array $item, array $choice): string
+{
+    $hover = trim((string) ($choice['hover_image'] ?? ''));
+    if ($hover !== '') {
+        return $hover;
+    }
+    $offer = trim((string) ($choice['offer_image'] ?? ''));
+    if ($offer !== '') {
+        return $offer;
+    }
+    $itemHover = trim((string) ($item['hover_image'] ?? ''));
+    if ($itemHover !== '') {
+        return $itemHover;
+    }
+    $itemOffer = trim((string) ($item['offer_image'] ?? ''));
+    if ($itemOffer !== '') {
+        return $itemOffer;
+    }
+
+    return product_choice_image($item, $choice);
 }
 
 function product_choice_offer_image(array $item, array $choice): string
@@ -363,6 +388,7 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
                 <?php foreach ($choices as $choice): ?>
                     <?php
                     $choiceImage = product_choice_image($item, $choice);
+                    $choiceHover = product_choice_hover_image($item, $choice);
                     $isDefault = (string) ($choice['key'] ?? '') === (string) ($selected['key'] ?? '');
                     $choiceBlurb = '';
                     foreach ($flavors as $flavor) {
@@ -373,7 +399,7 @@ function buy_form(string $slug, string $back, string $buttonClass = 'btn btn-dar
                     }
                     ?>
                     <label class="buy-option">
-                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"<?= $choiceImage !== '' ? ' data-image="' . e(asset($choiceImage)) . '"' : '' ?><?= $choiceBlurb !== '' ? ' data-blurb="' . e(t($choiceBlurb)) . '"' : '' ?><?= $isDefault ? ' checked' : '' ?>>
+                        <input type="radio" name="optiune" value="<?= e($choice['key']) ?>" data-price="<?= e(product_price_label($choice['pret'] ?? null)) ?>"<?= $choiceImage !== '' ? ' data-image="' . e(asset($choiceImage)) . '"' : '' ?><?= $choiceHover !== '' ? ' data-hover-image="' . e(asset($choiceHover)) . '"' : '' ?><?= $choiceBlurb !== '' ? ' data-blurb="' . e(t($choiceBlurb)) . '"' : '' ?><?= $isDefault ? ' checked' : '' ?>>
                         <span><?= tr($choice['label']) ?></span>
                     </label>
                 <?php endforeach; ?>
