@@ -2230,39 +2230,56 @@ html[lang="ru"] .script {
     to { transform: scale(1.1) translate3d(-0.8%, -0.5%, 0); }
 }
 
+.page-acasa .site-header:not(.is-scrolled) .lang-switch {
+    background: rgba(255, 252, 248, 0.92);
+    border-color: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
 .page-acasa .site-header:not(.is-scrolled) .lang-switch a {
-    color: rgba(247, 243, 234, 0.92);
+    color: var(--forest-2);
 }
 
 .page-acasa .site-header:not(.is-scrolled) .lang-switch a[aria-current="true"] {
-    background: #fff;
-    color: var(--forest);
+    background: var(--forest-2);
+    color: #f6f1e6;
+}
+
+.page-acasa .site-header:not(.is-scrolled) .nav-links {
+    background: rgba(255, 252, 248, 0.92);
+    border-color: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav-links a {
-    color: #f7f3ea;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    color: var(--forest-2);
+    text-shadow: none;
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav-links a:hover {
-    background: rgba(255, 255, 255, 0.14);
-    color: #fff;
+    background: rgba(18, 48, 40, 0.08);
+    color: var(--forest);
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav-links a[aria-current="page"] {
-    background: #fff;
-    color: var(--forest);
+    background: var(--forest-2);
+    color: #f6f1e6;
     box-shadow: none;
     text-shadow: none;
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav-toggle {
-    background: transparent;
-    border-color: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 252, 248, 0.92);
+    border-color: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav-toggle .bar {
-    background: #f7f3ea;
+    background: var(--forest-2);
 }
 
 .page-acasa .site-header:not(.is-scrolled) .nav .btn-dark {
