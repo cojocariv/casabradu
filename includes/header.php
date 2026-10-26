@@ -65,7 +65,7 @@ $schema = seo_graph($page, $fullTitle, $pageDescription, is_array($seoItems) ? $
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Marck+Script&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= e(asset('assets/css/style.css')) ?>?v=46">
+    <link rel="stylesheet" href="<?= e(asset('assets/css/style.css')) ?>?v=47">
     <?php if ($page === 'acasa'): ?>
         <link rel="preload" as="image" href="<?= e(asset('assets/img/hero-cafea.jpg')) ?>?v=2">
     <?php endif; ?>

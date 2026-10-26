@@ -1043,6 +1043,14 @@ html[lang="ru"] .script {
 
 .story p { color: var(--muted); max-width: 48ch; }
 
+.story .script {
+    color: #6a8a5e;
+    max-width: none;
+    margin: 4px 0 18px;
+    font-size: clamp(1.85rem, 3.2vw, 2.55rem);
+    line-height: 1.15;
+}
+
 .story-photo img,
 .split-photo img,
 .catalog-photo img {

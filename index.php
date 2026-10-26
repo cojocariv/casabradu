@@ -90,8 +90,10 @@ require __DIR__ . '/includes/header.php';
         <div class="story reveal">
             <div>
                 <p class="kicker"><?= tr('Povestea noastră') ?></p>
-                <h2><?= tr('Mai mult decât cafea, un drum din Italia.') ?></h2>
-                <p><?= tr('Casa Bradu Caffè aduce din Italia cafea artizanală și o livrează în toată țara, în Republica Moldova. Cialde, capsule și boabe, alese pentru aromă. Arabica dă finețea, Robusta ține corpul și crema. Raportul dintre ele este ideal în fiecare ceașcă.') ?></p>
+                <h2><?= tr('Gustul bun are o casă.') ?></h2>
+                <p><?= tr('Rețeta artizanală poartă semnătura Casei Bradu. Cafeaua este prăjită și ambalată cu grijă în Italia — mereu proaspătă, echilibrată și cu un gust aparte. Pentru diminețile de acasă, pauzele de la birou și obiceiul drag de a sta la povești în jurul unei cafele bune.') ?></p>
+                <p><?= tr('De patru ani, rețeta noastră este îndrăgită de clienții care ne-au rămas aproape. Astăzi, ducem povestea Casei Bradu mai departe, păstrând aceeași grijă pentru gust, pentru oameni și pentru lucrurile făcute temeinic.') ?></p>
+                <p class="script"><?= tr('Din casa noastră, în ritualul tău.') ?></p>
                 <a class="btn btn-dark" href="<?= e(url('despre.php')) ?>"><?= tr('Citește povestea') ?></a>
             </div>
             <div class="story-photo">
