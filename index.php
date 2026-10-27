@@ -12,10 +12,13 @@ $iconica = product_by_slug('iconica');
 
 $page = 'acasa';
 $pageTitle = 'Cafea artizanală din Italia';
-$pageDescription = SITE_DESCRIPTION;
+$pageDescription = 'Cafea din Italia. La procurare, aparatul e gratuit în folosință. Livrare în toată Republica Moldova.';
 $pageImage = 'assets/img/hero-cafea.jpg';
 $pageImageAlt = 'Ceașcă de cafea Casa Bradu Caffè, cu boabe prăjite';
 $seoItems = seo_product_items($products);
+$birouWhatsApp = site_whatsapp_digits() !== ''
+    ? site_whatsapp_url(t('Bună! Vreau ofertă pentru birou: cafea + aparat gratuit în folosință.'))
+    : '';
 require __DIR__ . '/includes/header.php';
 ?>
 
@@ -24,11 +27,11 @@ require __DIR__ . '/includes/header.php';
         <img src="<?= e(asset('assets/img/hero-cafea.jpg')) ?>?v=2" alt="<?= tr('Ceașcă de cafea cu lapte, boabe prăjite și frunze verzi') ?>" width="1600" height="1067">
     </div>
     <div class="wrap hero-content reveal">
-        <h1><?= tr('Cafeaua bună aduce') ?> <span class="script"><?= tr('zile mai fine') ?></span></h1>
-        <p class="lede"><?= tr(SITE_DESCRIPTION) ?></p>
+        <h1 class="hero-sell"><?= tr('Cafea din Italia. Aparat gratuit în folosință.') ?></h1>
+        <p class="lede"><?= tr('La procurarea cafelei de la Casa Bradu, aparatul e 0 lei în folosință. Livrăm în toată Moldova — acasă sau la birou.') ?></p>
         <div class="hero-actions">
-            <a class="btn btn-light" href="#produse"><?= tr('Vezi selecția') ?></a>
-            <a class="btn btn-ghost" href="<?= e(url('contact.php')) ?>"><?= tr('Solicită ofertă') ?></a>
+            <a class="btn btn-light" href="#pachete"><?= tr('Alege pachetul') ?></a>
+            <a class="btn btn-ghost" href="#produse"><?= tr('Comandă cafea') ?></a>
         </div>
     </div>
 </section>
@@ -57,6 +60,67 @@ require __DIR__ . '/includes/header.php';
                 <span><?= tr('Aparat gratuit') ?></span>
             </li>
         </ul>
+    </div>
+</section>
+
+<section class="section section-packs" id="pachete">
+    <div class="wrap">
+        <div class="section-head reveal">
+            <p class="kicker"><?= tr('Cum începi') ?></p>
+            <h2><?= tr('Trei drumuri clare spre comandă.') ?></h2>
+            <p class="section-lead"><?= tr('Alegi ce ți se potrivește — noi ne ocupăm de rest.') ?></p>
+        </div>
+        <div class="packs-grid">
+            <article class="pack reveal">
+                <p class="pack-tag"><?= tr('Pentru acasă') ?></p>
+                <h3><?= tr('Starter casă') ?></h3>
+                <p><?= tr('Aparat Iconica în folosință (0 lei) + cialde Intenso. Espresso acasă, fără investiție în aparat.') ?></p>
+                <ul class="pack-points">
+                    <li><?= tr('Aparat gratuit în folosință') ?></li>
+                    <li><?= tr('Cialde Intenso') ?></li>
+                    <li><?= tr('Livrare în Moldova') ?></li>
+                </ul>
+                <form class="pack-form" method="post" action="<?= e(url('cos.php')) ?>">
+                    <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                    <input type="hidden" name="actiune" value="pachet">
+                    <input type="hidden" name="pachet" value="casa">
+                    <input type="hidden" name="inapoi" value="index.php">
+                    <button class="btn btn-dark" type="submit"><?= tr('Adaugă în coș') ?></button>
+                </form>
+            </article>
+            <article class="pack pack-featured reveal">
+                <p class="pack-tag"><?= tr('Pentru birou') ?></p>
+                <h3><?= tr('Cafea la birou') ?></h3>
+                <p><?= tr('Consum lunar pe măsura echipei, aparat în folosință, factură și livrare — fără bătaie de cap.') ?></p>
+                <ul class="pack-points">
+                    <li><?= tr('Aparat 0 lei în folosință') ?></li>
+                    <li><?= tr('Cantitate pe măsura biroului') ?></li>
+                    <li><?= tr('Factură / transfer') ?></li>
+                </ul>
+                <?php if ($birouWhatsApp !== ''): ?>
+                    <a class="btn btn-dark" href="<?= e($birouWhatsApp) ?>" target="_blank" rel="noopener noreferrer"><?= tr('Ofertă pe WhatsApp') ?></a>
+                <?php else: ?>
+                    <a class="btn btn-dark" href="#oferta"><?= tr('Solicită ofertă birou') ?></a>
+                <?php endif; ?>
+            </article>
+            <article class="pack reveal">
+                <p class="pack-tag"><?= tr('Ai deja aparat') ?></p>
+                <h3><?= tr('Doar cafea') ?></h3>
+                <p><?= tr('Refill rapid: cialde Intenso + boabe Intenso 500 g. Compleezi stocul și gata.') ?></p>
+                <ul class="pack-points">
+                    <li><?= tr('Cialde Intenso') ?></li>
+                    <li><?= tr('Boabe Intenso 500 g') ?></li>
+                    <li><?= tr('Comandă din nou, oricând') ?></li>
+                </ul>
+                <form class="pack-form" method="post" action="<?= e(url('cos.php')) ?>">
+                    <input type="hidden" name="csrf" value="<?= e((string) ($_SESSION['csrf'] ?? '')) ?>">
+                    <input type="hidden" name="actiune" value="pachet">
+                    <input type="hidden" name="pachet" value="refill">
+                    <input type="hidden" name="inapoi" value="index.php">
+                    <button class="btn btn-dark" type="submit"><?= tr('Adaugă în coș') ?></button>
+                </form>
+            </article>
+        </div>
     </div>
 </section>
 

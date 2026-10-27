@@ -273,6 +273,47 @@ function cart_add(string $slug, int $qty, string $option = ''): bool
     return true;
 }
 
+function cart_pack_defs(): array
+{
+    return [
+        'casa' => [
+            'label' => 'Pachet Acasă',
+            'flash' => 'Pachetul Acasă a fost adăugat în coș: aparat în folosință + cafea.',
+            'lines' => [
+                ['slug' => 'iconica', 'option' => 'comodat', 'qty' => 1],
+                ['slug' => 'cialde', 'option' => 'intensocutie', 'qty' => 1],
+            ],
+        ],
+        'refill' => [
+            'label' => 'Pachet Refill',
+            'flash' => 'Pachetul Refill a fost adăugat în coș.',
+            'lines' => [
+                ['slug' => 'cialde', 'option' => 'intensocutie', 'qty' => 1],
+                ['slug' => 'boabe', 'option' => 'intenso', 'qty' => 1],
+            ],
+        ],
+    ];
+}
+
+function cart_add_pack(string $packKey): ?string
+{
+    $packs = cart_pack_defs();
+    if (!isset($packs[$packKey])) {
+        return null;
+    }
+    $added = 0;
+    foreach ($packs[$packKey]['lines'] as $line) {
+        if (cart_add((string) $line['slug'], (int) $line['qty'], (string) $line['option'])) {
+            $added++;
+        }
+    }
+    if ($added < 1) {
+        return null;
+    }
+
+    return (string) $packs[$packKey]['flash'];
+}
+
 function cart_set(array $posted): void
 {
     $cart = [];

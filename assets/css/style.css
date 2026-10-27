@@ -709,6 +709,10 @@ html[lang="ru"] .script {
     line-height: 1.18;
 }
 
+.hero-bleed h1.hero-sell {
+    max-width: 22ch;
+}
+
 .hero-bleed h1 .script {
     display: inline-block;
     margin: 0 0 0 0.15em;
@@ -823,6 +827,116 @@ html[lang="ru"] .script {
 
 .section { padding: 72px 0; }
 .section-tight { padding-top: 10px; }
+
+.section-packs {
+    padding-top: 28px;
+}
+
+.packs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    align-items: stretch;
+}
+
+.pack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px 20px 20px;
+    border-radius: var(--radius);
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+}
+
+.pack h3 {
+    margin: 0;
+    font-size: 1.55rem;
+    line-height: 1.2;
+}
+
+.pack > p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.55;
+}
+
+.pack-tag {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+}
+
+.pack-points {
+    list-style: none;
+    margin: 4px 0 8px;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.pack-points li {
+    position: relative;
+    padding-left: 1.1em;
+    color: var(--forest-2);
+    font-size: 0.94rem;
+    line-height: 1.4;
+}
+
+.pack-points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.4em;
+    height: 0.4em;
+    border-radius: 50%;
+    background: var(--gold);
+}
+
+.pack-form,
+.pack .btn {
+    margin-top: auto;
+}
+
+.pack-featured {
+    background: var(--forest-2);
+    border-color: transparent;
+    color: #f6f1e6;
+    box-shadow: 0 14px 36px rgba(18, 48, 40, 0.22);
+}
+
+.pack-featured .pack-tag {
+    color: var(--gold-soft);
+}
+
+.pack-featured h3 {
+    color: #fff;
+}
+
+.pack-featured > p,
+.pack-featured .pack-points li {
+    color: rgba(246, 241, 230, 0.88);
+}
+
+.pack-featured .pack-points li::before {
+    background: var(--gold-soft);
+}
+
+.pack-featured .btn-dark {
+    background: #fff;
+    color: var(--forest);
+    border-color: transparent;
+}
+
+.pack-featured .btn-dark:hover {
+    background: #fffaf3;
+}
 
 .section-head { text-align: center; margin-bottom: 36px; }
 
@@ -2041,6 +2155,7 @@ html[lang="ru"] .script {
 
 @media (max-width: 980px) {
     .values { grid-template-columns: 1fr 1fr; }
+    .packs-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 860px) {

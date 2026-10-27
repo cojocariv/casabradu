@@ -32,6 +32,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         }
         header('Location: ' . url(cart_return((string) ($_POST['inapoi'] ?? ''))));
         exit;
+    } elseif ($action === 'pachet') {
+        $packKey = text_line((string) ($_POST['pachet'] ?? ''), 20);
+        $flash = cart_add_pack($packKey);
+        if ($flash === null) {
+            flash_set('Pachetul nu a putut fi adăugat în coș.');
+            header('Location: ' . url(cart_return((string) ($_POST['inapoi'] ?? ''))));
+        } else {
+            flash_set($flash);
+            header('Location: ' . url('cos.php'));
+        }
+        exit;
     } elseif ($action === 'actualizeaza') {
         $posted = $_POST['qty'] ?? [];
         if (!is_array($posted)) {
