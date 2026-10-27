@@ -281,15 +281,15 @@ function cart_pack_defs(): array
             'flash' => 'Pachetul Acasă a fost adăugat în coș: aparat în folosință + cafea.',
             'lines' => [
                 ['slug' => 'iconica', 'option' => 'comodat', 'qty' => 1],
-                ['slug' => 'cialde', 'option' => 'intensocutie', 'qty' => 1],
+                ['slug' => 'cialde-intenso', 'option' => 'cutie', 'qty' => 1],
             ],
         ],
         'refill' => [
             'label' => 'Pachet Refill',
             'flash' => 'Pachetul Refill a fost adăugat în coș.',
             'lines' => [
-                ['slug' => 'cialde', 'option' => 'intensocutie', 'qty' => 1],
-                ['slug' => 'boabe', 'option' => 'intenso', 'qty' => 1],
+                ['slug' => 'cialde-intenso', 'option' => 'cutie', 'qty' => 1],
+                ['slug' => 'boabe-intenso', 'option' => '', 'qty' => 1],
             ],
         ],
     ];

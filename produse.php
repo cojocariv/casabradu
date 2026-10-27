@@ -31,16 +31,37 @@ require __DIR__ . '/includes/header.php';
 
 <section class="section">
     <div class="wrap">
+        <?php
+        $filterCats = [];
+        $catLabels = [
+            'cialde' => 'Cialde',
+            'capsule' => 'Capsule',
+            'boabe' => 'Boabe',
+            'pahare' => 'Pahare',
+            'betisoare' => 'Bețișoare',
+        ];
+        foreach ($products as $item) {
+            $cat = (string) ($item['cat'] ?? $item['slug'] ?? '');
+            if ($cat === '' || isset($filterCats[$cat])) {
+                continue;
+            }
+            if (isset($item['cat_label']) && is_string($item['cat_label']) && $item['cat_label'] !== '') {
+                $filterCats[$cat] = $item['cat_label'];
+            } else {
+                $filterCats[$cat] = $catLabels[$cat] ?? (string) ($item['title'] ?? $cat);
+            }
+        }
+        ?>
         <div class="filters" aria-label="<?= tr('Filtrează produsele') ?>">
             <button class="filter is-active" type="button" data-filter="toate"><?= tr('Toate') ?></button>
-            <?php foreach ($products as $item): ?>
-                <button class="filter" type="button" data-filter="<?= e($item['slug']) ?>"><?= tr($item['title']) ?></button>
+            <?php foreach ($filterCats as $catKey => $catLabel): ?>
+                <button class="filter" type="button" data-filter="<?= e($catKey) ?>"><?= tr($catLabel) ?></button>
             <?php endforeach; ?>
         </div>
 
         <div class="shop-grid product-shop">
             <?php foreach ($products as $item): ?>
-                <article class="shop-item reveal" id="<?= e($item['slug']) ?>" data-cat="<?= e($item['slug']) ?>">
+                <article class="shop-item reveal" id="<?= e($item['slug']) ?>" data-cat="<?= e((string) ($item['cat'] ?? $item['slug'])) ?>">
                     <?php
                     $mainImage = (string) ($item['image'] ?? '');
                     $hoverImage = trim((string) ($item['hover_image'] ?? ''));
