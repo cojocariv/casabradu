@@ -69,9 +69,19 @@ require __DIR__ . '/includes/header.php';
         </div>
         <div class="shop-grid">
             <?php foreach ($coffee as $item): ?>
+                <?php
+                $mainImage = (string) ($item['image'] ?? '');
+                $hoverImage = trim((string) ($item['hover_image'] ?? ''));
+                if ($hoverImage === '') {
+                    $hoverImage = trim((string) ($item['offer_image'] ?? ''));
+                }
+                ?>
                 <article class="shop-item reveal">
-                    <div class="shop-item-photo">
-                        <img src="<?= e(asset($item['image'])) ?>" alt="<?= tr($item['alt']) ?>" width="800" height="800">
+                    <div class="shop-item-photo<?= $hoverImage !== '' && $hoverImage !== $mainImage ? ' has-hover' : '' ?>">
+                        <img class="shop-photo-main" src="<?= e(asset($mainImage)) ?>" alt="<?= tr($item['alt']) ?>" width="800" height="800" data-shop-main>
+                        <?php if ($hoverImage !== '' && $hoverImage !== $mainImage): ?>
+                            <img class="shop-photo-hover" src="<?= e(asset($hoverImage)) ?>" alt="" width="800" height="800" data-shop-hover aria-hidden="true">
+                        <?php endif; ?>
                     </div>
                     <div class="shop-item-body">
                         <p class="kicker"><?= tr($item['meta']) ?></p>
