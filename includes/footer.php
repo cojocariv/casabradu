@@ -6,7 +6,7 @@
     <div class="wrap footer-grid">
         <div>
             <a class="brand-lockup" href="<?= e(url()) ?>">
-                <img src="<?= e(asset('assets/img/logo-alb.png?v=5')) ?>" alt="<?= e(SITE_NAME) ?>">
+                <img src="<?= e(asset('assets/img/logo-alb.png?v=6')) ?>" alt="<?= e(SITE_NAME) ?>">
             </a>
             <p><?= tr('Importăm din Italia cafea cu aromă și un raport ideal între Arabica și Robusta. Livrăm cialde, capsule și boabe în toată țara, în Republica Moldova. Oferim aparate în comodat și aparate la vânzare.') ?></p>
         </div>

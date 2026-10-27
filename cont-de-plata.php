@@ -34,7 +34,7 @@ if ($payer['nume'] === '') {
     $payer['nume'] = (string) ($user['nume'] ?? '');
 }
 
-$logo = asset('assets/img/logo.jpg?v=5');
+$logo = asset('assets/img/logo.jpg?v=6');
 $back = url($asAdmin ? 'admin.php' : 'cabinet.php');
 $replyTo = (string) ($order['email'] ?? $user['email'] ?? '');
 if (($order['email'] ?? '') === '' && $replyTo !== '') {
