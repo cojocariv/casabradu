@@ -272,7 +272,7 @@ function product_catalog_items(): array
         'kicker' => 'Compatibile Nespresso',
         'meta' => 'Import Italia',
         'image' => 'assets/img/Marfa/niciola.png',
-        'hover_image' => 'assets/img/Marfa/capsule.png',
+        'hover_image' => 'assets/img/Marfa/caps.png',
         'offer_image' => 'assets/img/Marfa/caps.png',
         'alt' => 'Capsule Nociola Casa Bradu Caffè',
         'short' => 'Capsule compatibile Nespresso: Nociola, Ginseng, Tramonto și Intenso.',
