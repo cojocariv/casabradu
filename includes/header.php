@@ -60,8 +60,8 @@ $schema = seo_graph($page, $fullTitle, $pageDescription, is_array($seoItems) ? $
     <meta name="twitter:title" content="<?= e($fullTitle) ?>">
     <meta name="twitter:description" content="<?= e($pageDescription) ?>">
     <meta name="twitter:image" content="<?= e($ogImage) ?>">
-    <link rel="icon" href="<?= e(asset('assets/img/favicon.jpg')) ?>?v=6" type="image/jpeg">
-    <link rel="apple-touch-icon" href="<?= e(asset('assets/img/favicon.jpg')) ?>?v=6">
+    <link rel="icon" href="<?= e(asset('assets/img/favicon.png')) ?>?v=7" type="image/png">
+    <link rel="apple-touch-icon" href="<?= e(asset('assets/img/favicon-180.png')) ?>?v=7">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Marck+Script&display=swap" rel="stylesheet">
