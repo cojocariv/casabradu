@@ -10,7 +10,7 @@ declare(strict_types=1);
 /** @var string $actPlace */
 /** @var string $back */
 
-$logo = asset('assets/img/logo.jpg?v=4');
+$logo = asset('assets/img/logo.jpg?v=5');
 $totalBani = $table['total'] ?? null;
 $totalWords = is_int($totalBani) ? act_lei_words($totalBani) : '';
 $note = trim((string) ($order['nota'] ?? ''));
