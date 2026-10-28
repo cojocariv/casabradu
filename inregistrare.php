@@ -117,7 +117,7 @@ require __DIR__ . '/includes/header.php';
                 <?php if (isset($errors['parola2'])): ?><small class="field-error"><?= e(t($errors['parola2'])) ?></small><?php endif; ?>
 
                 <button class="btn btn-dark" type="submit"><?= tr('Creează contul') ?></button>
-                <p class="form-note"><?= tr('Folosim datele ca să îți confirmăm comenzile.') ?></p>
+                <p class="form-note"><?= tr('Folosim datele ca să îți confirmăm comenzile. Vezi') ?> <a href="<?= e(url('confidentialitate.php')) ?>"><?= tr('Politica de confidențialitate') ?></a>.</p>
             </form>
         </div>
         <aside class="contact-aside">

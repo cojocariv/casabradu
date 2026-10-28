@@ -383,4 +383,73 @@
             });
         });
     });
+
+    (function initCookieBanner() {
+        var KEY = 'cbc_cookie_consent';
+        var banner = document.getElementById('cookie-banner');
+        var accept = document.getElementById('cookie-accept');
+        var reset = document.getElementById('cookie-reset');
+        var storage = null;
+        try {
+            storage = window.localStorage;
+        } catch (err) {
+            storage = null;
+        }
+
+        function readConsent() {
+            if (!storage) {
+                return null;
+            }
+            try {
+                return storage.getItem(KEY);
+            } catch (err) {
+                return null;
+            }
+        }
+
+        function writeConsent(value) {
+            if (!storage) {
+                return;
+            }
+            try {
+                if (value === null) {
+                    storage.removeItem(KEY);
+                } else {
+                    storage.setItem(KEY, value);
+                }
+            } catch (err) {
+                /* ignore quota / private mode */
+            }
+        }
+
+        function showBanner(show) {
+            if (!banner) {
+                return;
+            }
+            banner.hidden = !show;
+            document.body.classList.toggle('has-cookie-banner', show);
+        }
+
+        if (banner && !readConsent()) {
+            showBanner(true);
+        }
+
+        if (accept) {
+            accept.addEventListener('click', function () {
+                writeConsent(new Date().toISOString());
+                showBanner(false);
+            });
+        }
+
+        if (reset) {
+            reset.hidden = false;
+            reset.addEventListener('click', function () {
+                writeConsent(null);
+                showBanner(true);
+                if (banner) {
+                    banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        }
+    })();
 })();

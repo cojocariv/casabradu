@@ -47,5 +47,5 @@ $theme = $theme ?? 'light';
     <?php if (isset($errors['mesaj'])): ?><small class="field-error" id="mesaj-error"><?= e(t($errors['mesaj'])) ?></small><?php endif; ?>
 
     <button class="btn btn-send" type="submit"><?= tr('Trimite') ?></button>
-    <p class="form-note"><?= tr('Folosim datele doar ca să îți răspundem.') ?></p>
+    <p class="form-note"><?= tr('Folosim datele doar ca să îți răspundem. Vezi') ?> <a href="<?= e(url('confidentialitate.php')) ?>"><?= tr('Politica de confidențialitate') ?></a>.</p>
 </form>

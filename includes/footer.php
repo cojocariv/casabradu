@@ -38,9 +38,30 @@
     </div>
     <div class="wrap legal">
         <p>© <?= date('Y') ?> <?= e(SITE_LEGAL) ?>. <?= tr('Toate drepturile rezervate.') ?></p>
-        <p><?= e(SITE_DOMAIN) ?></p>
+        <p class="legal-links">
+            <a href="<?= e(url('confidentialitate.php')) ?>"><?= tr('Confidențialitate') ?></a>
+            <span aria-hidden="true">·</span>
+            <a href="<?= e(url('cookies.php')) ?>"><?= tr('Cookies') ?></a>
+            <span aria-hidden="true">·</span>
+            <span><?= e(SITE_DOMAIN) ?></span>
+        </p>
     </div>
 </footer>
+<?php if (($page ?? '') !== 'admin'): ?>
+    <div class="cookie-banner" id="cookie-banner" hidden role="dialog" aria-labelledby="cookie-banner-title" aria-describedby="cookie-banner-text">
+        <div class="cookie-banner-inner wrap">
+            <div class="cookie-banner-copy">
+                <p class="cookie-banner-title" id="cookie-banner-title"><?= tr('Cookie-uri pe site') ?></p>
+                <p id="cookie-banner-text"><?= tr('Folosim cookie-uri necesare pentru coș, cont și securitate. Detalii în') ?>
+                    <a href="<?= e(url('cookies.php')) ?>"><?= tr('Politica de cookies') ?></a>
+                    <?= tr('și') ?>
+                    <a href="<?= e(url('confidentialitate.php')) ?>"><?= tr('Politica de confidențialitate') ?></a>.
+                </p>
+            </div>
+            <button type="button" class="btn btn-dark btn-sm" id="cookie-accept"><?= tr('Accept') ?></button>
+        </div>
+    </div>
+<?php endif; ?>
 <?php if (($page ?? '') !== 'admin' && site_whatsapp_digits() !== ''): ?>
     <?php
     $waDefault = t('Bună! Vreau să aflu mai multe despre cafeaua Casa Bradu Caffè.');
@@ -70,6 +91,6 @@
         </button>
     </div>
 <?php endif; ?>
-<script src="<?= e(asset('assets/js/main.js')) ?>?v=9" defer></script>
+<script src="<?= e(asset('assets/js/main.js')) ?>?v=10" defer></script>
 </body>
 </html>

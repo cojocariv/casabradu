@@ -160,6 +160,8 @@ function breadcrumb_nav(string $page): string
         'aparate' => 'Aparate',
         'despre' => 'Despre',
         'contact' => 'Contact',
+        'confidentialitate' => 'Confidențialitate',
+        'cookies' => 'Cookies',
     ];
 
     if (!isset($labels[$page])) {
