@@ -632,6 +632,50 @@ function product_catalog_items(): array
             ['key' => 'noi', 'label' => 'Aparate la vânzare', 'pret' => 4999],
         ],
     ],
+    [
+        'slug' => 'capucinator-negru',
+        'kind' => 'aparat',
+        'title' => 'Capucinator Aroma Negru',
+        'kicker' => 'Spumă de lapte',
+        'meta' => 'La vânzare',
+        'image' => 'assets/img/Aparate/capucinator-negru.webp',
+        'offer_image' => 'assets/img/Aparate/capucinator-negru.webp',
+        'alt' => 'Capucinator Aroma negru, pentru spumă de lapte',
+        'short' => 'Capucinator electric Aroma, carcasă neagră: spumă densă sau aerată, lapte cald sau spumă rece.',
+        'long' => 'Capucinator Aroma Coffee Machines, variantă neagră, cu carafă din sticlă și panou tactil.',
+        'details' => [
+            'Capucinator electric Aroma Coffee Machines, în variantă neagră. Carafa din sticlă (până la 500 ml pentru încălzire, 250 ml pentru spumă) stă pe baza motorizată cu panou tactil.',
+            'Programe pentru spumă densă, spumă aerată, lapte cald și spumă rece — potrivite pentru cappuccino, latte și băuturi pe bază de lapte, acasă sau la birou.',
+        ],
+        'points' => [
+            'Carcasă neagră, carafă din sticlă',
+            'Spumă caldă densă sau aerată',
+            'Lapte cald și spumă rece',
+        ],
+        'pret' => 1800,
+    ],
+    [
+        'slug' => 'capucinator-alb',
+        'kind' => 'aparat',
+        'title' => 'Capucinator Aroma Alb',
+        'kicker' => 'Spumă de lapte',
+        'meta' => 'La vânzare',
+        'image' => 'assets/img/Aparate/capucinator-alb.webp',
+        'offer_image' => 'assets/img/Aparate/capucinator-alb.webp',
+        'alt' => 'Capucinator Aroma alb, pentru spumă de lapte',
+        'short' => 'Capucinator electric Aroma, carcasă albă: spumă densă sau aerată, lapte cald sau spumă rece.',
+        'long' => 'Capucinator Aroma Coffee Machines, variantă albă, cu carafă din sticlă și panou tactil.',
+        'details' => [
+            'Capucinator electric Aroma Coffee Machines, în variantă albă. Carafa din sticlă (până la 500 ml pentru încălzire, 250 ml pentru spumă) stă pe baza motorizată cu panou tactil.',
+            'Programe pentru spumă densă, spumă aerată, lapte cald și spumă rece — potrivite pentru cappuccino, latte și băuturi pe bază de lapte, acasă sau la birou.',
+        ],
+        'points' => [
+            'Carcasă albă, carafă din sticlă',
+            'Spumă caldă densă sau aerată',
+            'Lapte cald și spumă rece',
+        ],
+        'pret' => 1800,
+    ],
     ];
 }
 
