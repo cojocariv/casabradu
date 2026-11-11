@@ -718,4 +718,6 @@ return [
     'Carcasă albă, carafă din sticlă' => 'Белый корпус, стеклянный кувшин',
     'Spumă caldă densă sau aerată' => 'Горячая плотная или воздушная пена',
     'Lapte cald și spumă rece' => 'Тёплое молоко и холодная пена',
+    'Ofertă aparat gratuit' => 'Предложение: бесплатный аппарат',
+    'La 2 cutii de cialde lunar, aparatul de cafea se oferă gratis în comodat' => 'При покупке 2 коробок чалд в месяц кофемашина предоставляется бесплатно в пользование',
 ];

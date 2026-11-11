@@ -124,6 +124,14 @@ require __DIR__ . '/includes/header.php';
     </div>
 </section>
 
+<section class="section section-poster" id="oferta-comodat" aria-label="<?= tr('Ofertă aparat gratuit') ?>">
+    <div class="wrap">
+        <a class="home-poster reveal" href="<?= e(url('aparate.php')) ?>">
+            <img src="<?= e(asset('assets/img/poster-comodat.jpg')) ?>?v=1" alt="<?= tr('La 2 cutii de cialde lunar, aparatul de cafea se oferă gratis în comodat') ?>" width="819" height="1024" loading="lazy">
+        </a>
+    </div>
+</section>
+
 <section class="section" id="produse">
     <div class="wrap">
         <div class="section-head reveal">

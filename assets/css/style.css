@@ -873,6 +873,32 @@ html[lang="ru"] .script {
 .section { padding: 72px 0; }
 .section-tight { padding-top: 10px; }
 
+.section-poster {
+    padding-top: 28px;
+    padding-bottom: 28px;
+}
+
+.home-poster {
+    display: block;
+    max-width: 920px;
+    margin: 0 auto;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(18, 48, 40, 0.14);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-poster img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.home-poster:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 22px 48px rgba(18, 48, 40, 0.18);
+}
+
 .section-packs {
     padding-top: 28px;
 }
