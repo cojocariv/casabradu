@@ -44,13 +44,21 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 $from = crm_text((string) ($_GET['de_la'] ?? date('Y-m-01')), 10);
 $to = crm_text((string) ($_GET['pana_la'] ?? date('Y-m-d')), 10);
 $q = crm_text((string) ($_GET['q'] ?? ''), 80);
-$rows = crm_sales_list($from, $to, $q);
+$tipPlata = crm_text((string) ($_GET['tip_plata'] ?? ''), 20);
+$rows = crm_sales_list($from, $to, $q, $tipPlata);
 
 $sumTotal = 0.0;
 $sumCash = 0.0;
+$sumOficial = 0.0;
+$sumNeoficial = 0.0;
 foreach ($rows as $row) {
     if ($row['total'] !== null) {
         $sumTotal += (float) $row['total'];
+        if ((string) ($row['tip_plata'] ?? '') === 'neoficiala') {
+            $sumNeoficial += (float) $row['total'];
+        } else {
+            $sumOficial += (float) $row['total'];
+        }
     }
     if ($row['cash'] !== null) {
         $sumCash += (float) $row['cash'];
@@ -107,8 +115,15 @@ crm_header('Vânzări', 'vanzari');
             <label>Cutii
                 <input name="cutii" value="<?= crm_e((string) ($_POST['cutii'] ?? '1')) ?>">
             </label>
-            <label>Plată / consumabile
-                <input name="plata" maxlength="80" placeholder="ff + transfer / fara cec" value="<?= crm_e((string) ($_POST['plata'] ?? '')) ?>">
+            <label>Tip plată *
+                <select name="tip_plata" required>
+                    <?php foreach (crm_tip_plata_options() as $key => $label): ?>
+                        <option value="<?= crm_e($key) ?>"<?= ((string) ($_POST['tip_plata'] ?? 'oficiala') === $key) ? ' selected' : '' ?>><?= crm_e($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label>Detaliu plată
+                <input name="plata" maxlength="80" placeholder="ff + transfer / fara cec / cash" value="<?= crm_e((string) ($_POST['plata'] ?? '')) ?>">
             </label>
             <label>Total
                 <input name="total" value="<?= crm_e((string) ($_POST['total'] ?? '')) ?>">
@@ -138,11 +153,19 @@ crm_header('Vânzări', 'vanzari');
     <form class="crm-toolbar" method="get" action="<?= crm_e(crm_url('vanzari.php')) ?>">
         <label>De la <input type="date" name="de_la" value="<?= crm_e($from) ?>"></label>
         <label>Până la <input type="date" name="pana_la" value="<?= crm_e($to) ?>"></label>
+        <select name="tip_plata">
+            <option value="">Toate plățile</option>
+            <?php foreach (crm_tip_plata_options() as $key => $label): ?>
+                <option value="<?= crm_e($key) ?>"<?= $tipPlata === $key ? ' selected' : '' ?>><?= crm_e($label) ?></option>
+            <?php endforeach; ?>
+        </select>
         <input type="search" name="q" placeholder="Caută…" value="<?= crm_e($q) ?>">
         <button class="crm-btn crm-btn-line" type="submit">Filtrează</button>
     </form>
     <p class="crm-muted">
-        Total filtrat: <strong><?= crm_e(crm_money_format($sumTotal)) ?></strong>
+        Total: <strong><?= crm_e(crm_money_format($sumTotal)) ?></strong>
+        · Oficial: <strong><?= crm_e(crm_money_format($sumOficial)) ?></strong>
+        · Neoficial: <strong><?= crm_e(crm_money_format($sumNeoficial)) ?></strong>
         · Cash: <strong><?= crm_e(crm_money_format($sumCash)) ?></strong>
         · <?= count($rows) ?> înregistrări
     </p>
@@ -156,7 +179,8 @@ crm_header('Vânzări', 'vanzari');
                     <th>Telefon</th>
                     <th>Produs</th>
                     <th>Cutii</th>
-                    <th>Plată</th>
+                    <th>Tip plată</th>
+                    <th>Detaliu</th>
                     <th>Total</th>
                     <th>Preț spec.</th>
                     <th>Cash</th>
@@ -166,9 +190,10 @@ crm_header('Vânzări', 'vanzari');
             </thead>
             <tbody>
             <?php if ($rows === []): ?>
-                <tr><td colspan="12" class="crm-muted">Nicio vânzare pe perioada selectată.</td></tr>
+                <tr><td colspan="13" class="crm-muted">Nicio vânzare pe perioada selectată.</td></tr>
             <?php else: ?>
                 <?php foreach ($rows as $sale): ?>
+                    <?php $tp = (string) ($sale['tip_plata'] ?? 'oficiala'); ?>
                     <tr>
                         <td><?= crm_e((string) $sale['la']) ?></td>
                         <td>
@@ -184,6 +209,7 @@ crm_header('Vânzări', 'vanzari');
                         <td><?= crm_e((string) $sale['telefon']) ?></td>
                         <td><?= crm_e((string) $sale['produs']) ?></td>
                         <td><?= crm_e(rtrim(rtrim(number_format((float) $sale['cutii'], 2, ',', ' '), '0'), ',')) ?></td>
+                        <td><span class="crm-badge crm-badge-<?= $tp === 'neoficiala' ? 'neoficiala' : 'oficiala' ?>"><?= crm_e(crm_tip_plata_label($tp)) ?></span></td>
                         <td><?= crm_e((string) $sale['plata']) ?></td>
                         <td><?= crm_e(crm_money_format($sale['total'] !== null ? (float) $sale['total'] : null)) ?></td>
                         <td><?= crm_e(crm_money_format($sale['pret_special'] !== null ? (float) $sale['pret_special'] : null)) ?></td>

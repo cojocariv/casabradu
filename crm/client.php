@@ -209,8 +209,15 @@ crm_header((string) $client['companie'], 'clienti');
             <label>Cutii / cantitate
                 <input name="cutii" value="1">
             </label>
-            <label>Plată / consumabile
-                <input name="plata" maxlength="80" placeholder="ff + transfer / fara cec">
+            <label>Tip plată *
+                <select name="tip_plata" required>
+                    <?php foreach (crm_tip_plata_options() as $key => $label): ?>
+                        <option value="<?= crm_e($key) ?>"><?= crm_e($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label>Detaliu plată
+                <input name="plata" maxlength="80" placeholder="ff + transfer / fara cec / cash">
             </label>
             <label>Total
                 <input name="total" placeholder="3600">
@@ -237,7 +244,8 @@ crm_header((string) $client['companie'], 'clienti');
                     <th>Data</th>
                     <th>Produs</th>
                     <th>Cutii</th>
-                    <th>Plată</th>
+                    <th>Tip plată</th>
+                    <th>Detaliu</th>
                     <th>Total</th>
                     <th>Cash</th>
                     <th>Notă</th>
@@ -245,13 +253,15 @@ crm_header((string) $client['companie'], 'clienti');
             </thead>
             <tbody>
             <?php if ($sales === []): ?>
-                <tr><td colspan="7" class="crm-muted">Nicio vânzare pentru acest client.</td></tr>
+                <tr><td colspan="8" class="crm-muted">Nicio vânzare pentru acest client.</td></tr>
             <?php else: ?>
                 <?php foreach ($sales as $sale): ?>
+                    <?php $tp = (string) ($sale['tip_plata'] ?? 'oficiala'); ?>
                     <tr>
                         <td><?= crm_e((string) $sale['la']) ?></td>
                         <td><?= crm_e((string) $sale['produs']) ?></td>
                         <td><?= crm_e(rtrim(rtrim(number_format((float) $sale['cutii'], 2, ',', ' '), '0'), ',')) ?></td>
+                        <td><span class="crm-badge crm-badge-<?= $tp === 'neoficiala' ? 'neoficiala' : 'oficiala' ?>"><?= crm_e(crm_tip_plata_label($tp)) ?></span></td>
                         <td><?= crm_e((string) $sale['plata']) ?></td>
                         <td><?= crm_e(crm_money_format($sale['total'] !== null ? (float) $sale['total'] : null)) ?></td>
                         <td><?= crm_e(crm_money_format($sale['cash'] !== null ? (float) $sale['cash'] : null)) ?></td>

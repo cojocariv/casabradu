@@ -97,6 +97,21 @@ function crm_produs_options(): array
     ];
 }
 
+function crm_tip_plata_options(): array
+{
+    return [
+        'oficiala' => 'Oficială',
+        'neoficiala' => 'Neoficială',
+    ];
+}
+
+function crm_tip_plata_label(string $tip): string
+{
+    $labels = crm_tip_plata_options();
+
+    return $labels[$tip] ?? ($tip !== '' ? $tip : '—');
+}
+
 function crm_aparat_tipuri(): array
 {
     return [

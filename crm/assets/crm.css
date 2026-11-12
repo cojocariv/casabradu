@@ -109,7 +109,7 @@ a { color: var(--forest-2); }
 
 .crm-stats {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 20px;
 }
@@ -239,6 +239,8 @@ a { color: var(--forest-2); }
 .crm-badge-ok { background: #daf3e2; color: #166534; }
 .crm-badge-atentie { background: #ffe2d6; color: #9a3412; }
 .crm-badge-pierdut { background: #fde2e2; color: #991b1b; }
+.crm-badge-oficiala { background: #daf3e2; color: #166534; }
+.crm-badge-neoficiala { background: #ffe8cc; color: #9a4d00; }
 
 .crm-form {
     display: grid;

@@ -40,6 +40,14 @@ crm_header('Panou', 'acasa');
         <span>Cash luna asta</span>
         <strong><?= crm_e(crm_money_format((float) $stats['cash_luna'])) ?></strong>
     </div>
+    <div class="crm-stat">
+        <span>Plată oficială (luna)</span>
+        <strong><?= crm_e(crm_money_format((float) ($stats['oficial_luna'] ?? 0))) ?></strong>
+    </div>
+    <div class="crm-stat">
+        <span>Plată neoficială (luna)</span>
+        <strong><?= crm_e(crm_money_format((float) ($stats['neoficial_luna'] ?? 0))) ?></strong>
+    </div>
 </div>
 
 <section class="crm-card">
@@ -52,21 +60,24 @@ crm_header('Panou', 'acasa');
                     <th>Companie</th>
                     <th>Produs</th>
                     <th>Cutii</th>
-                    <th>Plată</th>
+                    <th>Tip plată</th>
+                    <th>Detaliu</th>
                     <th>Total</th>
                     <th>Cash</th>
                 </tr>
             </thead>
             <tbody>
             <?php if ($recentSales === []): ?>
-                <tr><td colspan="7" class="crm-muted">Nicio vânzare înregistrată luna asta.</td></tr>
+                <tr><td colspan="8" class="crm-muted">Nicio vânzare înregistrată luna asta.</td></tr>
             <?php else: ?>
                 <?php foreach ($recentSales as $sale): ?>
+                    <?php $tp = (string) ($sale['tip_plata'] ?? 'oficiala'); ?>
                     <tr>
                         <td><?= crm_e((string) $sale['la']) ?></td>
                         <td><?= crm_e((string) ($sale['client_companie'] ?: $sale['companie'])) ?></td>
                         <td><?= crm_e((string) $sale['produs']) ?></td>
                         <td><?= crm_e(rtrim(rtrim(number_format((float) $sale['cutii'], 2, ',', ' '), '0'), ',')) ?></td>
+                        <td><span class="crm-badge crm-badge-<?= $tp === 'neoficiala' ? 'neoficiala' : 'oficiala' ?>"><?= crm_e(crm_tip_plata_label($tp)) ?></span></td>
                         <td><?= crm_e((string) $sale['plata']) ?></td>
                         <td><?= crm_e(crm_money_format($sale['total'] !== null ? (float) $sale['total'] : null)) ?></td>
                         <td><?= crm_e(crm_money_format($sale['cash'] !== null ? (float) $sale['cash'] : null)) ?></td>

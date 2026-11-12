@@ -59,6 +59,13 @@ function crm_install(): void
             KEY produs_idx (produs)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
+
+    db_add_column($pdo, 'crm_vanzari', 'tip_plata', "VARCHAR(20) NOT NULL DEFAULT 'oficiala'");
+    try {
+        $pdo->exec('ALTER TABLE crm_vanzari ADD KEY tip_plata_idx (tip_plata)');
+    } catch (PDOException $e) {
+        // index may already exist
+    }
 }
 
 function crm_stats(): array
@@ -71,12 +78,19 @@ function crm_stats(): array
     $stmt->execute([$monthStart]);
     $row = $stmt->fetch(PDO::FETCH_NUM) ?: [0, 0, 0];
 
+    $oficial = $pdo->prepare("SELECT COALESCE(SUM(total),0) FROM crm_vanzari WHERE la >= ? AND tip_plata = 'oficiala'");
+    $oficial->execute([$monthStart]);
+    $neoficial = $pdo->prepare("SELECT COALESCE(SUM(total),0) FROM crm_vanzari WHERE la >= ? AND tip_plata = 'neoficiala'");
+    $neoficial->execute([$monthStart]);
+
     return [
         'clienti' => $clients,
         'aparate_comodat' => $machines,
         'vanzari_luna' => (float) $row[0],
         'cash_luna' => (float) $row[1],
         'livrari_luna' => (int) $row[2],
+        'oficial_luna' => (float) $oficial->fetchColumn(),
+        'neoficial_luna' => (float) $neoficial->fetchColumn(),
     ];
 }
 
@@ -204,7 +218,7 @@ function crm_machine_delete(int $id, int $clientId): void
     db()->prepare('DELETE FROM crm_aparate WHERE id = ? AND client_id = ?')->execute([$id, $clientId]);
 }
 
-function crm_sales_list(string $from = '', string $to = '', string $q = ''): array
+function crm_sales_list(string $from = '', string $to = '', string $q = '', string $tipPlata = ''): array
 {
     $pdo = db();
     $sql = 'SELECT v.*, c.companie AS client_companie
@@ -219,6 +233,10 @@ function crm_sales_list(string $from = '', string $to = '', string $q = ''): arr
     if ($to !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $to)) {
         $sql .= ' AND v.la <= ?';
         $params[] = $to;
+    }
+    if ($tipPlata !== '' && isset(crm_tip_plata_options()[$tipPlata])) {
+        $sql .= ' AND v.tip_plata = ?';
+        $params[] = $tipPlata;
     }
     if ($q !== '') {
         $sql .= ' AND (v.companie LIKE ? OR v.contact LIKE ? OR v.telefon LIKE ? OR v.produs LIKE ? OR v.note LIKE ? OR c.companie LIKE ?)';
@@ -275,6 +293,10 @@ function crm_sale_add(array $data): int
         $cutii = 0.0;
     }
     $plata = crm_text((string) ($data['plata'] ?? ''), 80);
+    $tipPlata = crm_text((string) ($data['tip_plata'] ?? 'oficiala'), 20);
+    if (!isset(crm_tip_plata_options()[$tipPlata])) {
+        $tipPlata = 'oficiala';
+    }
     $total = crm_money_input((string) ($data['total'] ?? ''));
     $pretSpecial = crm_money_input((string) ($data['pret_special'] ?? ''));
     $cash = crm_money_input((string) ($data['cash'] ?? ''));
@@ -292,8 +314,8 @@ function crm_sale_add(array $data): int
 
     $stmt = $pdo->prepare(
         'INSERT INTO crm_vanzari
-        (client_id, companie, telefon, contact, produs, cutii, plata, total, pret_special, cash, note, la, creat)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)'
+        (client_id, companie, telefon, contact, produs, cutii, plata, tip_plata, total, pret_special, cash, note, la, creat)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
     );
     $stmt->execute([
         $clientId,
@@ -303,6 +325,7 @@ function crm_sale_add(array $data): int
         $produs,
         $cutii,
         $plata,
+        $tipPlata,
         $total,
         $pretSpecial,
         $cash,

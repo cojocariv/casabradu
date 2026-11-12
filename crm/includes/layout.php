@@ -13,7 +13,7 @@ function crm_header(string $title, string $page = ''): void
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <title><?= crm_e($title) ?> · CRM Casa Bradu</title>
-    <link rel="stylesheet" href="<?= crm_e(crm_asset('assets/crm.css')) ?>?v=1">
+    <link rel="stylesheet" href="<?= crm_e(crm_asset('assets/crm.css')) ?>?v=2">
 </head>
 <body>
 <header class="crm-top">
